@@ -5,6 +5,7 @@ test-results/
 *.class
 *.jar
 README.md
+Notes.md
 
 .idea/
 *.iml
