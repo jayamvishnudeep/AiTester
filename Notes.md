@@ -139,6 +139,44 @@ flowchart LR
 - Separate facts from hypotheses.
 - Mark unclear items as `Needs clarification` or `[NEEDS CLARIFICATION]`.
 
+### Anti-Hallucination Example: Bug Report
+
+#### Evidence Provided
+
+```text
+Screenshot: Login button remains disabled after valid-looking input.
+Browser: Chrome.
+Environment: Staging.
+```
+
+#### Evidence-Based Output
+
+```text
+Title: Login button remains disabled after input
+Environment: Staging, Chrome
+Severity: Needs more information
+Steps to Reproduce: [Not provided in evidence]
+Expected Result: [UNKNOWN]
+Actual Result: Login button remains disabled after valid-looking input.
+Evidence: Screenshot
+Root Cause: [UNKNOWN]
+```
+
+#### Why This Is Safe
+
+- The actual result repeats only the supplied evidence.
+- The root cause is not guessed.
+- Severity is not assigned without demonstrated impact.
+- Missing reproduction steps and expected behavior remain visible.
+
+### Test Case Example: Evidence-Based Login Validation
+
+| Test ID | Description | Preconditions | Steps | Expected Result | Priority |
+|---|---|---|---|---|---|
+| LOGIN-EX-001 | Verify the documented login control | Login page is available and the requirement identifies a login control | Open the page and locate the documented control | The documented control is available. | High |
+| LOGIN-EX-002 | Validate an undocumented invalid-credential outcome | Invalid credentials and expected error behavior are documented | Enter the documented invalid values and submit | Use the exact documented error and navigation result. | High |
+| LOGIN-EX-003 | Handle missing expected behavior | Login page is available but the requirement does not define the error result | Submit the supplied invalid data and capture evidence | `Insufficient information to determine.` until the expected behavior is documented. | Medium |
+
 # 9 AUGUST 2026
 
 ### AI Tester Blueprint
@@ -172,6 +210,43 @@ flowchart LR
 - Greedy decoding selects the highest-probability token.
 - Sampling selects from a probability distribution and can produce varied output.
 - Temperature affects the concentration and diversity of token probabilities.
+
+### RICE-POT Example: Salesforce Login Automation
+
+| RICE-POT Element | Mentor Example |
+|---|---|
+| Role | QA automation tester with experience in IT and CRM projects such as Salesforce. |
+| Instructions | Generate an enterprise-level Selenium, Java, Maven, and TestNG automation framework for the Salesforce login page. Automate valid and invalid login scenarios. |
+| Context | Target: `https://login.salesforce.com/?locale=in`. The page includes username, password, submit, and Remember me functionality. |
+| Example | Use Page Object Model with PageFactory, XPath locators, reusable action methods, and constructor initialization. |
+| Parameters | External URLs and credentials are supplied separately. Use explicit waits and avoid `Thread.sleep()`. |
+| Output | One Page Object file, two TestNG test scripts, and the Maven project files. |
+| Tone | Technical, precise, and enterprise-grade. |
+
+### Page Object Example: Salesforce Login
+
+```java
+public class LoginPage {
+	@FindBy(xpath = "//input[@id='username']")
+	WebElement username;
+
+	@FindBy(xpath = "//input[@id='password']")
+	WebElement password;
+
+	@FindBy(xpath = "//input[@id='Login']")
+	WebElement loginButton;
+
+	public LoginPage(WebDriver driver) {
+		PageFactory.initElements(driver, this);
+	}
+
+	public void doLogin(String user, String pass) {
+		username.sendKeys(user);
+		password.sendKeys(pass);
+		loginButton.click();
+	}
+}
+```
 
 # 15 AUGUST 2026
 
@@ -224,6 +299,54 @@ flowchart LR
 - Parameters: define inputs, constraints, environment, and boundaries.
 - Output: specify the exact deliverable.
 - Tone: define the communication style.
+
+### API Contract Testing Example
+
+#### Input Specification
+
+```text
+API SCHEMA:
+<<<
+[PASTE JSON SCHEMA OR OPENAPI SPEC]
+>>>
+```
+
+#### Output Structure
+
+| Test ID | Response Type | Field | Expected Type | Required | Validation |
+|---|---|---|---|---|---|
+| API-CONTRACT-EX-001 | Success | [Documented field] | [Documented type] | [Documented requirement] | Compare the response with the supplied schema. |
+| API-CONTRACT-EX-002 | Error | [Documented error field] | [Documented type] | [Documented requirement] | Compare the error response with the supplied schema. |
+
+`[Documented field]`, `[Documented type]`, and the expected validation result must be replaced only with values from the supplied API specification.
+
+### Bug Classification Example
+
+```text
+Severity: Needs more information
+Priority: Needs more information
+Justification: The supplied evidence does not demonstrate business impact, data loss, security impact, or workaround availability.
+Missing Information: User impact, reproducibility, affected environment, frequency, and workaround.
+```
+
+### Prompt Output Example: Missing Information
+
+```text
+Verified Facts:
+- The requirement identifies an email field.
+- The requirement identifies a password field.
+
+Missing / Unknown Information:
+- The required error message is not provided.
+- The successful-login destination is not provided.
+
+Generated Output:
+- Create cases for field presence and input submission.
+- Mark the expected error and destination as unknown.
+
+Self-Validation Check:
+- No error message or redirect was invented.
+```
 
 ### QA Prompt Templates
 
