@@ -6,6 +6,14 @@ test-results/
 *.jar
 README.md
 Notes.md
+.env
+*.env
+config.json
+*.sqlite3
+.runtime/
+__pycache__/
+.pytest_cache/
+*.pyc
 
 .idea/
 *.iml
