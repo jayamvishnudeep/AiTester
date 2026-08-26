@@ -18,7 +18,7 @@ class AppConfig:
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "gemma3:1b"
     groq_api_key: str = ""
-    groq_model: str = "llama-3.1-8b-instant"
+    groq_model: str = "openai/gpt-oss-20b"
     acceptance_criteria_field: str = ""
 
     def public_values(self) -> dict[str, str]:
@@ -64,7 +64,7 @@ def load_config() -> AppConfig:
         ollama_url=_first_env("OLLAMA_URL", "OLLAMA_ENDPOINT", default=str(values.get("ollama_url", "http://localhost:11434"))),
         ollama_model=_first_env("OLLAMA_MODEL", default=str(values.get("ollama_model", "gemma3:1b"))),
         groq_api_key=_first_env("GROQ_API_KEY", "GROQ_TOKEN", default=str(values.get("groq_api_key", ""))),
-        groq_model=_first_env("GROQ_MODEL", default=str(values.get("groq_model", "llama-3.1-8b-instant"))),
+        groq_model=_first_env("GROQ_MODEL", default=str(values.get("groq_model", "openai/gpt-oss-20b"))),
         acceptance_criteria_field=_first_env("JIRA_ACCEPTANCE_CRITERIA_FIELD", default=str(values.get("acceptance_criteria_field", ""))),
     )
 

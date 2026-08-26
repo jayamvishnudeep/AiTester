@@ -20,7 +20,7 @@ LLM_PROVIDER=ollama
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=gemma3:1b
 GROQ_API_KEY=
-GROQ_MODEL=llama-3.1-8b-instant
+GROQ_MODEL=openai/gpt-oss-20b
 JIRA_ACCEPTANCE_CRITERIA_FIELD=
 ```
 

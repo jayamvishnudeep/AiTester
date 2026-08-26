@@ -18,6 +18,14 @@ class GenerationResult:
     provider: str
 
 
+def _groq_error_detail(response: requests.Response) -> str:
+    try:
+        message = response.json().get("error", {}).get("message", "")
+    except (ValueError, AttributeError):
+        message = ""
+    return f"HTTP {response.status_code} - {message or response.text[:200]}"
+
+
 class LLMClient:
     def __init__(self, config: AppConfig, session: requests.Session | None = None) -> None:
         self.config = config
@@ -65,14 +73,18 @@ class LLMClient:
                 },
                 timeout=120,
             )
-            response.raise_for_status()
+        except requests.RequestException as exc:
+            raise LLMClientError("Groq could not be reached. Check your network connection.") from exc
+        if response.status_code >= 400:
+            raise LLMClientError(f"Groq request failed: {_groq_error_detail(response)}")
+        try:
             body: dict[str, Any] = response.json()
             text = str(body["choices"][0]["message"]["content"]).strip()
-            if not text:
-                raise LLMClientError("Groq returned an empty response.")
-            return text
-        except (requests.RequestException, ValueError, KeyError, IndexError) as exc:
-            raise LLMClientError("Groq generation failed.") from exc
+        except (ValueError, KeyError, IndexError) as exc:
+            raise LLMClientError("Groq returned an unreadable response.") from exc
+        if not text:
+            raise LLMClientError("Groq returned an empty response.")
+        return text
 
 
 def check_ollama_connection(config: AppConfig, session: requests.Session | None = None) -> tuple[bool, str]:
