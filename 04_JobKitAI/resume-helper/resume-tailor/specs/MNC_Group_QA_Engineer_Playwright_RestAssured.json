@@ -1,5 +1,5 @@
 {
-  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\MNC_Group_QA_Engineer_Playwright_RestAssured_Vishnudeep_Jayam.docx",
+  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\naukri\\MNC_Group_QA_Engineer_Playwright_RestAssured_Vishnudeep_Jayam.docx",
   "docTitle": "Vishnudeep Jayam — QA Engineer (Playwright, REST Assured) — MNC Group",
   "name": "VISHNUDEEP JAYAM",
   "title": "==QA ENGINEER (PLAYWRIGHT, REST ASSURED)==  ·  TEST AUTOMATION",
@@ -14,30 +14,34 @@
   "sections": [
     {
       "heading": "SUMMARY",
-      "body": "==QA Engineer (Playwright, REST Assured)== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==built a Playwright + TypeScript automation framework for web applications and led Cucumber-based automation across Windows, Android, and iOS==. ==automated backend APIs with REST Assured and Postman, and built Python-based API test suites==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
+      "body": "==QA Engineer (Playwright, REST Assured)== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==Built a Playwright + TypeScript automation framework for web applications and led Cucumber-based automation across Windows, Android, and iOS==. ==Automated backend APIs with REST Assured and Postman, and built Python-based API test suites==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
     },
     {
       "heading": "CORE SKILLS",
       "rows": [
         [
           "Automation Frameworks & Tools",
-          "Selenium WebDriver · ==Playwright== · Cucumber (BDD) · TestNG · Page Object Model"
+          "Selenium WebDriver · ==Playwright== · Cucumber (BDD) · TestNG · Page Object Model · Selenium Grid"
         ],
         [
           "API & Backend Testing",
-          "==REST Assured== · Postman · ==Python API test scripts=="
+          "==REST Assured== · ==Postman== · ==Python API test scripts=="
         ],
         [
           "Languages",
           "Java · TypeScript · Python · PHP (Codeception)"
         ],
         [
-          "CI/CD & Build Tools",
-          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub"
+          "CI/CD, Build & Cloud",
+          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub · AWS"
         ],
         [
           "Test Management & Methodology",
-          "TestRail · XRay · Jira · Agile Scrum · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+          "TestRail · XRay · Jira · Agile Scrum · Kanban · Test Planning & Case Design · Defect Tracking & Reporting · SDLC / STLC"
+        ],
+        [
+          "Platforms Tested",
+          "Web (Chrome, Firefox, IE) · Windows Desktop · Android · iOS · Mobile / Tablet"
         ],
         [
           "Domain Exposure",
@@ -66,7 +70,7 @@
           "org": "IBMiX",
           "meta": "Mar 2019 – Jan 2022  |  Berlin, Germany  |  Automotive / in-car infotainment",
           "bullets": [
-            "Automated infotainment system backend ==API==s using the ==REST Assured== framework and Postman for manual API testing.",
+            "Automated infotainment system backend ==API==s using the ==REST Assured== framework and ==Postman== for manual API testing.",
             "Owned testing of the Volkswagen in-car infotainment app \"We Experience\" for the VW Passat and VW Golf as the sole QA resource on the product.",
             "Analyzed real-time app performance while driving the vehicle and debugged logs from the car's backend systems.",
             "Designed a test automation framework using Selenium, Java, and TestNG for the in-car infotainment app.",

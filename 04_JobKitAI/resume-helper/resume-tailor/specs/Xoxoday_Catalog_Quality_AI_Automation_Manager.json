@@ -1,5 +1,5 @@
 {
-  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\Xoxoday_Catalog_Quality_AI_Automation_Manager_Vishnudeep_Jayam.docx",
+  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\naukri\\Xoxoday_Catalog_Quality_AI_Automation_Manager_Vishnudeep_Jayam.docx",
   "docTitle": "Vishnudeep Jayam — Catalog Quality & AI Automation Manager — Xoxoday",
   "name": "VISHNUDEEP JAYAM",
   "title": "==CATALOG QUALITY & AI AUTOMATION MANAGER==  ·  TEST AUTOMATION",
@@ -14,14 +14,14 @@
   "sections": [
     {
       "heading": "SUMMARY",
-      "body": "==Catalog Quality & AI Automation Manager== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==managed test case preparation, execution, defect tracking, and status reporting as the QA lead on an automotive infotainment product==. ==automated backend APIs with REST Assured and Postman, and built Python-based API test suites==, differentiated by end-to-end ownership of QA across a 13-country e-commerce portfolio."
+      "body": "==Catalog Quality & AI Automation Manager== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==Managed test case preparation, execution, defect tracking, and status reporting as the QA lead on an automotive infotainment product==. ==Owned QA for 13 European e-commerce storefronts on the Magento platform==, differentiated by end-to-end ownership of QA across a 13-country e-commerce portfolio."
     },
     {
       "heading": "CORE SKILLS",
       "rows": [
         [
           "Test Management & Methodology",
-          "TestRail · XRay · ==Jira== · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+          "TestRail · XRay · ==Jira== · ==Agile Scrum== · Kanban · Test Planning & Case Design · ==Defect Tracking & Reporting== · SDLC / STLC"
         ],
         [
           "Domain Exposure",
@@ -29,7 +29,7 @@
         ],
         [
           "Automation Frameworks & Tools",
-          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model"
+          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model · Selenium Grid"
         ],
         [
           "Languages",
@@ -40,10 +40,19 @@
           "REST Assured · Postman · Python API test scripts"
         ],
         [
-          "CI/CD & Build Tools",
-          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub"
+          "CI/CD, Build & Cloud",
+          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub · AWS"
+        ],
+        [
+          "Platforms Tested",
+          "Web (Chrome, Firefox, IE) · Windows Desktop · Android · iOS · Mobile / Tablet"
+        ],
+        [
+          "[Gate skills — fill or delete this row]",
+          "[Product Catalog Management] · [AI-Powered Automation Tooling] · [Data Analysis & Trend Reporting]"
         ]
-      ]
+      ],
+      "note": "JD MISMATCH — this is a catalog / product-data management role, not a software test automation role. Your QA and e-commerce experience is adjacent, not a direct match — address the domain gap in a cover note or skip this one.  FILL-IN RULE — every item in the bracketed row above is named by this job description but is not evidenced anywhere in your source resume. Keep only what you have genuinely shipped with and could be questioned on for twenty minutes; delete the rest, then delete the row label itself. Do not soften an entry to \"exposure to\"."
     },
     {
       "heading": "PROFESSIONAL EXPERIENCE",

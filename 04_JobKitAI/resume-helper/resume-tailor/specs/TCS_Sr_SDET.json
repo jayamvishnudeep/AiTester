@@ -1,8 +1,8 @@
 {
-  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\TCS_Sr_SDET_Vishnudeep_Jayam.docx",
-  "docTitle": "Vishnudeep Jayam — Sr. SDET — Tata Consultancy Services",
+  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\naukri\\TCS_Sr_SDET_Vishnudeep_Jayam.docx",
+  "docTitle": "Vishnudeep Jayam — Senior SDET — Tata Consultancy Services",
   "name": "VISHNUDEEP JAYAM",
-  "title": "==SR. SDET==  ·  TEST AUTOMATION",
+  "title": "==SENIOR SDET==  ·  TEST AUTOMATION",
   "contact": [
     [
       "Berlin, Germany",
@@ -14,36 +14,45 @@
   "sections": [
     {
       "heading": "SUMMARY",
-      "body": "==Sr. SDET== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==designed Selenium + Java + TestNG automation frameworks across e-commerce, automotive, and enterprise web platforms==. ==automated backend APIs with REST Assured and Postman, and built Python-based API test suites==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
+      "body": "==Senior SDET== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==Designed Selenium + Java + TestNG automation frameworks across e-commerce, automotive, and enterprise web platforms==. ==Managed test case preparation, execution, defect tracking, and status reporting as the QA lead on an automotive infotainment product==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
     },
     {
       "heading": "CORE SKILLS",
       "rows": [
         [
-          "Automation Frameworks & Tools",
-          "==Selenium WebDriver== · Playwright · Cucumber (BDD) · TestNG · Page Object Model"
-        ],
-        [
-          "API & Backend Testing",
-          "REST Assured · Postman · ==Python API test scripts=="
-        ],
-        [
           "Languages",
-          "==Java== · TypeScript · Python · PHP (Codeception)"
+          "==Java== · ==TypeScript== · ==Python== · PHP (Codeception)"
         ],
         [
-          "CI/CD & Build Tools",
-          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub"
+          "Automation Frameworks & Tools",
+          "==Selenium WebDriver== · Playwright · ==Cucumber (BDD)== · TestNG · Page Object Model · ==Selenium Grid=="
         ],
         [
           "Test Management & Methodology",
-          "TestRail · XRay · Jira · Agile Scrum · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+          "TestRail · ==XRay== · ==Jira== · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting · SDLC / STLC"
+        ],
+        [
+          "API & Backend Testing",
+          "REST Assured · ==Postman== · ==Python API test scripts=="
+        ],
+        [
+          "CI/CD, Build & Cloud",
+          "==Jenkins== · Gradle · Maven · Travis CI · Git · GitHub · AWS"
+        ],
+        [
+          "Platforms Tested",
+          "Web (Chrome, Firefox, IE) · Windows Desktop · Android · iOS · Mobile / Tablet"
         ],
         [
           "Domain Exposure",
           "Automotive Infotainment Systems (VW) · E-commerce Platforms (Magento) · Enterprise Web Applications"
+        ],
+        [
+          "[Gate skills — fill or delete this row]",
+          "[Node.js / Mocha] · [Insomnia] · [Harness] · [qTest / Allure Report]"
         ]
-      ]
+      ],
+      "note": "FILL-IN RULE — every item in the bracketed row above is named by this job description but is not evidenced anywhere in your source resume. Keep only what you have genuinely shipped with and could be questioned on for twenty minutes; delete the rest, then delete the row label itself. Do not soften an entry to \"exposure to\"."
     },
     {
       "heading": "PROFESSIONAL EXPERIENCE",
@@ -53,12 +62,12 @@
           "org": "Zertificon Solutions GmbH",
           "meta": "Feb 2022 – Present  |  Berlin, Germany  |  Secure email / enterprise web applications",
           "bullets": [
+            "Develop and maintain a test automation framework for web applications using Playwright with ==TypeScript==.",
+            "Design and build test automation from scratch using the ==Cucumber== framework for Windows-based, Android, and iOS Zertificon applications.",
             "Build and maintain test automation for the Zertificon website using the Cucumber framework with ==Selenium== and ==Java==.",
-            "Develop and maintain a test automation framework for web applications using Playwright with TypeScript.",
-            "Design and build test automation from scratch using the Cucumber framework for Windows-based, Android, and iOS Zertificon applications.",
-            "Write and maintain test cases for Zertificon applications in the TestRail test case management tool.",
-            "Use Gradle as the build management tool and Jenkins for CI/CD.",
-            "Follow Scrum Agile methodology across the team, collaborating with cross-functional teams to reproduce reported bugs and mentoring junior engineers."
+            "Use Gradle as the build management tool and ==Jenkins== for CI/CD.",
+            "Follow Scrum ==Agile== methodology across the team, collaborating with cross-functional teams to reproduce reported bugs and mentoring junior engineers.",
+            "Write and maintain test cases for Zertificon applications in the TestRail test case management tool."
           ]
         },
         {
@@ -67,12 +76,12 @@
           "meta": "Mar 2019 – Jan 2022  |  Berlin, Germany  |  Automotive / in-car infotainment",
           "bullets": [
             "Designed a test automation framework using Selenium, Java, and TestNG for the in-car infotainment app.",
-            "Automated infotainment system backend ==API==s using the REST Assured framework and Postman for manual API testing.",
+            "Automated infotainment system backend APIs using the REST Assured framework and ==Postman== for manual API testing.",
+            "Used Maven as the build management tool and Jenkins / Travis CI for continuous integration.",
+            "Wrote test cases for the infotainment car application in the ==XRay== test case management tool and produced daily and weekly status reports.",
             "Owned testing of the Volkswagen in-car infotainment app \"We Experience\" for the VW Passat and VW Golf as the sole QA resource on the product.",
             "Analyzed real-time app performance while driving the vehicle and debugged logs from the car's backend systems.",
-            "Used Maven as the build management tool and Jenkins / Travis CI for continuous integration.",
-            "Wrote test cases for the infotainment car application in the XRay test case management tool and produced daily and weekly status reports.",
-            "Followed Scrum and Kanban Agile methodology, managing test case preparation, execution, defect tracking, and reporting for the team."
+            "Followed Scrum and Kanban Agile methodology, managing test case preparation, execution, defect tracking, and reporting for the team, leading a team of [X] QA and automation engineers."
           ]
         },
         {
@@ -81,14 +90,14 @@
           "meta": "Oct 2017 – Jan 2019  |  Berlin, Germany  |  E-commerce (13 European markets)",
           "bullets": [
             "Designed a test automation framework using Selenium with Java in the Page Object Model pattern, using Maven as the build management tool.",
-            "Owned testing for all 13 e-commerce shops across Europe as the sole QA engineer.",
             "Developed automation scripts using TestNG and ran automated test suites in Jenkins.",
+            "Performed the complete testing lifecycle — ==regression== testing of fixed bugs and new builds, sanity testing, and user testing — following Scrum and Kanban.",
+            "Owned testing for all 13 e-commerce shops across Europe as the sole QA engineer.",
             "Wrote automated test scripts using Codeception in PHP.",
             "Wrote test cases from user stories and acceptance criteria and created test plans.",
             "Tested application compatibility across browser versions (IE, Firefox, Chrome) and across mobile, desktop, and tablet environments.",
             "Tested backend Magento e-commerce modules and deployed features to test servers for manual and automated testing.",
-            "Used Git for version control and worked within AWS infrastructure.",
-            "Performed the complete testing lifecycle — regression testing of fixed bugs and new builds, sanity testing, and user testing — following Scrum and Kanban."
+            "Used Git for version control and worked within AWS infrastructure."
           ]
         },
         {
@@ -96,7 +105,7 @@
           "org": "Adnymics GmbH",
           "meta": "May 2017 – Oct 2017  |  München, Germany  |  Print-tech / personalization platform",
           "bullets": [
-            "Designed a test automation framework using Selenium with Python in the Page Object Model pattern.",
+            "Designed a test automation framework using Selenium with ==Python== in the Page Object Model pattern.",
             "Wrote automated test scripts for APIs in Python and tested APIs using Postman.",
             "Ran Selenium automation scripts using Selenium Grid and performed the complete testing lifecycle — regression, sanity, and user testing — following Agile Scrum."
           ]
@@ -107,7 +116,7 @@
           "meta": "Mar 2017 – Apr 2017  |  München, Germany  |  Print-tech / personalization platform",
           "bullets": [
             "Wrote and executed manual and automated test cases using Selenium in Python, running scripts via Selenium Grid.",
-            "Performed the complete testing lifecycle — regression, sanity, and user testing — applying SDLC quality practices and filing defects in Jira."
+            "Performed the complete testing lifecycle — regression, sanity, and user testing — applying SDLC quality practices and filing defects in ==Jira==."
           ]
         }
       ]
