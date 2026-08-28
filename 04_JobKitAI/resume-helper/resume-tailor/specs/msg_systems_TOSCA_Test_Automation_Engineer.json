@@ -14,7 +14,7 @@
   "sections": [
     {
       "heading": "SUMMARY",
-      "body": "==TOSCA Test Automation Engineer== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==automated backend APIs with REST Assured and Postman, and built Python-based API test suites==. ==embedded automated suites into CI/CD pipelines using Jenkins, Gradle, Maven, and Travis CI==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
+      "body": "==TOSCA Test Automation Engineer== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==Automated backend APIs with REST Assured and Postman, and built Python-based API test suites==. ==Embedded automated suites into CI/CD pipelines using Jenkins, Gradle, Maven, and Travis CI==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
     },
     {
       "heading": "CORE SKILLS",
@@ -24,20 +24,24 @@
           "REST Assured · Postman · ==Python API test scripts=="
         ],
         [
-          "CI/CD & Build Tools",
-          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub"
+          "CI/CD, Build & Cloud",
+          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub · AWS"
         ],
         [
           "Test Management & Methodology",
-          "TestRail · XRay · Jira · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+          "TestRail · XRay · Jira · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting · SDLC / STLC"
         ],
         [
           "Automation Frameworks & Tools",
-          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model"
+          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model · Selenium Grid"
         ],
         [
           "Languages",
           "Java · TypeScript · Python · PHP (Codeception)"
+        ],
+        [
+          "Platforms Tested",
+          "Web (Chrome, Firefox, IE) · Windows Desktop · Android · iOS · Mobile / Tablet"
         ],
         [
           "Domain Exposure",

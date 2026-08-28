@@ -14,18 +14,18 @@
   "sections": [
     {
       "heading": "SUMMARY",
-      "body": "==Test Automation Engineer== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==embedded automated suites into CI/CD pipelines using Jenkins, Gradle, Maven, and Travis CI==. ==designed Selenium + Java + TestNG automation frameworks across e-commerce, automotive, and enterprise web platforms==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
+      "body": "==Test Automation Engineer== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==Embedded automated suites into CI/CD pipelines using Jenkins, Gradle, Maven, and Travis CI==. ==Designed Selenium + Java + TestNG automation frameworks across e-commerce, automotive, and enterprise web platforms==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
     },
     {
       "heading": "CORE SKILLS",
       "rows": [
         [
-          "CI/CD & Build Tools",
-          "==Jenkins== · Gradle · Maven · Travis CI · Git · GitHub"
+          "CI/CD, Build & Cloud",
+          "==Jenkins== · Gradle · Maven · Travis CI · Git · GitHub · AWS"
         ],
         [
           "Automation Frameworks & Tools",
-          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model"
+          "Selenium WebDriver · Playwright · Cucumber (BDD) · TestNG · Page Object Model · Selenium Grid"
         ],
         [
           "Languages",
@@ -37,7 +37,11 @@
         ],
         [
           "Test Management & Methodology",
-          "TestRail · XRay · Jira · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+          "TestRail · XRay · Jira · ==Agile Scrum== · Kanban · Test Planning & Case Design · Defect Tracking & Reporting · SDLC / STLC"
+        ],
+        [
+          "Platforms Tested",
+          "Web (Chrome, Firefox, IE) · Windows Desktop · Android · iOS · Mobile / Tablet"
         ],
         [
           "Domain Exposure",
