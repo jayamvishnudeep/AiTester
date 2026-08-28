@@ -1,23 +1,581 @@
-Job Title,Company,Job Description
-"Senior QA Engineer , Software",Light & Wonder,Non-engineer roles that are primarily performing audits and tests of software products ...
-Catalog Quality & AI Automation Manager,Xoxoday,Manage and maintain high-quality product catalogs across various platforms. Develop an...
-IN_Manager_QA Automation_Data and Analytics_Advisory_Bangalore,PwC Service Delivery Center,Automation Tools : 6+ years of production experience building frameworks specifically w...
-Senior Quantitative Model Solutions Specialist,Wells Fargo,"Proven experience in developing Automated Testing Frameworks in python using Pytest / Selenium. . Good understanding of Database concepts,DB testing and writing SQL queries. . Job Expectations . Experience in Finance / Credit/Banking Modelling with a strong understanding of industry specific SDLC processes."
-Senior Quality Assurance Engineer,Tata Consultancy Services,"Senior Quality Assurance EngineerExperience: 5+ yearsLocation: Bengaluru, Karnataka Req..."
-QA Tester with AI,Tekskills India,"Minimum experience: . At least 4 years of experience in software quality assurance, wit..."
-Senior QA Automation Engineer (Playwright + Cursor AI),CGI,"Position Description: Company Profile:Founded in 1976, CGI is among the largest indep..."
-Cypress Automation Tester,GSR Business Services,Job DescriptionBrief DescriptionWe look for self-starters who thrive in fast-paced agi...
-SDET Automation Test Engineer,Apexon,"Analyze test results,identify defects,and report issues to stakeholders. Job Requirements : . 5-8 years of experience in software development or quality assurance with a focus on automation testing"
-C# and OOP concepts Expert_BAX,Larsen & Toubro (L&T),Hands-on experience with Selenium and Appium automation frameworks Hands-on experience ...
-Quality Engineer,Grid Dynamics,Required Skills (Important) . Strong knowledge of JavaScript and Java We are looking fo...
-INFOSYS_ API Tester_ Pune/BLR/Noida/CHN/HYD /TVM,Infosys,Required Skills and Qualifications Extensive experience with Selenium WebDriver for web...
-IN_Senior Associate_QA Automation_Data and Analytics,PwC Service Delivery Center,Years of experience. Years of experience required: 4-8. Disclaimer: This job posting ha...
-playwright Automation Tester,HCLTech,"Mandatory Skills - Playwright, JavaScript, Typescript Detail JD - Playwright, JavaScrip..."
-QA Automation Engineer,Siemens Healthcare,Experience with Git / GitHub and CI / CD practicesPreferred Candidate Profile Strong ex...
-QA Automation + EDI Test Engineer(US Healthcare),kezan,"The candidate should have strong knowledge of healthcare EDI transactions, API testing,..."
-"Qa Engineer ( Playwright , Rest Assured API automation testing)",MNC Group,"Position Name- QA automation(Playwright , Rest Api)Location: PAN india"
-QA Automation Engineer (Playwright) | Bangalore| 4 To 10 Years,Tata Consultancy Services,Role & responsibilities Role: QA Automation Engineer Location: Bangalore Experience: 4 ...
-Sr. SDET,Tata Consultancy Services,Required Skills Minimum 5 years of related work experience
-"QA Automation Engineer, Professional Services R&D",Okta,Solid understanding of CI / CD principles and experience integrating tests into pipelin...
-QA Automation Engineer (Camera Testing),Larsen & Toubro (L&T),Preferred candidate profile . .
-Lead QA Automation Engineer (Playwright + Cursor AI),CGI,"Position Description: Company Profile:Founded in 1976, CGI is among the largest indep..."
+﻿"Company","Job Title","Experience","Location","Job Description","Job URL"
+"Light & Wonder","Senior QA Engineer , Software","4-8 Yrs","Bengaluru","Gaming:
+
+Welcome to the world of land-based gaming. At Light & Wonder, it's all about the games, and our Gaming team builds cutting-edge technology, products, and content for the most iconic casinos and operators across the globe.
+
+Position Summary
+
+Debugs software products through the use of systematic tests to develop, apply and maintain quality standards for firm products. Develops, modifies and executes software test plans, automated scripts and programs for testing. Analyzes and writes test standards and procedures. Maintains documentation of test results to assist in debugging and modification of software. Analyzes test results to ensure existing functionality and recommends corrective action. Consults with development engineers in resolution of problems. Provides feedback in preparation of technical appraisals of programming languages, systems and computation software. Ensures quality computer integration into the overall functions of scientific computation, data acquisition and processing. Non-engineer roles that are primarily performing audits and tests of software products in accordance with established test plans and procedures and are not involved in the development of test plans should be matched Software Test Technician.
+
+Qualifications","https://www.naukri.com/job-listings-senior-qa-engineer-software-light-wonder-bengaluru-4-to-8-years-120826027500"
+"Xoxoday","Catalog Quality & AI Automation Manager","4-7 Yrs","Bengaluru","Manage and maintain high-quality product catalogs across various platforms.
+
+Develop and implement AI-powered automation solutions to improve catalog management processes.
+
+Collaborate with cross-functional teams to ensure seamless integration of catalogs with other systems.
+
+Analyze data to identify trends and areas for improvement in catalog management.
+
+Implement quality control measures to ensure accuracy and consistency in catalog content.
+
+Lead a team of professionals in achieving departmental goals and objectives.
+
+Disclaimer: This job posting has been aggregated from external source. Role details, content, and availability are subject to change. Applicants are advised to confirm the latest information directly on the company website before applying.","https://www.naukri.com/job-listings-catalog-quality-ai-automation-manager-xoxoday-bengaluru-4-to-7-years-250626504719"
+"PwC Service Delivery Center","IN_Manager_QA Automation_Data and Analytics_Advisory_Bangalore","6-11 Yrs","Bengaluru","Job Summary
+
+At PwC, our people in data management focus on organising and maintaining data to enable accuracy and accessibility for effective decision-making. These individuals handle data governance, quality control, and data integration to support business operations.
+
+In data quality assurance at PwC, you will be responsible for the accuracy and reliability of data through testing and validation processes. You will play a crucial role in maintaining data integrity and identifying areas for improvement in data management systems.
+
+Responsibilities
+Define and lead test strategies for data-intensive systems, ensuring alignment with quality and compliance goals.
+Design and implement scalable automation frameworks for ETL/ELT pipelines and cloud-based data platforms.
+Guide a team of QA engineers, driving best practices in test automation, data validation, and performance testing.
+Integrate automated tests into CI/CD workflows using tools like Jenkins, GitHub Actions, or Azure DevOps.
+Collaborate with engineering, data, and business teams in Agile environments to ensure quality across the development lifecycle.
+Report key QA metrics and provide risk-based recommendations for release readiness.
+Stay current with testing trends, including AI-powered automation tools.
+
+Mandatory skill sets
+Automation Tools: 6+ years of production experience building frameworks specifically with Playwright (experience with Cypress or Selenium is a plus but Playwright is required).
+Strong background in ETL testing, data quality, and SQL.
+Experience with ETL tools
+Proficiency in test automation (Python, Java, PyTest, Selenium).
+Solid understanding of cloud platforms (AWS, Azure) and CI/CD.
+Familiar with Agile/Scrum practices and stakeholder collaboration.
+
+Preferred skill sets
+Working knowledge of AWS.
+Understanding of DevOps practices.
+Team Handling.
+
+Disclaimer: This job posting has been aggregated from external source. Role details, content, and availability are subject to change. Applicants are advised to confirm the latest information directly on the company website before applying.","https://www.naukri.com/job-listings-in-manager-qa-automation-data-and-analytics-advisory-bangalore-pricewaterhouse-coopers-service-delivery-center-kolkata-bengaluru-6-to-11-years-190826504520"
+"Tata Consultancy Services","Senior Quality Assurance Engineer","5-10 Yrs","Bengaluru","Senior Quality Assurance Engineer
+
+Experience: 5+ years
+
+Location: Bengaluru, Karnataka
+
+Required Qualifications
+
+5+ years of QA/SDET experience.
+Proficiency in Java, TypeScript, and Python.
+Experience with Selenium, Appium, JUnit, Postman, and Insomnia.
+Experience with NodeJS, Mocha, and Cucumber.
+Familiarity with Agile, TDD, and BDD.
+Experience with CI/CD tools such as Jenkins or Harness.
+Strong analytical and communication skills.
+
+Preferred Qualifications
+
+Experience with AWS, Azure, or other cloud services.
+Familiarity with AngularJS, NodeJS, and modern web frameworks.
+Experience with GenAI, AI/ML, and advanced automation augmentation tools.
+Experience with JIRA, Xray, qTest, and Allure Reports.
+
+Education
+
+Bachelors degree in Computer Science, Information Systems, Engineering, or equivalent experience.","https://www.naukri.com/job-listings-senior-quality-assurance-engineer-tata-consultancy-services-bengaluru-5-to-10-years-240826030419"
+"Tekskills India (Posted by Tekskills)","QA Tester with AI","5-10 Yrs","Bengaluru","Job Description:
+
+Minimum experience:
+
+At least 4 years of experience in software quality assurance, with a focus on AI solutions.
+
+Must have hands-on:
+
+Deep understanding of LLM behaviour including hallucinations, bias, edge-case handling
+Experience prompt engineering to design adversarial and robustness test cases
+Conduct photo validation and recognition tests to ensure accuracy in AI-driven quality audits.
+Able to integrate LLM-focused test suites into CI/CD pipelines (Azure DevOps, GitHub Actions)
+Experience in LLM test case generation, RAG evaluation, and use of guardrails for secure, explainable testing
+Strong background in data pipeline testing, ensuring input/output integrity of training and retrieval systems
+Expertise in managing test data, generating synthetic data, and auditing data coverage
+Document defects clearly and support triage with engineering tea","https://www.naukri.com/job-listings-qa-tester-with-ai-tekskills-bengaluru-5-to-10-years-180826928004"
+"CGI","Senior QA Automation Engineer (Playwright + Cursor AI)","5-8 Yrs","Bengaluru","Position Description:
+
+Company Profile:
+Founded in 1976, CGI is among the largest independent IT and business consulting services firms in the world. With 94,000 consultants and professionals across the globe, CGI delivers an end-to-end portfolio of capabilities, from strategic IT and business consulting to systems integration, managed IT and business process services and intellectual property solutions. CGI works with clients through a local relationship model complemented by a global delivery network that helps clients digitally transform their organizations and accelerate results. CGI Fiscal 2024 reported revenue is CA$14.68 billion and CGI shares are listed on the TSX (GIB.A) and the NYSE (GIB). Learn more at cgi.com.
+Job Title: Java Full Stack Developer with AWS
+Position: Senior Software Engineer
+Experience: 6-9 Years
+Category: Software Development/ Engineering
+Shift: General
+Main location: India, Karnataka, Bangalore, Tamil Nadu, Chennai
+Position ID: J0426-2476
+Employment Type: Full Time
+Education Qualification: Bachelor's degree in Computer Science or related field or higher with minimum 3 years of relevant experience.
+Position Description: We are looking for an experienced Java Full Stack Developer with AWS to join our team. The ideal candidate should be passionate about coding and developing scalable and high-performance applications. You will work closely with our front-end developers, designers, and other members of the team to deliver quality solutions that meet the needs of our clients.
+Role Responsibilities:
+6+ years experience
+Hands-on development using Core Java, Spring/Spring Boot, AWS services, and Microservices architecture.
+Build and consume RESTful APIs and develop UI components using Angular (or similar frontend frameworks).
+Actively participate in the product development lifecycle, including design, development, testing, deployment, and production support (on a rotation basis).
+Drive technical discussions, evaluate multiple approaches, and recommend optimal solutions in a collaborative, opinionated engineering environment.
+Influence and promote high-quality software design, coding best practices, security standards, testability, and defect-prevention strategies.
+Develop and maintain application features along with automated tests (unit, component, integration, and functional tests).
+Support and enhance CI/CD pipelines to improve release efficiency and reliability.
+Collaborate with team members to improve test coverage, release velocity, and production stability.
+Participate in code and test reviews as part of the Scrum/Agile team.
+Own features end-to-end from concept and design to deployment working closely with cross-functional teams.
+Contribute ideas to improve products, continuously learn new technologies, tools, and programming languages, and drive innovation.
+
+Must-Have Skills:
+Strong experience in Java (8 or above)
+Hands-on experience with Spring Boot / Spring Framework
+Good understanding of RESTful APIs
+Good understanding of Microservices architecture
+Good hands on experience in Angular
+Experience with front-end technologies like HTML, CSS, JavaScript
+Experience with SQL databases (MySQL / PostgreSQL / Oracle)
+Familiarity with Git for version control.
+
+Good-to-Have Skills:
+Experience with Spring Security
+Knowledge of Docker / Kubernetes
+Experience with CI/CD tools (Jenkins / GitHub Actions)
+Understanding of NoSQL databases (MongoDB)
+Knowledge of Unit Testing frameworks (JUnit / Mockito)
+Experience working in Agile/Scrum environment.
+CGI is an equal opportunity employer. In addition, CGI is committed to providing accommodation for people with disabilities in accordance with provincial legislation. Please let us know if you require reasonable accommodation due to a disability during any aspect of the recruitment process and we will work with you to address your needs.
+
+Life at CGI:
+It is rooted in ownership, teamwork, respect and belonging. Here, youll reach your full potential because
+You are invited to be an owner from day 1 as we work together to bring our Dream to life. Thats why we call ourselves CGI Partners rather than employees. We benefit from our collective success and actively shape our companys strategy and direction.
+Your work creates value. Youll develop innovative solutions and build relationships with teammates and clients while accessing global capabilities to scale your ideas, embrace new opportunities, and benefit from expansive industry and technology expertise.
+Youll shape your career by joining a company built to grow and last. Youll be supported by leaders who care about your health and well-being and provide you with opportunities to deepen your skills and broaden your horizons.
+Come join our team, one of the largest IT and business consulting services firms in the world.
+
+
+Skills:
+
+Angular
+AWS AI Services
+Java
+Microservices
+Spring Boot
+
+
+What you can expect from us:
+
+Together, as owners, lets turn meaningful insights into action.
+
+Life at CGI is rooted in ownership, teamwork, respect and belonging. Here, youll reach your full potential because
+
+You are invited to be an owner from day 1 as we work together to bring our Dream to life. Thats why we call ourselves CGI Partners rather than employees. We benefit from our collective success and actively shape our companys strategy and direction.
+
+Your work creates value. Youll develop innovative solutions and build relationships with teammates and clients while accessing global capabilities to scale your ideas, embrace new opportunities, and benefit from expansive industry and technology expertise.
+
+Youll shape your career by joining a company built to grow and last. Youll be supported by leaders who care about your health and well-being and provide you with opportunities to deepen your skills and broaden your horizons.
+
+That same commitment to fairness extends to how we use technology. To support our recruitment team, AI tools may be used to help assess applications though they never replace human judgement. All hiring decisions remain entirely in the hands of our recruitment professionals.
+
+Come join our teamone of the largest IT and business consulting services firms in the world.","https://www.naukri.com/job-listings-senior-qa-automation-engineer-playwright-cursor-ai-cgi-information-systems-and-management-consultants-bengaluru-5-to-8-years-270826919884"
+"GSR Business Services","Cypress Automation Tester","4-6 Yrs","Hybrid - Bengaluru","Job Description
+
+Brief Description
+
+We look for self-starters who thrive in fast-paced agile environment. The ideal candidate should be able to change directions quickly, and keen to learn new technologies and best practices. The candidate should be able to work with a cross-functional, collaborative environment where excellent interpersonal and communication skills are a must. We look for people who can prioritize, multi-task and deliver. Should be able to test application both manually and with automated tools using black box, grey box and white box testing techniques. Should be capable of working with development engineers to understand the features and technical implementation without losing the appropriate tester mindset.
+
+Change the future with us!!!
+
+To develop Test Automation scripts/framework for Lab Diagnostics products
+Develop Test scripts using Cypress
+Design and execute test scripts, API, UI and Integration level for system and sub-system components
+Experience in FlaUI UI testing of windows application is an added advantage
+Integration with CI pipeline and monitoring, triaging the failures
+Maintain integration test suite with quality and continuous improvement mindset
+Refine automated tests to ensure high test coverage
+Report errors in bug tracking tool and track the issues to closure including support of defect investigation, validate defect fixes and analyze impact of fixes.
+Perform defect analysis, Root Cause Analysis (RCA)
+Create test documentation including test specification, impact analysis and summarize reports
+Perform manual tests as required by the project
+
+Use your skills to move the world forward!!!
+
+We need a B.E/B. Tech/MCA/M.Tech graduate with 4 to 6 years of experience with different automation tools & frameworks
+Hands on experience with Cypress, Mocha, Jasmine, JavaScript, Chai, Applitools, Jest, and BDD
+Expertise in SDLC
+Good communication, Analytical skills, and a team player.","https://www.naukri.com/job-listings-cypress-automation-tester-gsr-business-services-bengaluru-4-to-6-years-280826007471"
+"Larsen & Toubro (L&T)","C# and OOP concepts Expert_BAX","5-9 Yrs","Bengaluru","Hands-on experience in C# and OOP concepts.
+Hands-on experience in developing test automation frameworks (e.g., Page Object Model (POM), Behavior-Driven Development (BDD), Data-Driven Frameworks, etc.).
+Hands-on experience in developing and automating REST API test scripts.
+Hands-on experience with Selenium and Appium automation frameworks.
+Good understanding of software testing concepts:
+SDLC and STLC
+Test case design techniques
+Functional, Regression, Smoke, and Sanity testing
+Defect life cycle and defect management
+Test execution process
+API testing concepts
+Automation testing best practices and framework design","https://www.naukri.com/job-listings-c-and-oop-concepts-expert-bax-larsen-toubro-l-t-bengaluru-5-to-9-years-290726033995"
+"Grid Dynamics","Quality Engineer","6-11 Yrs","Hybrid - Bengaluru","We are looking for a skilled Quality Engineer with strong experience in Playwright, JavaScript, Java, API testing, and AWS to own end-to-end quality assurance for scalable retail/order management platforms.
+
+Key Responsibilities
+
+Own E2E QA across manual and automation testing.
+Design, develop, and execute automation tests using Playwright, Cucumber, Selenium/Cypress/Appium.
+Perform API, integration, backend, and platform testing for Java-based applications.
+Validate JSON/XML, APIs, transactions, logs, metrics, and traces.
+Work with Kafka/Amazon MQ and distributed systems.
+Use Splunk, Grafana, and OpenTelemetry (OTEL) for monitoring and troubleshooting.
+Perform testing across build, release, and production-readiness phases.
+Manage test coverage and traceability using Xray.
+Collaborate with engineering, product, and platform teams across geographies.
+Leverage AI tools such as Cursor to improve testing productivity and quality.
+
+Required Skills (Important)
+
+Strong knowledge of JavaScript and Java.
+Hands-on experience with Playwright and Cucumber.
+Experience with Selenium/Cypress/Appium.
+Strong understanding of API, JSON/XML, and backend testing.
+Good knowledge of AWS and cloud environments.
+Experience with data validation and performance monitoring.
+Strong stakeholder management and communication skills.
+Ability to work independently as a stand-alone engineer.","https://www.naukri.com/job-listings-quality-engineer-grid-dynamics-bengaluru-6-to-11-years-270826014659"
+"Infosys (Posted by Glauben Technologies)","INFOSYS_ API Tester_ Pune/BLR/Noida/CHN/HYD /TVM","5-10 Yrs","Bengaluru, Hyderabad, Pune","Job description
+
+Core Responsibilities
+
+Design and Development: Create, develop, and maintain high-quality automation test scripts and frameworks using Selenium and Java.
+API Testing: Design and execute API tests, validating requests, responses, data integrity, and security aspects using tools like REST Assured, Postman, or Karate.
+Collaboration: Work closely with development teams, business analysts, and project managers to gather requirements, define test strategies, and ensure seamless integration and functionality.
+Execution and Analysis: Execute test plans, analyze results, identify defects, perform root cause analysis, and track issues to resolution.
+Framework Enhancement: Continuously enhance testing frameworks and processes for improved efficiency, effectiveness, and the creation of reusable, reliable code.
+Documentation and Reporting: Document test procedures, test cases, and results, and provide regular status updates to management and stakeholders.
+
+Required Skills and Qualifications
+
+Technical Proficiency:
+Strong programming skills in Java (including OOPs concepts, collections framework, exception handling).
+Extensive experience with Selenium WebDriver for web UI automation.
+Hands-on experience with API automation tools/frameworks such as REST Assured, Postman, Karate, or SoapUI.
+Familiarity with test automation frameworks like TestNG or JUnit.
+Experience with build automation tools like Maven or Gradle.
+Knowledge of database query tools like SQL for data validation.)
+
+Education: BE/B.Tech/MCA/M.Tech/MSc./MCA","https://www.naukri.com/job-listings-infosys-api-tester-pune-blr-noida-chn-hyd-tvm-glauben-technologies-hyderabad-pune-bengaluru-5-to-10-years-270826009131"
+"PwC Service Delivery Center","IN_Senior Associate_QA Automation_Data and Analytics","3-6 Yrs","Bengaluru","Job Summary
+
+At PwC, our people in data management focus on organising and maintaining data to enable accuracy and accessibility for effective decision-making. These individuals handle data governance, quality control, and data integration to support business operations.
+
+Those in data quality and operations at PwC will focus on the accuracy, completeness, and accessibility of data for effective decision-making and business operations. Your work will involve implementing data quality control measures, performing data cleansing and validation, and monitoring data integrity. You will be responsible for managing data operations, including data acquisition, transformation, and loading processes, to enable the smooth functioning of data management systems and processes.
+
+A career within Data and Analytics services will provide you with the opportunity to help organizations uncover enterprise insights and drive business results using smarter data analytics. We focus on a collection of organizational technology capabilities, including business intelligence, data management, and data assurance that help our clients drive innovation, growth, and change within their organizations in order to keep up with the changing nature of customers and technology. We make impactful decisions by mixing mind and machine to leverage data, understand and navigate risk, and help our clients gain a competitive edge.
+
+Responsibilities
+Define and lead test strategies for data-intensive systems, ensuring alignment with quality and compliance goals.
+Design and implement scalable automation frameworks for ETL/ELT pipelines and cloud-based data platforms.
+Integrate automated tests into CI/CD workflows using tools like Jenkins, GitHub Actions, or Azure DevOps.
+Collaborate with engineering, data, and business teams in Agile environments to ensure quality across the development lifecycle.
+Report key QA metrics and provide risk-based recommendations for release readiness.
+Stay current with testing trends, including AI-powered automation tools.
+
+Mandatory skill sets
+Strong background in ETL testing, data quality, and SQL.
+Experience with ETL tools
+Proficiency in test automation (Python, Java, PyTest, Selenium).
+Solid understanding of cloud platforms (AWS, Azure) and CI/CD.
+Familiar with Agile/Scrum practices and stakeholder collaboration.
+
+Preferred skill sets
+Team Handling
+Client Facing
+
+Years of experience
+Years of experience required: 4-8
+
+Disclaimer: This job posting has been aggregated from external source. Role details, content, and availability are subject to change. Applicants are advised to confirm the latest information directly on the company website before applying.","https://www.naukri.com/job-listings-in-senior-associate-qa-automation-data-and-analytics-pricewaterhouse-coopers-service-delivery-center-kolkata-bengaluru-3-to-6-years-180826501689"
+"HCLTech","playwright Automation Tester","4-8 Yrs","Bengaluru, Noida, Chennai","Mandatory Skills - Playwright, JavaScript, Typescript
+
+Detail JD - Playwright, JavaScript, Typescript, TestNG, BDD Cucumber, Api Automation, Java/Selenium
+
+Experience - 4 to 8 Yrs
+
+Location - Bangalore/Chennai/Noida/Hyderabad","https://www.naukri.com/job-listings-playwright-automation-tester-hcltech-noida-chennai-bengaluru-4-to-8-years-060826011000"
+"Siemens Healthcare (Posted by Sunovaa Tech)","QA Automation Engineer","4-7 Yrs","Bengaluru","Role & Responsibilities
+
+Design, develop, and maintain scalable UI automation frameworks using Cypress with TypeScript/JavaScript.
+Develop and maintain automated test suites using Playwright and Selenium.
+Build reusable automation components using Page Object Model (POM) and framework best practices.
+Perform functional, regression, smoke, sanity, and integration testing.
+Develop and execute API automation using REST APIs, Postman, REST Assured, or similar tools.
+Integrate automation suites with Azure DevOps CI/CD pipelines for continuous testing.
+Analyze automation failures, perform debugging and root-cause analysis, and improve test stability.
+Collaborate with Developers, Product Owners, DevOps, and QA teams in an Agile/Scrum environment.
+Participate in test planning, execution, defect management, release validation, and quality improvement activities.
+Maintain test scripts, reusable utilities, test data, and automation documentation.
+Continuously improve automation coverage, execution efficiency, framework maintainability, and regression cycle time.
+
+Preferred Candidate Profile
+
+4-6 years of experience in QA Automation / SDET roles.
+Strong hands-on experience with Cypress and TypeScript/JavaScript.
+Strong experience in automation framework development, preferably using POM.
+Hands-on experience with Playwright and/or Selenium.
+Strong understanding of API Testing / API Automation using Postman, REST Assured, or equivalent.
+Practical experience integrating automation into Azure DevOps CI/CD pipelines.
+Good programming and scripting skills in TypeScript/JavaScript.
+Experience with Git/GitHub and CI/CD practices.
+Good understanding of BDD/Cucumber, Mocha/TestNG is preferred.
+Experience with SQL/database validation is an added advantage.
+Exposure to Jenkins, GitHub Actions, AWS/Azure, JMeter or k6 will be an advantage.
+Strong understanding of SDLC, STLC, Agile/Scrum, defect lifecycle, and test automation best practices.
+Should be able to independently design, develop, debug, and enhance automation frameworks, rather than only execute existing scripts.
+Strong communication, analytical, troubleshooting, and problem-solving skills.","https://www.naukri.com/job-listings-qa-automation-engineer-sunovaa-tech-bengaluru-4-to-7-years-250826025193"
+"kezan (Posted by Kezan Consulting)","QA Automation + EDI Test Engineer (US Healthcare)","4-8 Yrs","Hybrid - Bengaluru, Gurugram","We are looking for a QA Automation Engineer with 4+ years of experience in software testing, automation, and Healthcare EDI testing. The candidate should have strong knowledge of healthcare EDI transactions, API testing, database validation, and automation frameworks.
+
+Key Responsibilities
+
+Design, develop, and execute manual and automated test cases for healthcare applications.
+Perform end-to-end testing of Healthcare EDI transactions.
+Validate EDI files, segments, elements, data mapping, and transformation rules.
+Test healthcare transactions such as 837, 835, 270, 271, 276, 277, 278, 834, 999 and TA1.
+Perform EDI-to-application, EDI-to-database, and application-to-EDI validation.
+Develop and maintain automation scripts using Selenium with Java/Python.
+Perform API testing using tools such as Postman and REST/SOAP APIs.
+Write SQL queries for database validation and data reconciliation.
+Perform functional, regression, integration, system, and end-to-end testing.
+Identify, analyze, document, and track defects using Jira/Azure DevOps.
+Collaborate with developers, business analysts, EDI specialists, and product teams.
+Participate in Agile/Scrum ceremonies, sprint planning, and defect triage.
+Contribute to automation framework enhancement and CI/CD integration.
+
+Mandatory Skills
+
+4+ years of QA/Software Testing experience
+Strong experience in Healthcare EDI Testing
+Hands-on experience with 837, 835, 270/271, 276/277
+Good understanding of US Healthcare Claims and Payer/Provider processes
+Selenium with Java or Python
+API Testing REST/SOAP, Postman
+Strong SQL and Database Testing
+Experience with automation frameworks such as TestNG/JUnit/PyTest
+Knowledge of Git and Jenkins/CI-CD
+Experience with Jira/Azure DevOps
+Strong understanding of SDLC, STLC, and defect lifecycle","https://www.naukri.com/job-listings-qa-automation-edi-test-engineer-us-healthcare-kezan-consulting-gurugram-bengaluru-4-to-8-years-240826010643"
+"MNC Group (Posted by Advance Career Solutions)","Qa Engineer (Playwright, Rest Assured API automation testing)","6-10 Yrs","Hybrid - Bengaluru, Pune, Chennai","Position Name- QA automation(Playwright , Rest Api)
+
+Location: PAN india","https://www.naukri.com/job-listings-qa-engineer-playwright-rest-assured-api-automation-testing-advance-career-solutions-pune-chennai-bengaluru-6-to-10-years-240826004949"
+"Tata Consultancy Services","QA Automation Engineer (Playwright) | Bangalore | 4 To 10 Years","5-10 Yrs","Bengaluru","Role & responsibilities
+
+Role: QA Automation Engineer
+Location: Bangalore
+Experience: 4 to 10 Years
+
+Mandatory Skills:
+
+Minimum 4 years of hands-on experience in Playwright
+Strong experience in JavaScript and TypeScript
+Expertise in Automation Testing and test script development
+Experience in Manual Testing, Test Case Creation, and Test Management tools (Jira/X-Ray, etc.)
+Knowledge of API testing using Postman
+Experience with automation tools such as Playwright, Selenium, JUnit
+
+Good to Have:
+
+Test Data Management
+Functional, Integration, E2E, Performance, and Security Testing
+Knowledge of SAP Sales Processes
+
+Requirements:
+
+Candidates must be based in Bangalore
+Strong focus on application stability, regression testing, and automation framework maintenance
+Internal candidates preferred","https://www.naukri.com/job-listings-qa-automation-engineer-playwright-bangalore-4-to-10-years-tata-consultancy-services-bengaluru-5-to-10-years-210826008494"
+"Tata Consultancy Services","Sr. SDET","6-10 Yrs","Bengaluru","Required Skills
+
+Minimum 5 years of related work experience
+Comfortable working in an agile environment
+A visionary who motivates teams to excel and fosters creativity, consistently driving excellence in all endeavors
+An advocate for a diverse and inclusive culture that encourages innovation and ensures every team member feels a sense of belonging
+Familiar with a desire to further develop technical expertise in data engineering tools, methodologies, and emerging technologies:
+Programming Languages: Java, TypeScript, Python
+Test Automation Frameworks: NodeJS, Mocha, Cucumber
+UI Test Automation Tools: Selenium
+API Test Automation: Postman, Insomnia
+CI/CD Tools: Jenkins, Harness
+Test Management / Reporting: JIRA, Xray, qTest, Allure Report
+
+Role & responsibilities
+
+Collaborate across technology teams optimizing the use of a shared framework where appropriate
+Impact higher-risk aspects, set priorities, review requirements, and determine scope and limitations of testing initiatives
+Guide best-practices, standardization of processes, approaches and methodologies for multiple QA testing services, i.e.: SOA, unit, integration, functional, regression, acceptance, system, load, performance, smoke tests, and defect management
+Lead test case creation plans and facilitate reviews/inspections/approvals of test automation for continuous process improvement and reduction of product defects","https://www.naukri.com/job-listings-sr-sdet-tata-consultancy-services-bengaluru-6-to-10-years-090326012241"
+"Okta","QA Automation Engineer, Professional Services R&D","3-8 Yrs","Bengaluru","Secure Every Identity, from AI to Human
+
+Identity is the key to unlocking the potential of AI. Okta secures AI by building the trusted, neutral infrastructure that enables organizations to safely embrace this new era. This work requires a relentless drive to solve complex challenges with real-world stakes. We are looking for builders and owners who operate with speed and urgency and execute with excellence.
+
+This is an opportunity to do career-defining work. We're all in on this mission. If you are too, let's talk.
+
+About the Team
+
+The Professional Services R&D team is a new, dynamic group at the forefront of innovation within Okta. Our mission is to design and build reusable, scalable assets and tools that empower our delivery teams and partners. By making customer engagements more efficient, streamlined, and cost-effective, we directly contribute to our customers' success and accelerate their time-to-value with Okta. This is a unique opportunity to join a strategic team from the ground up and shape the future of Okta's professional services.
+
+Position Summary
+
+As a QA Automation Engineer, you will be a critical guardian of quality for the R&D team. You will be responsible for designing, building, and maintaining the automated testing frameworks that ensure our reusable assets are robust, reliable, and bug-free. You will embed a ""quality-first"" mindset within the team, working closely with developers to implement comprehensive test strategies and integrate them into our CI/CD pipeline. Your work will directly ensure that the tools we provide to our field teams and partners are trusted and effective.
+
+Responsibilities
+
+Design, develop, and maintain scalable and reliable automated test frameworks for UI, API, and performance testing.
+Write and execute automated test cases to ensure comprehensive test coverage for all developed assets.
+Integrate automated testing into the CI/CD pipeline to enable continuous delivery and rapid feedback.
+Work closely with developers and the Product Manager to understand requirements and identify potential quality issues early in the development lifecycle.
+Define the team's overall QA strategy, including test planning, execution, and reporting.
+Triage, document, and track defects, and collaborate with the team to ensure timely resolution.
+Champion quality engineering best practices across the R&D team.
+
+Qualifications
+
+3+ years of experience in a QA Automation or Software Development Engineer in Test (SDET) role.
+Strong programming skills in at least one language, such as Python, Java, or JavaScript.
+Hands-on experience with modern test automation frameworks and tools (e.g., Cypress, Playwright, Selenium, Postman, Jest).
+Experience with testing both APIs (REST, GraphQL) and web front-ends.
+Solid understanding of CI/CD principles and experience integrating tests into pipelines (e.g., GitHub Actions, Jenkins, GitLab CI).
+Experience with Agile development methodologies.
+A meticulous eye for detail and a passion for building high-quality software.
+#LI-Onsite
+P25242_3491489
+
+The Okta Experience
+We are intentional about connection. Our global community, spanning over 20 offices worldwide, is united by a drive to innovate. Your journey begins with an immersive, in-person onboarding experience designed to accelerate your impact and connect you to our mission and team from day one.
+
+Okta is an Equal Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, ancestry, marital status, age, physical or mental disability, or status as a protected veteran. We also consider for employment qualified applicants with arrest and convictions records, consistent with applicable laws.
+
+If reasonable accommodation is needed to complete any part of the job application, interview process, or onboarding please to request an accommodation.
+
+Notice for New York City Applicants & Employees: Okta may use Automated Employment Decision Tools (AEDT), as defined by New York City Local Law 144, that use artificial intelligence, machine learning, or other automated processes to assist in our recruitment and hiring process. In accordance with NYC Local Law 144, if you are an applicant or employee residing in New York City, please to view our full NYC AEDT Notice.","https://www.naukri.com/job-listings-qa-automation-engineer-professional-services-r-d-okta-identity-india-private-limited-bengaluru-3-to-8-years-260826926253"
+"Larsen & Toubro (L&T)","QA Automation Engineer (Camera Testing)","3-8 Yrs","Bengaluru","Immediate Joiners or candidates serving up to 1 month notice period will be considered.
+
+Role & responsibilities
+
+Design and execute manual and automated test cases for camera-based applications.
+Develop and maintain automation frameworks using Selenium with Java/Python.
+Perform Functional, Regression, System, Integration, and API testing.
+Log, track, and manage defects using JIRA.
+Integrate automation suites with CI/CD pipelines using Jenkins and Git.
+Collaborate with Agile teams to ensure product quality and timely delivery.
+
+Preferred candidate profile
+
+Camera Testing
+Selenium WebDriver
+Java or Python
+API Testing (Postman / RestAssured)
+Cucumber (BDD)
+Manual & Automation Testing
+Functional, Regression, System & Integration Testing
+JIRA
+Jenkins & Git (CI/CD)","https://www.naukri.com/job-listings-qa-automation-engineer-camera-testing-larsen-toubro-l-t-bengaluru-3-to-8-years-260826031495"
+"CGI","Lead QA Automation Engineer (Playwright + Cursor AI)","5-8 Yrs","Bengaluru","Position Description:
+
+Company Profile:
+Founded in 1976, CGI is among the largest independent IT and business consulting services firms in the world. With 94,000 consultants and professionals across the globe, CGI delivers an end-to-end portfolio of capabilities, from strategic IT and business consulting to systems integration, managed IT and business process services and intellectual property solutions. CGI works with clients through a local relationship model complemented by a global delivery network that helps clients digitally transform their organizations and accelerate results. CGI Fiscal 2024 reported revenue is CA$14.68 billion and CGI shares are listed on the TSX (GIB.A) and the NYSE (GIB). Learn more at cgi.com.
+Job Title: Java Full Stack Developer with AWS
+Position: Senior Software Engineer
+Experience: 6-9 Years
+Category: Software Development/ Engineering
+Shift: General
+Main location: India, Karnataka, Bangalore, Tamil Nadu, Chennai
+Position ID: J0426-2565
+Employment Type: Full Time
+Education Qualification: Bachelor's degree in Computer Science or related field or higher with minimum 3 years of relevant experience.
+Position Description: We are looking for an experienced Java Full Stack Developer with AWS to join our team. The ideal candidate should be passionate about coding and developing scalable and high-performance applications. You will work closely with our front-end developers, designers, and other members of the team to deliver quality solutions that meet the needs of our clients.
+Role Responsibilities:
+6+ years experience
+Hands-on development using Core Java, Spring/Spring Boot, AWS services, and Microservices architecture.
+Build and consume RESTful APIs and develop UI components using Angular (or similar frontend frameworks).
+Actively participate in the product development lifecycle, including design, development, testing, deployment, and production support (on a rotation basis).
+Drive technical discussions, evaluate multiple approaches, and recommend optimal solutions in a collaborative, opinionated engineering environment.
+Influence and promote high-quality software design, coding best practices, security standards, testability, and defect-prevention strategies.
+Develop and maintain application features along with automated tests (unit, component, integration, and functional tests).
+Support and enhance CI/CD pipelines to improve release efficiency and reliability.
+Collaborate with team members to improve test coverage, release velocity, and production stability.
+Participate in code and test reviews as part of the Scrum/Agile team.
+Own features end-to-end from concept and design to deployment working closely with cross-functional teams.
+Contribute ideas to improve products, continuously learn new technologies, tools, and programming languages, and drive innovation.
+
+Must-Have Skills:
+Strong experience in Java (8 or above)
+Hands-on experience with Spring Boot / Spring Framework
+Good understanding of RESTful APIs
+Good understanding of Microservices architecture
+Good hands on experience in Angular
+Experience with front-end technologies like HTML, CSS, JavaScript
+Experience with SQL databases (MySQL / PostgreSQL / Oracle)
+Familiarity with Git for version control.
+
+Good-to-Have Skills:
+Experience with Spring Security
+Knowledge of Docker / Kubernetes
+Experience with CI/CD tools (Jenkins / GitHub Actions)
+Understanding of NoSQL databases (MongoDB)
+Knowledge of Unit Testing frameworks (JUnit / Mockito)
+Experience working in Agile/Scrum environment.
+CGI is an equal opportunity employer. In addition, CGI is committed to providing accommodation for people with disabilities in accordance with provincial legislation. Please let us know if you require reasonable accommodation due to a disability during any aspect of the recruitment process and we will work with you to address your needs.
+
+Life at CGI:
+It is rooted in ownership, teamwork, respect and belonging. Here, youll reach your full potential because
+You are invited to be an owner from day 1 as we work together to bring our Dream to life. Thats why we call ourselves CGI Partners rather than employees. We benefit from our collective success and actively shape our companys strategy and direction.
+Your work creates value. Youll develop innovative solutions and build relationships with teammates and clients while accessing global capabilities to scale your ideas, embrace new opportunities, and benefit from expansive industry and technology expertise.
+Youll shape your career by joining a company built to grow and last. Youll be supported by leaders who care about your health and well-being and provide you with opportunities to deepen your skills and broaden your horizons.
+Come join our team, one of the largest IT and business consulting services firms in the world.
+
+
+Skills:
+
+Angular
+AWS AI Services
+Java
+Microservices
+Spring Boot
+
+
+What you can expect from us:
+
+Together, as owners, lets turn meaningful insights into action.
+
+Life at CGI is rooted in ownership, teamwork, respect and belonging. Here, youll reach your full potential because
+
+You are invited to be an owner from day 1 as we work together to bring our Dream to life. Thats why we call ourselves CGI Partners rather than employees. We benefit from our collective success and actively shape our companys strategy and direction.
+
+Your work creates value. Youll develop innovative solutions and build relationships with teammates and clients while accessing global capabilities to scale your ideas, embrace new opportunities, and benefit from expansive industry and technology expertise.
+
+Youll shape your career by joining a company built to grow and last. Youll be supported by leaders who care about your health and well-being and provide you with opportunities to deepen your skills and broaden your horizons.
+
+That same commitment to fairness extends to how we use technology. To support our recruitment team, AI tools may be used to help assess applications though they never replace human judgement. All hiring decisions remain entirely in the hands of our recruitment professionals.
+
+Come join our teamone of the largest IT and business consulting services firms in the world.","https://www.naukri.com/job-listings-lead-qa-automation-engineer-playwright-cursor-ai-cgi-information-systems-and-management-consultants-bengaluru-5-to-8-years-270826919861"
+"Wells Fargo","Senior Quantitative Model Solutions Specialist (promoted listing)","4-9 Yrs","Bengaluru","Job Summary
+Wells Fargo is seeking a Senior Quantitative Model Solutions Specialist.
+
+Responsibilities
+Lead or participate in moderately complex model maintenance and optimization initiatives related to operating processes, controls, reporting, testing, implementation, and documentation
+Review and analyze moderately complex data sets, quantitative models, and model outputs to validate model efficiency and results in support of business initiatives
+Advise and guide team on moderately complex model optimization and processes strategies
+Independently resolve moderately complex issues and lead team to meet project deliverables while leveraging solid understanding of policies and compliance requirements
+Collaborate and consult with peers, colleagues, and managers to resolve issues and achieve goals
+
+Required Qualifications
+4+ years of quantitative solutions engineering, model solutions or quantitative model operations experience, or equivalent demonstrated through one or a combination of the following: work experience, training, military experience, education
+
+Desired Qualifications
+Bachelors degree in finance, statistics, computer science, Information Technology, or a related field with minimum of 4+ years of experience
+Experience in Finance/Credit/Banking Modelling with a strong understanding of industry specific SDLC processes
+Experience with Python/R or SAS and Excel
+Strong expertise in data engineering analysis and ability to handle large volume of data efficiently.
+Demonstrated experience in Platform Migration/ Model Reengineering projects in finance sector.
+3+ years of experience in data visualization tools like PowerBI/ Tableau/ Qlikview
+Proven experience in developing Automated Testing Frameworks in python using Pytest/Selenium.
+Good understanding of Database concepts, DB testing and writing SQL queries.
+
+Job Expectations
+Develop, execute and maintain automated test scripts, test plans and automation framework for data migration activities, ensuring data accuracy and completeness.
+Excellent analytical and problem-solving skills.
+Possess strong risk acumen and functional knowledge of procedures, risks, controls, compliance, testing, validation, assessment of findings, escalation, and reporting, while developing business acumen
+Partner with business partners to understand the environment and related initiatives to develop appropriate and complementary testing procedures.
+Work closely with finance/credit modelling teams to understand domain specific testing requirements and provide innovative solutions
+The successful candidate will be a team player and a self-starter who is accustomed to working in complex organizations, partnering with a diverse group of stakeholders, and achieving results.","https://www.naukri.com/job-listings-senior-quantitative-model-solutions-specialist-wells-fargo-international-solutions-private-ltd-bengaluru-4-to-9-years-250826909502"
