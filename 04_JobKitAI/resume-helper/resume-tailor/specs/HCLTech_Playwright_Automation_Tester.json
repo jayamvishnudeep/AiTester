@@ -1,0 +1,148 @@
+{
+  "output": "E:\\Visual Studio Code\\AiTester\\04_JobKitAI\\output\\HCLTech_Playwright_Automation_Tester_Vishnudeep_Jayam.docx",
+  "docTitle": "Vishnudeep Jayam — Playwright Automation Tester — HCLTech",
+  "name": "VISHNUDEEP JAYAM",
+  "title": "==PLAYWRIGHT AUTOMATION TESTER==  ·  TEST AUTOMATION",
+  "contact": [
+    [
+      "Berlin, Germany",
+      "jayamvishnudeep1@gmail.com|mailto:jayamvishnudeep1@gmail.com",
+      "+49 176 5797 5732"
+    ]
+  ],
+  "margin": 0.5,
+  "sections": [
+    {
+      "heading": "SUMMARY",
+      "body": "==Playwright Automation Tester== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==built a Playwright + TypeScript automation framework for web applications and led Cucumber-based automation across Windows, Android, and iOS==. ==delivered cross-platform automation spanning Windows, Android, iOS, and web==, differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently."
+    },
+    {
+      "heading": "CORE SKILLS",
+      "rows": [
+        [
+          "Automation Frameworks & Tools",
+          "Selenium WebDriver · ==Playwright== · Cucumber (BDD) · TestNG · Page Object Model"
+        ],
+        [
+          "Languages",
+          "Java · ==TypeScript== · Python · PHP (Codeception)"
+        ],
+        [
+          "API & Backend Testing",
+          "REST Assured · Postman · Python API test scripts"
+        ],
+        [
+          "CI/CD & Build Tools",
+          "Jenkins · Gradle · Maven · Travis CI · Git · GitHub"
+        ],
+        [
+          "Test Management & Methodology",
+          "TestRail · XRay · Jira · Agile Scrum · Kanban · Test Planning & Case Design · Defect Tracking & Reporting"
+        ],
+        [
+          "Domain Exposure",
+          "Automotive Infotainment Systems (VW) · E-commerce Platforms (Magento) · Enterprise Web Applications"
+        ]
+      ]
+    },
+    {
+      "heading": "PROFESSIONAL EXPERIENCE",
+      "roles": [
+        {
+          "title": "Senior QA Engineer",
+          "org": "Zertificon Solutions GmbH",
+          "meta": "Feb 2022 – Present  |  Berlin, Germany  |  Secure email / enterprise web applications",
+          "bullets": [
+            "Develop and maintain a test automation framework for web applications using ==Playwright== with ==TypeScript==.",
+            "Design and build test automation from scratch using the Cucumber framework for Windows-based, Android, and iOS Zertificon applications.",
+            "Build and maintain test automation for the Zertificon website using the Cucumber framework with Selenium and Java.",
+            "Write and maintain test cases for Zertificon applications in the TestRail test case management tool.",
+            "Use Gradle as the build management tool and Jenkins for CI/CD.",
+            "Follow Scrum Agile methodology across the team, collaborating with cross-functional teams to reproduce reported bugs and mentoring junior engineers."
+          ]
+        },
+        {
+          "title": "Quality Assurance Manager",
+          "org": "IBMiX",
+          "meta": "Mar 2019 – Jan 2022  |  Berlin, Germany  |  Automotive / in-car infotainment",
+          "bullets": [
+            "Owned testing of the Volkswagen in-car infotainment app \"We Experience\" for the VW Passat and VW Golf as the sole QA resource on the product.",
+            "Analyzed real-time app performance while driving the vehicle and debugged logs from the car's backend systems.",
+            "Designed a test automation framework using Selenium, Java, and TestNG for the in-car infotainment app.",
+            "Automated infotainment system backend APIs using the REST Assured framework and Postman for manual API testing.",
+            "Used Maven as the build management tool and Jenkins / Travis CI for continuous integration.",
+            "Wrote test cases for the infotainment car application in the XRay test case management tool and produced daily and weekly status reports.",
+            "Followed Scrum and Kanban Agile methodology, managing test case preparation, execution, defect tracking, and reporting for the team."
+          ]
+        },
+        {
+          "title": "QA Engineer",
+          "org": "Geschenkidee DA GmbH",
+          "meta": "Oct 2017 – Jan 2019  |  Berlin, Germany  |  E-commerce (13 European markets)",
+          "bullets": [
+            "Owned testing for all 13 e-commerce shops across Europe as the sole QA engineer.",
+            "Designed a test automation framework using Selenium with Java in the Page Object Model pattern, using Maven as the build management tool.",
+            "Developed automation scripts using TestNG and ran automated test suites in Jenkins.",
+            "Wrote automated test scripts using Codeception in PHP.",
+            "Wrote test cases from user stories and acceptance criteria and created test plans.",
+            "Tested application compatibility across browser versions (IE, Firefox, Chrome) and across mobile, desktop, and tablet environments.",
+            "Tested backend Magento e-commerce modules and deployed features to test servers for manual and automated testing.",
+            "Used Git for version control and worked within AWS infrastructure.",
+            "Performed the complete testing lifecycle — regression testing of fixed bugs and new builds, sanity testing, and user testing — following Scrum and Kanban."
+          ]
+        },
+        {
+          "title": "QA Automation Engineer (Werkstudent)",
+          "org": "Adnymics GmbH",
+          "meta": "May 2017 – Oct 2017  |  München, Germany  |  Print-tech / personalization platform",
+          "bullets": [
+            "Designed a test automation framework using Selenium with Python in the Page Object Model pattern.",
+            "Wrote automated test scripts for APIs in Python and tested APIs using Postman.",
+            "Ran Selenium automation scripts using Selenium Grid and performed the complete testing lifecycle — regression, sanity, and user testing — following Agile Scrum."
+          ]
+        },
+        {
+          "title": "QA Automation Engineer (Intern)",
+          "org": "Adnymics GmbH",
+          "meta": "Mar 2017 – Apr 2017  |  München, Germany  |  Print-tech / personalization platform",
+          "bullets": [
+            "Wrote and executed manual and automated test cases using Selenium in Python, running scripts via Selenium Grid.",
+            "Performed the complete testing lifecycle — regression, sanity, and user testing — applying SDLC quality practices and filing defects in Jira."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "EDUCATION",
+      "rows": [
+        [
+          "Masters in Information Technology",
+          "Frankfurt University of Applied Sciences, Frankfurt am Main, Germany  ·  Oct 2014 – Jan 2018"
+        ],
+        [
+          "Principal Subjects",
+          "Software Engineering (.NET), Mobile Computing (Java), Distributed Systems, Machine Learning, Autonomous Intelligent Systems"
+        ]
+      ]
+    },
+    {
+      "heading": "CERTIFICATIONS",
+      "bullets": [
+        "ISTQB Certified Tester – Foundation Level (CTFL)"
+      ]
+    },
+    {
+      "heading": "LANGUAGES",
+      "rows": [
+        [
+          "English",
+          "Proficient"
+        ],
+        [
+          "German",
+          "Intermediate (A2)"
+        ]
+      ]
+    }
+  ]
+}
