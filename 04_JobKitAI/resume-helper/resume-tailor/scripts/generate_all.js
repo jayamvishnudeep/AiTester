@@ -39,16 +39,17 @@ const CERT_BULLETS = [
   'ISTQB Certified Tester – Foundation Level (CTFL)',
 ];
 
-// Core skills: id -> {label, items:[{text, terms:[...]}]}
+// Core skills: id -> {label, items}. Every item must be evidenced in the source resume.
 const SKILL_CATS = {
-  automation:  { label: 'Automation Frameworks & Tools', items: ['Selenium WebDriver', 'Playwright', 'Cucumber (BDD)', 'TestNG', 'Page Object Model'] },
+  automation:  { label: 'Automation Frameworks & Tools', items: ['Selenium WebDriver', 'Playwright', 'Cucumber (BDD)', 'TestNG', 'Page Object Model', 'Selenium Grid'] },
   languages:   { label: 'Languages', items: ['Java', 'TypeScript', 'Python', 'PHP (Codeception)'] },
   api:         { label: 'API & Backend Testing', items: ['REST Assured', 'Postman', 'Python API test scripts'] },
-  cicd:        { label: 'CI/CD & Build Tools', items: ['Jenkins', 'Gradle', 'Maven', 'Travis CI', 'Git', 'GitHub'] },
-  mgmt:        { label: 'Test Management & Methodology', items: ['TestRail', 'XRay', 'Jira', 'Agile Scrum', 'Kanban', 'Test Planning & Case Design', 'Defect Tracking & Reporting'] },
+  cicd:        { label: 'CI/CD, Build & Cloud', items: ['Jenkins', 'Gradle', 'Maven', 'Travis CI', 'Git', 'GitHub', 'AWS'] },
+  mgmt:        { label: 'Test Management & Methodology', items: ['TestRail', 'XRay', 'Jira', 'Agile Scrum', 'Kanban', 'Test Planning & Case Design', 'Defect Tracking & Reporting', 'SDLC / STLC'] },
+  platforms:   { label: 'Platforms Tested', items: ['Web (Chrome, Firefox, IE)', 'Windows Desktop', 'Android', 'iOS', 'Mobile / Tablet'] },
   domain:      { label: 'Domain Exposure', items: ['Automotive Infotainment Systems (VW)', 'E-commerce Platforms (Magento)', 'Enterprise Web Applications'] },
 };
-const SKILL_ORDER_DEFAULT = ['automation', 'languages', 'api', 'cicd', 'mgmt', 'domain'];
+const SKILL_ORDER_DEFAULT = ['automation', 'languages', 'api', 'cicd', 'mgmt', 'platforms', 'domain'];
 
 // Roles, most recent first. Each bullet: {id, text, terms:[highlightable terms]}
 const ROLES = [
@@ -138,10 +139,12 @@ const DIFFERENTIATORS = {
   fullstack: 'differentiated by owning the full automation lifecycle — from framework design through CI/CD integration to defect reporting — independently',
 };
 
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
 function buildSummary(targetTitle, proofIds, diffId) {
   const proofs = proofIds.map(id => PROOFS[id]);
   const diff = DIFFERENTIATORS[diffId];
-  return `==${targetTitle}== with **9+ years** of experience across UI and API test automation — from tool selection and framework design to script development, suite execution, and defect reporting. ==${proofs[0]}==. ==${proofs[1]}==, ${diff}.`;
+  return `==${targetTitle}== with **9+ years** of experience across UI and API test automation — from tool selection and framework design through script development, suite execution, and defect reporting. ==${cap(proofs[0])}==. ==${cap(proofs[1])}==, ${diff}.`;
 }
 
 // --------------------------------------------------------------- helpers
@@ -182,9 +185,11 @@ function buildRoleSection(job) {
   return roles;
 }
 
+const FILL_IN_RULE = 'FILL-IN RULE — every item in the bracketed row above is named by this job description but is not evidenced anywhere in your source resume. Keep only what you have genuinely shipped with and could be questioned on for twenty minutes; delete the rest, then delete the row label itself. Do not soften an entry to "exposure to".';
+
 function buildSkillsRows(job) {
   const order = [...new Set([...(job.skillOrder || []), ...SKILL_ORDER_DEFAULT])];
-  return order.map(catId => {
+  const rows = order.map(catId => {
     const cat = SKILL_CATS[catId];
     const items = cat.items.map(item => {
       const isMatch = job.terms.some(t => item.toLowerCase().includes(t.toLowerCase()));
@@ -192,6 +197,20 @@ function buildSkillsRows(job) {
     });
     return [cat.label, items.join(' · ')];
   });
+  if (job.gapSkills) {
+    rows.push([
+      '[Gate skills — fill or delete this row]',
+      job.gapSkills.map(g => `[${g}]`).join(' · '),
+    ]);
+  }
+  return rows;
+}
+
+function buildSkillsNote(job) {
+  const parts = [];
+  if (job.jdWarning) parts.push(`JD MISMATCH — ${job.jdWarning}`);
+  if (job.gapSkills) parts.push(FILL_IN_RULE);
+  return parts.length ? parts.join('  ') : undefined;
 }
 
 function buildSpec(job) {
@@ -207,7 +226,7 @@ function buildSpec(job) {
     margin: 0.5,
     sections: [
       { heading: 'SUMMARY', body: buildSummary(job.targetTitle, job.proofs, job.diff) },
-      { heading: 'CORE SKILLS', rows: buildSkillsRows(job) },
+      { heading: 'CORE SKILLS', rows: buildSkillsRows(job), note: buildSkillsNote(job) },
       { heading: 'PROFESSIONAL EXPERIENCE', roles: buildRoleSection(job).map(r => ({ title: r.title, org: r.org, meta: r.meta, bullets: r.bullets })) },
       { heading: 'EDUCATION', rows: EDUCATION_ROWS },
       { heading: 'CERTIFICATIONS', bullets: CERT_BULLETS },
@@ -217,97 +236,142 @@ function buildSpec(job) {
 }
 
 // ------------------------------------------------------------------ jobs
-// terms: existing resume terms to emphasise/highlight for this JD.
-// proofs: 2 ids from PROOFS. diff: 1 id from DIFFERENTIATORS.
-// skillOrder: category ids to float to the top of Core Skills.
+// gapSkills: gate skills the JD names that the source resume does NOT evidence —
+//   rendered as a [placeholder] row plus a fill-in rule, never asserted.
+// jdWarning: surfaced on the working copy when the posting itself is inconsistent.
 const JOBS = [
+  // ---- naukri_jobs.csv (Indian market, Naukri) --------------------------
   {
-    company: 'Light & Wonder', targetTitle: 'Senior QA Engineer', file: 'Light_and_Wonder_Senior_QA_Engineer',
-    terms: ['Selenium', 'Java', 'Agile'], proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'mgmt'],
+    company: 'Light & Wonder', targetTitle: 'Senior QA Engineer, Software', file: 'Light_and_Wonder_Senior_QA_Engineer',
+    terms: ['Selenium', 'Java', 'Agile', 'regression', 'Test Planning', 'Defect Tracking'],
+    proofs: ['selenium_java', 'management'], diff: 'fullstack', skillOrder: ['automation', 'mgmt'],
+    gapSkills: ['Land-Based Gaming / Casino Domain'],
   },
   {
     company: 'Xoxoday', targetTitle: 'Catalog Quality & AI Automation Manager', file: 'Xoxoday_Catalog_Quality_AI_Automation_Manager',
-    terms: ['Agile', 'Jira'], proofs: ['management', 'api'], diff: 'ecommerce', skillOrder: ['mgmt', 'domain'], leadershipRoleKey: 'ibmix',
+    terms: ['Agile', 'Jira', 'Defect Tracking'],
+    proofs: ['management', 'ecommerce'], diff: 'ecommerce', skillOrder: ['mgmt', 'domain'], leadershipRoleKey: 'ibmix',
+    gapSkills: ['Product Catalog Management', 'AI-Powered Automation Tooling', 'Data Analysis & Trend Reporting'],
+    jdWarning: 'this is a catalog / product-data management role, not a software test automation role. Your QA and e-commerce experience is adjacent, not a direct match — address the domain gap in a cover note or skip this one.',
   },
   {
-    company: 'PwC Service Delivery Center', targetTitle: 'Manager – QA Automation, Data & Analytics Advisory', file: 'PwC_Manager_QA_Automation_Data_Analytics_Advisory',
-    terms: ['Selenium', 'Java', 'Jenkins', 'CI/CD'], proofs: ['selenium_java', 'management'], diff: 'automotive', skillOrder: ['automation', 'mgmt'], leadershipRoleKey: 'ibmix',
-  },
-  {
-    company: 'Wells Fargo', targetTitle: 'Senior Quantitative Model Solutions Specialist', file: 'Wells_Fargo_Senior_Quant_Model_Solutions_Specialist',
-    terms: ['Python', 'Selenium'], proofs: ['api', 'selenium_java'], diff: 'fullstack', skillOrder: ['languages', 'api'],
+    company: 'PwC Service Delivery Center', targetTitle: 'Manager – QA Automation, Data & Analytics', file: 'PwC_Manager_QA_Automation_Data_Analytics_Advisory',
+    terms: ['Playwright', 'Selenium', 'Java', 'Python', 'Jenkins', 'CI/CD', 'AWS', 'Agile', 'Scrum'],
+    proofs: ['playwright', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'cicd', 'mgmt'], leadershipRoleKey: 'ibmix',
+    gapSkills: ['ETL / ELT Pipeline Testing', 'SQL & Data Quality Validation', 'PyTest', 'Azure DevOps'],
   },
   {
     company: 'Tata Consultancy Services', targetTitle: 'Senior Quality Assurance Engineer', file: 'TCS_Senior_Quality_Assurance_Engineer',
-    terms: ['Selenium', 'Java', 'Agile'], proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'mgmt'],
+    terms: ['Java', 'TypeScript', 'Python', 'Selenium', 'Postman', 'Cucumber', 'Jenkins', 'Agile', 'XRay', 'Jira'],
+    proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['languages', 'automation', 'api', 'mgmt'],
+    gapSkills: ['Appium', 'Node.js / Mocha', 'JUnit', 'Insomnia', 'Harness'],
   },
   {
     company: 'Tekskills India', targetTitle: 'QA Tester with AI', file: 'Tekskills_QA_Tester_with_AI',
-    terms: ['Playwright', 'TypeScript'], proofs: ['playwright', 'api'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    terms: ['CI/CD', 'Defect Tracking'],
+    proofs: ['cicd', 'api'], diff: 'fullstack', skillOrder: ['cicd', 'api'],
+    gapSkills: ['LLM Behaviour Testing (hallucination, bias, edge cases)', 'Prompt Engineering for Adversarial Tests', 'RAG Evaluation & Guardrails', 'Synthetic Test Data Generation', 'Data Pipeline Testing', 'Azure DevOps / GitHub Actions'],
+    jdWarning: 'this is an AI/LLM-specific testing role. Almost every mandatory skill (LLM behaviour, prompt engineering, RAG evaluation, guardrails) is absent from your resume — this is a stretch application, not a near match.',
   },
   {
     company: 'CGI', targetTitle: 'Senior QA Automation Engineer (Playwright)', file: 'CGI_Senior_QA_Automation_Engineer_Playwright',
-    terms: ['Playwright', 'TypeScript'], proofs: ['playwright', 'crossplatform'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    terms: ['Java', 'Playwright', 'CI/CD', 'Agile', 'Scrum', 'Git', 'API'],
+    proofs: ['playwright', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'cicd'],
+    gapSkills: ['Spring Boot / Spring Framework', 'Angular', 'Microservices Architecture', 'SQL Databases (MySQL / PostgreSQL / Oracle)'],
+    jdWarning: 'the posting title says QA Automation Engineer but the description body is a Java Full Stack Developer role (Spring Boot, Angular, Microservices, HTML/CSS). Confirm with the recruiter which role is actually being hired before applying — this resume is tailored to the QA title, not the developer JD.',
   },
   {
     company: 'GSR Business Services', targetTitle: 'Cypress Automation Tester', file: 'GSR_Business_Services_Cypress_Automation_Tester',
-    terms: ['TypeScript', 'Playwright'], proofs: ['playwright', 'crossplatform'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    terms: ['Windows', 'Cucumber', 'API', 'CI/CD', 'SDLC', 'regression'],
+    proofs: ['crossplatform', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'platforms', 'api'],
+    gapSkills: ['Cypress', 'Mocha / Jasmine / Chai', 'Jest', 'Applitools', 'FlaUI'],
   },
   {
-    company: 'Apexon', targetTitle: 'SDET Automation Test Engineer', file: 'Apexon_SDET_Automation_Test_Engineer',
-    terms: ['Selenium', 'Java', 'API', 'Jenkins'], proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'cicd'],
-  },
-  {
-    company: 'Larsen & Toubro (L&T)', targetTitle: 'Automation Engineer – Selenium (C# / OOP)', file: 'LT_CSharp_OOP_Automation_Expert',
-    terms: ['Selenium', 'mobile'], proofs: ['selenium_java', 'crossplatform'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    company: 'Larsen & Toubro (L&T)', targetTitle: 'Test Automation Engineer – C# and OOP', file: 'LT_CSharp_OOP_Automation_Expert',
+    terms: ['Selenium', 'Page Object Model', 'Cucumber', 'REST Assured', 'API', 'SDLC', 'regression'],
+    proofs: ['selenium_java', 'api'], diff: 'fullstack', skillOrder: ['automation', 'api', 'mgmt'],
+    gapSkills: ['C#', 'Appium'],
+    jdWarning: 'C# is the headline requirement and is absent from your resume (only .NET as a Master’s course subject). Appium is also named. Your framework-design and REST API automation experience transfers, but the language gate does not.',
   },
   {
     company: 'Grid Dynamics', targetTitle: 'Quality Engineer', file: 'Grid_Dynamics_Quality_Engineer',
-    terms: ['Java', 'TypeScript'], proofs: ['selenium_java', 'playwright'], diff: 'fullstack', skillOrder: ['languages', 'automation'],
+    terms: ['Playwright', 'Java', 'Cucumber', 'Selenium', 'API', 'AWS', 'XRay', 'regression'],
+    proofs: ['playwright', 'api'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'api', 'cicd'],
+    gapSkills: ['JavaScript', 'Kafka / Amazon MQ', 'Splunk / Grafana / OpenTelemetry', 'Retail & Order Management Domain'],
   },
   {
     company: 'Infosys', targetTitle: 'API Tester', file: 'Infosys_API_Tester',
-    terms: ['Selenium', 'API', 'REST Assured', 'Postman'], proofs: ['api', 'selenium_java'], diff: 'fullstack', skillOrder: ['api', 'automation'],
+    terms: ['Java', 'Selenium', 'REST Assured', 'Postman', 'TestNG', 'Maven', 'Gradle', 'API'],
+    proofs: ['api', 'selenium_java'], diff: 'fullstack', skillOrder: ['api', 'automation', 'languages'],
+    gapSkills: ['SQL / Database Validation', 'Karate', 'SoapUI', 'JUnit'],
   },
   {
     company: 'PwC Service Delivery Center', targetTitle: 'Senior Associate – QA Automation, Data & Analytics', file: 'PwC_Senior_Associate_QA_Automation_Data_Analytics',
-    terms: ['Selenium', 'Java', 'CI/CD'], proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'cicd'],
+    terms: ['Python', 'Java', 'Selenium', 'Jenkins', 'CI/CD', 'AWS', 'Agile', 'Scrum'],
+    proofs: ['selenium_java', 'cicd'], diff: 'fullstack', skillOrder: ['languages', 'automation', 'cicd'],
+    gapSkills: ['ETL / ELT Pipeline Testing', 'SQL & Data Quality Validation', 'PyTest', 'Azure DevOps'],
   },
   {
     company: 'HCLTech', targetTitle: 'Playwright Automation Tester', file: 'HCLTech_Playwright_Automation_Tester',
-    terms: ['Playwright', 'TypeScript'], proofs: ['playwright', 'crossplatform'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    terms: ['Playwright', 'TypeScript', 'TestNG', 'Cucumber', 'API', 'Java', 'Selenium'],
+    proofs: ['playwright', 'selenium_java'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'api'],
   },
   {
     company: 'Siemens Healthcare', targetTitle: 'QA Automation Engineer', file: 'Siemens_Healthcare_QA_Automation_Engineer',
-    terms: ['Git', 'CI/CD', 'Jenkins'], proofs: ['cicd', 'selenium_java'], diff: 'fullstack', skillOrder: ['cicd', 'automation'],
+    terms: ['Playwright', 'Selenium', 'TypeScript', 'Page Object Model', 'REST Assured', 'Postman', 'Git', 'Cucumber', 'TestNG', 'API', 'Scrum', 'SDLC'],
+    proofs: ['playwright', 'api'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'api', 'cicd'],
+    gapSkills: ['Cypress', 'Azure DevOps', 'SQL / Database Validation'],
   },
   {
     company: 'kezan', targetTitle: 'QA Automation + EDI Test Engineer', file: 'kezan_QA_Automation_EDI_Test_Engineer',
-    terms: ['API', 'REST Assured'], proofs: ['api', 'selenium_java'], diff: 'fullstack', skillOrder: ['api', 'automation'],
+    terms: ['Selenium', 'Java', 'Python', 'Postman', 'TestNG', 'Git', 'Jenkins', 'Jira', 'API', 'regression', 'SDLC'],
+    proofs: ['selenium_java', 'api'], diff: 'fullstack', skillOrder: ['automation', 'api', 'cicd'],
+    gapSkills: ['Healthcare EDI Transactions (837 / 835 / 270 / 271 / 276 / 277)', 'US Healthcare Claims & Payer / Provider Processes', 'SQL & Database Testing', 'PyTest'],
+    jdWarning: 'Healthcare EDI testing is the mandatory, non-negotiable skill here and is entirely absent from your resume. The automation half matches well; the domain half does not.',
   },
   {
     company: 'MNC Group', targetTitle: 'QA Engineer (Playwright, REST Assured)', file: 'MNC_Group_QA_Engineer_Playwright_RestAssured',
-    terms: ['Playwright', 'REST Assured', 'API'], proofs: ['playwright', 'api'], diff: 'fullstack', skillOrder: ['automation', 'api'],
+    terms: ['Playwright', 'REST Assured', 'API', 'Postman'],
+    proofs: ['playwright', 'api'], diff: 'fullstack', skillOrder: ['automation', 'api'],
   },
   {
     company: 'Tata Consultancy Services', targetTitle: 'QA Automation Engineer (Playwright)', file: 'TCS_QA_Automation_Engineer_Playwright_Bangalore',
-    terms: ['Playwright', 'TypeScript'], proofs: ['playwright', 'crossplatform'], diff: 'fullstack', skillOrder: ['automation', 'languages'],
+    terms: ['Playwright', 'TypeScript', 'Jira', 'XRay', 'Postman', 'Selenium', 'API', 'regression', 'Test Planning'],
+    proofs: ['playwright', 'management'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'mgmt'],
+    gapSkills: ['JavaScript', 'JUnit', 'SAP Sales Processes'],
+    jdWarning: 'the posting requires candidates to be based in Bangalore and states internal candidates are preferred. You are Berlin-based — confirm relocation is acceptable before applying.',
   },
   {
-    company: 'Tata Consultancy Services', targetTitle: 'Sr. SDET', file: 'TCS_Sr_SDET',
-    terms: ['Selenium', 'Java', 'API'], proofs: ['selenium_java', 'api'], diff: 'fullstack', skillOrder: ['automation', 'api'],
+    company: 'Tata Consultancy Services', targetTitle: 'Senior SDET', file: 'TCS_Sr_SDET',
+    terms: ['Java', 'TypeScript', 'Python', 'Cucumber', 'Selenium', 'Postman', 'Jenkins', 'Jira', 'XRay', 'Agile', 'regression'],
+    proofs: ['selenium_java', 'management'], diff: 'fullstack', skillOrder: ['languages', 'automation', 'mgmt'], leadershipRoleKey: 'ibmix',
+    gapSkills: ['Node.js / Mocha', 'Insomnia', 'Harness', 'qTest / Allure Report'],
   },
   {
     company: 'Okta', targetTitle: 'QA Automation Engineer, Professional Services R&D', file: 'Okta_QA_Automation_Engineer_Professional_Services',
-    terms: ['CI/CD', 'Jenkins', 'Selenium'], proofs: ['cicd', 'selenium_java'], diff: 'fullstack', skillOrder: ['cicd', 'automation'],
+    terms: ['Python', 'Java', 'Playwright', 'Selenium', 'Postman', 'Jenkins', 'CI/CD', 'API', 'Agile', 'Test Planning'],
+    proofs: ['playwright', 'cicd'], diff: 'fullstack', skillOrder: ['automation', 'languages', 'api', 'cicd'],
+    gapSkills: ['Cypress / Jest', 'GraphQL API Testing', 'GitHub Actions / GitLab CI'],
   },
   {
     company: 'Larsen & Toubro (L&T)', targetTitle: 'QA Automation Engineer (Camera Testing)', file: 'LT_QA_Automation_Engineer_Camera_Testing',
-    terms: ['Selenium', 'Java'], proofs: ['selenium_java', 'crossplatform'], diff: 'automotive', skillOrder: ['automation', 'domain'],
+    terms: ['Selenium', 'Java', 'Python', 'Jira', 'Jenkins', 'Git', 'Cucumber', 'Postman', 'REST Assured', 'API', 'regression'],
+    proofs: ['selenium_java', 'api'], diff: 'automotive', skillOrder: ['automation', 'api', 'cicd', 'domain'],
+    gapSkills: ['Camera / Image-Capture Testing'],
   },
   {
     company: 'CGI', targetTitle: 'Lead QA Automation Engineer (Playwright)', file: 'CGI_Lead_QA_Automation_Engineer_Playwright',
-    terms: ['Playwright', 'TypeScript'], proofs: ['playwright', 'management'], diff: 'fullstack', skillOrder: ['automation', 'mgmt'], leadershipRoleKey: 'ibmix',
+    terms: ['Java', 'Playwright', 'CI/CD', 'Agile', 'Scrum', 'Git', 'API'],
+    proofs: ['playwright', 'management'], diff: 'fullstack', skillOrder: ['automation', 'mgmt', 'cicd'], leadershipRoleKey: 'ibmix',
+    gapSkills: ['Spring Boot / Spring Framework', 'Angular', 'Microservices Architecture', 'SQL Databases (MySQL / PostgreSQL / Oracle)'],
+    jdWarning: 'the posting title says Lead QA Automation Engineer but the description body is a Java Full Stack Developer role (Spring Boot, Angular, Microservices, HTML/CSS). Confirm with the recruiter which role is actually being hired before applying — this resume is tailored to the QA title, not the developer JD.',
+  },
+  {
+    company: 'Wells Fargo', targetTitle: 'Senior Quantitative Model Solutions Specialist', file: 'Wells_Fargo_Senior_Quant_Model_Solutions_Specialist',
+    terms: ['Python', 'Selenium', 'SDLC', 'regression', 'Test Planning'],
+    proofs: ['selenium_java', 'management'], diff: 'fullstack', skillOrder: ['languages', 'automation', 'mgmt'],
+    gapSkills: ['Finance / Credit / Banking Modelling', 'PyTest', 'R / SAS', 'PowerBI / Tableau / Qlikview', 'SQL & Database Testing', 'Data Migration Testing'],
+    jdWarning: 'the automated-testing-framework line is one requirement inside a quantitative finance role. The core of the job — credit/banking modelling, data engineering at volume, and BI tooling — is absent from your resume.',
   },
 
   // ---- stepstone_jobs.csv (German market, Stepstone) --------------------
