@@ -99,18 +99,30 @@ gets its own validated step rather than an automatic flip.
 
 ## Verified
 
-- `npm run build` succeeds (52 modules, ~76 kB gzipped JS).
-- Dev server serves and transforms modules.
+![The board with all 26 seeded postings](JobTrackerAI_Kanban_BoardResult.png)
+
+- `npm run build` succeeds (~76 kB gzipped JS).
 - 29 assertions over the analytics, date and nudge logic pass — funnel counts,
   dwell-time windows, resume rates, week/month bucketing, stale and overdue
   thresholds.
+- The import path was exercised against a real IndexedDB implementation:
+  parse, write, read-back, history and tag preservation, and re-import without
+  duplicates.
 - `Insights` and `JobCard` server-render without runtime errors, including the
   zero-data empty state.
+- Confirmed in the browser (screenshot above): all six columns populate with the
+  right counts, the status accents read as six distinct hues, salary and resume
+  chips render on the card face, and the stale, overdue and idle badges fire on
+  the cards they should.
 
-Not verified: the rendered UI has not been visually inspected in a browser, and
-there is no automated browser test. Drag-and-drop, the notification permission
-prompt, and the responsive breakpoints were written to spec but are worth a
-manual pass.
+Still not covered by a test: drag-and-drop, the notification permission prompt,
+the Insights tab's rendered layout, and the responsive breakpoints. There is no
+automated browser test.
+
+**Known rough edge.** Putting the salary on the role line costs role width, and
+long titles truncate hard at the default column size — "Qa Engineer (Playwright,
+R…". Legible enough to identify a card, but the full title needs the detail
+panel. Moving salary to its own line would fix it at the cost of taller cards.
 
 ## Limitations
 
