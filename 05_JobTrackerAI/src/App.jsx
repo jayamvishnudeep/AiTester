@@ -43,6 +43,7 @@ export default function App() {
 
   const searchRef = useRef(null);
   const emptyImportRef = useRef(null);
+  const seedAttempted = useRef(false);
 
   // ---- backup bookkeeping -------------------------------------------------
   useEffect(() => {
@@ -55,30 +56,31 @@ export default function App() {
    * board by hand stays cleared instead of refilling on the next reload.
    */
   useEffect(() => {
-    if (loading || jobs.length > 0) return;
-    let cancelled = false;
+    if (loading || seedAttempted.current) return;
+    seedAttempted.current = true; // runs once per mount, never re-entered
 
     (async () => {
-      if (await getMeta('seeded', false)) return;
-      if (cancelled) return;
+      // Nothing to do if the board already has cards, or this browser has
+      // been seeded before and the user emptied it deliberately.
+      if (jobs.length > 0 || (await getMeta('seeded', false))) return;
+
       setSeeding(true);
       try {
         const res = await fetch(`${import.meta.env.BASE_URL}seed-data.json`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const rows = parseBackup(await res.text());
-        if (cancelled) return;
-        await importJobs(rows, 'merge');
+        await importJobs(parseBackup(await res.text()), 'merge');
         await setMeta('seeded', true);
       } catch {
         // No seed file, or it failed to parse — fall through to the empty
         // state, which still offers the manual load and import buttons.
       } finally {
-        if (!cancelled) setSeeding(false);
+        // Unconditional. Guarding this on a "cancelled" flag is what hung the
+        // spinner: importing re-ran the effect, which flipped the flag before
+        // the finally block reached it, so the loader never cleared.
+        setSeeding(false);
       }
     })();
-
-    return () => { cancelled = true; };
-  }, [loading, jobs.length, importJobs]);
+  }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const daysSinceExport = lastExport ? daysSince(lastExport) : null;
   const showBackupBanner =
