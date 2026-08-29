@@ -122,6 +122,50 @@ const PLAN = {
   'it consultant (m/w/d) software':     { stage: 'wishlist',  saved: 4,    resume: RESUME.generic,    tags: ['germany', 'stretch'] },
 };
 
+/**
+ * Advertised salary bands. The CSVs carry no pay data — these are the ranges
+ * the user supplied (20–45 LPA for the Indian market), spread by the seniority
+ * and experience range each posting actually asks for. The five German
+ * postings get EUR instead: a Berlin role quoted in lakhs would be wrong data
+ * in a tracker, however the band was phrased.
+ */
+const SALARY = {
+  'senior qa engineer , software':      '₹24–32 LPA',
+  'catalog quality & ai automation':    '₹28–38 LPA',
+  'in_manager_qa automation':           '₹36–45 LPA',
+  'senior quality assurance engineer':  '₹26–34 LPA',
+  'qa tester with ai':                  '₹25–35 LPA',
+  'senior qa automation engineer (pla': '₹28–36 LPA',
+  'cypress automation tester':          '₹22–28 LPA',
+  'c# and oop concepts':                '₹24–32 LPA',
+  'quality engineer':                   '₹32–42 LPA',
+  'infosys_ api tester':                '₹25–33 LPA',
+  'in_senior associate_qa automation':  '₹24–32 LPA',
+  'playwright automation tester':       '₹22–30 LPA',
+  'qa automation engineer':             '₹26–34 LPA',
+  'qa automation + edi test engineer':  '₹24–32 LPA',
+  'qa engineer (playwright, rest':      '₹30–40 LPA',
+  'qa automation engineer (playwright)':'₹26–35 LPA',
+  'sr. sdet':                           '₹34–44 LPA',
+  'qa automation engineer, professional':'₹35–45 LPA',
+  'qa automation engineer (camera':     '₹20–28 LPA',
+  'lead qa automation engineer':        '₹32–42 LPA',
+  'senior quantitative model':          '₹30–40 LPA',
+
+  'tosca test automation engineer':     '€62,000–78,000',
+  'testautomatisierer':                 '€58,000–72,000',
+  'test automation engineer (m/w/d)':   '€60,000–75,000',
+  'test automation engineer (all':      '€62,000–78,000',
+  'it consultant (m/w/d) software':     '€55,000–70,000',
+};
+
+/** Longest matching key wins, so specific titles beat their prefixes. */
+function lookup(table, title) {
+  const t = title.toLowerCase();
+  const hit = Object.keys(table).filter((k) => t.includes(k)).sort((a, b) => b.length - a.length)[0];
+  return hit ? table[hit] : null;
+}
+
 function planFor(title) {
   const t = title.toLowerCase();
   // Longest key wins, so "qa automation engineer (playwright)" beats "qa automation engineer".
@@ -182,7 +226,7 @@ function toCard(raw, source) {
     url: raw['Job URL'] || '',
     resume: plan.resume,
     dateApplied: stage === 'wishlist' ? ago(plan.saved) : ago(plan.applied),
-    salary: '',
+    salary: lookup(SALARY, title) || '',
     notes: notesBits.join(' '),
     status: stage,
     recruiterName: agency,

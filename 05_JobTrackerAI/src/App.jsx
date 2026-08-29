@@ -9,6 +9,7 @@ import Insights from './components/Insights.jsx';
 import ToastStack from './components/Toast.jsx';
 import BackupBanner from './components/BackupBanner.jsx';
 import Modal from './components/Modal.jsx';
+import { Plus, Upload } from './components/Icons.jsx';
 
 import { useJobs } from './hooks/useJobs.js';
 import { useToast } from './hooks/useToast.js';
@@ -40,6 +41,7 @@ export default function App() {
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const searchRef = useRef(null);
+  const emptyImportRef = useRef(null);
 
   // ---- backup bookkeeping -------------------------------------------------
   useEffect(() => {
@@ -252,6 +254,37 @@ export default function App() {
           <p className="grid h-full place-items-center text-sm text-ink-faint">Loading…</p>
         ) : view === 'insights' ? (
           <Insights jobs={jobs} />
+        ) : jobs.length === 0 ? (
+          /* First run: six empty columns give no hint that Import exists. */
+          <div className="grid h-full place-items-center px-6">
+            <div className="max-w-sm text-center">
+              <h2 className="text-base font-semibold text-ink">Your board is empty</h2>
+              <p className="mt-1.5 text-sm text-ink-muted">
+                Add your first application, or import a backup — including the
+                <code className="mx-1 rounded bg-surface-sunken px-1 py-0.5 text-xs">seed-data.json</code>
+                built from your JobKitAI postings.
+              </p>
+              <div className="mt-4 flex justify-center gap-2">
+                <button onClick={() => { setEditing(null); setFormOpen(true); }} className="btn-primary">
+                  <Plus size={15} /> New application
+                </button>
+                <button onClick={() => emptyImportRef.current?.click()} className="btn-outline">
+                  <Upload size={15} /> Import backup
+                </button>
+                <input
+                  ref={emptyImportRef}
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleImportFile(f);
+                    e.target.value = '';
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         ) : (
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="scroll-slim flex h-full gap-3 overflow-x-auto px-4 py-3">
