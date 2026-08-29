@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const JOBKIT = path.resolve(HERE, '..', '..', '04_JobKitAI');
-const OUT = path.resolve(HERE, '..', 'seed-data.json');
+const OUT = path.resolve(HERE, '..', 'public', 'seed-data.json');
 
 // ---------------------------------------------------------------- CSV parse
 /** Handles quoted fields, escaped "" quotes, and newlines inside quotes. */

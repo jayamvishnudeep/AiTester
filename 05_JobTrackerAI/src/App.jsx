@@ -9,7 +9,7 @@ import Insights from './components/Insights.jsx';
 import ToastStack from './components/Toast.jsx';
 import BackupBanner from './components/BackupBanner.jsx';
 import Modal from './components/Modal.jsx';
-import { Plus, Upload } from './components/Icons.jsx';
+import { Download, Plus, Upload } from './components/Icons.jsx';
 
 import { useJobs } from './hooks/useJobs.js';
 import { useToast } from './hooks/useToast.js';
@@ -181,6 +181,19 @@ export default function App() {
     [push]
   );
 
+  /** One-click seed: fetches the bundled backup, no file dialog involved. */
+  const loadSeed = useCallback(async () => {
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}seed-data.json`);
+      if (!res.ok) throw new Error(`seed-data.json not found (HTTP ${res.status}).`);
+      const rows = parseBackup(await res.text());
+      const all = await importJobs(rows, 'merge');
+      push({ message: `Loaded ${rows.length} postings — ${all.length} on the board.`, tone: 'success' });
+    } catch (e) {
+      push({ message: e.message, tone: 'error', timeout: 6000 });
+    }
+  }, [importJobs, push]);
+
   const runImport = useCallback(
     async (mode) => {
       const rows = pendingImport;
@@ -260,16 +273,18 @@ export default function App() {
             <div className="max-w-sm text-center">
               <h2 className="text-base font-semibold text-ink">Your board is empty</h2>
               <p className="mt-1.5 text-sm text-ink-muted">
-                Add your first application, or import a backup — including the
-                <code className="mx-1 rounded bg-surface-sunken px-1 py-0.5 text-xs">seed-data.json</code>
-                built from your JobKitAI postings.
+                Load the 26 real postings from your JobKitAI folder to see the board and
+                Insights with data in them — or start your own.
               </p>
-              <div className="mt-4 flex justify-center gap-2">
-                <button onClick={() => { setEditing(null); setFormOpen(true); }} className="btn-primary">
-                  <Plus size={15} /> New application
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <button onClick={loadSeed} className="btn-primary w-56">
+                  <Download size={15} /> Load my 26 JobKitAI postings
                 </button>
-                <button onClick={() => emptyImportRef.current?.click()} className="btn-outline">
-                  <Upload size={15} /> Import backup
+                <button onClick={() => { setEditing(null); setFormOpen(true); }} className="btn-outline w-56">
+                  <Plus size={15} /> Add one myself
+                </button>
+                <button onClick={() => emptyImportRef.current?.click()} className="btn-ghost w-56 text-xs">
+                  <Upload size={13} /> Import a different backup file
                 </button>
                 <input
                   ref={emptyImportRef}
