@@ -7,6 +7,45 @@ it is gone, which is why the export is prominent.
 
 Built from the spec in `job-tracker-build-prompt.md`.
 
+## Results
+
+Both screenshots are of the app running against `public/seed-data.json` — the 26
+real postings from `04_JobKitAI`, not mock data.
+
+### The board — `JobTrackerAI_Kanban_BoardResult.png`
+
+![Kanban board with all 26 seeded postings spread across six columns](JobTrackerAI_Kanban_BoardResult.png)
+
+All 26 cards across the six columns, with the counts in each header. What this
+one is evidence of:
+
+- **The six status accents read as distinct hues.** An earlier draft had Wishlist
+  and Interview as near-identical purples; this is the re-validated palette.
+- **Card face**: company, role, salary right-aligned, tag chips, resume version,
+  days since applied, priority stars, round progress (`2/5 rounds`), link icon.
+- **The nudges fire on the right cards** — `Follow-up overdue` on three,
+  `8d/9d/10d no reply` on stale Applied cards, `Sitting idle` on old Wishlist
+  items. The header agrees: `26 roles · 5 overdue`.
+- The backup banner, since nothing had been exported yet.
+
+### The Insights dashboard — `JobTrackerAI_Analysis_Board_Result.png`
+
+![Insights tab showing stat tiles, weekly submissions, conversion funnel, dwell time and resume response rates](JobTrackerAI_Analysis_Board_Result.png)
+
+The analytics view over the same data:
+
+- **Stat row** — tracked, submitted, interviewing, overdue.
+- **Applications submitted** — weekly bars, only the peak labelled rather than
+  every mark.
+- **Conversion funnel** — an ordinal blue ramp narrowing through Applied →
+  Interview → Offer, with the rate between stages.
+- **Average days in each stage** — bars in their column accents, each row
+  labelled so colour is never the only cue.
+- **Most-applied companies** and **response rate by resume** — single-hue, since
+  each row carries its own label.
+
+This screenshot also happens to prove drag-and-drop works; see [Verified](#verified).
+
 ## Running it
 
 ```bash
@@ -27,6 +66,12 @@ dependency. Plain JavaScript throughout, no TypeScript.
 ```
 05_JobTrackerAI/
 ├── index.html                  pre-paint theme script (avoids a flash of light mode)
+├── job-tracker-build-prompt.md the spec this was built from
+├── JobTrackerAI_Kanban_BoardResult.png     result screenshot — the board
+├── JobTrackerAI_Analysis_Board_Result.png  result screenshot — Insights
+├── public/seed-data.json       26 real postings, served at /seed-data.json
+├── scripts/
+│   └── seed-from-jobkit.mjs    regenerates that file from the 04_JobKitAI CSVs
 ├── src/
 │   ├── App.jsx                 state owner: view, filters, modals, shortcuts
 │   ├── index.css               colour tokens + the validated chart palette
@@ -99,7 +144,7 @@ gets its own validated step rather than an automatic flip.
 
 ## Verified
 
-![The board with all 26 seeded postings](JobTrackerAI_Kanban_BoardResult.png)
+Both screenshots referenced below are in [Results](#results) above.
 
 - `npm run build` succeeds (~76 kB gzipped JS).
 - 29 assertions over the analytics, date and nudge logic pass — funnel counts,
@@ -110,14 +155,12 @@ gets its own validated step rather than an automatic flip.
   duplicates.
 - `Insights` and `JobCard` server-render without runtime errors, including the
   zero-data empty state.
-- Confirmed in the browser (board screenshot above): all six columns populate
-  with the right counts, the status accents read as six distinct hues, salary
-  and resume chips render on the card face, and the stale, overdue and idle
-  badges fire on the cards they should.
-
-![The Insights tab](JobTrackerAI_Analysis_Board_Result.png)
-
-- Insights confirmed in the browser too: the stat row, the weekly bars with only
+- Confirmed in the browser (`JobTrackerAI_Kanban_BoardResult.png`): all six
+  columns populate with the right counts, the status accents read as six
+  distinct hues, salary and resume chips render on the card face, and the stale,
+  overdue and idle badges fire on the cards they should.
+- Insights confirmed too (`JobTrackerAI_Analysis_Board_Result.png`): the stat
+  row, the weekly bars with only
   the peak labelled, the ordinal funnel ramp, the per-stage dwell bars in their
   column accents, and both single-hue ranked charts all render as designed.
 - Drag-and-drop is confirmed working, indirectly but conclusively. The Insights
