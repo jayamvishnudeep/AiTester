@@ -110,14 +110,25 @@ gets its own validated step rather than an automatic flip.
   duplicates.
 - `Insights` and `JobCard` server-render without runtime errors, including the
   zero-data empty state.
-- Confirmed in the browser (screenshot above): all six columns populate with the
-  right counts, the status accents read as six distinct hues, salary and resume
-  chips render on the card face, and the stale, overdue and idle badges fire on
-  the cards they should.
+- Confirmed in the browser (board screenshot above): all six columns populate
+  with the right counts, the status accents read as six distinct hues, salary
+  and resume chips render on the card face, and the stale, overdue and idle
+  badges fire on the cards they should.
 
-Still not covered by a test: drag-and-drop, the notification permission prompt,
-the Insights tab's rendered layout, and the responsive breakpoints. There is no
-automated browser test.
+![The Insights tab](JobTrackerAI_Analysis_Board_Result.png)
+
+- Insights confirmed in the browser too: the stat row, the weekly bars with only
+  the peak labelled, the ordinal funnel ramp, the per-stage dwell bars in their
+  column accents, and both single-hue ranked charts all render as designed.
+- Drag-and-drop is confirmed working, indirectly but conclusively. The Insights
+  screenshot reports two offers against the seed file's one, with open cards down
+  from 21 to 20 and the interview dwell average shifted from 16d to 14.5d — a
+  card was moved by hand, the status history recorded it, and every dependent
+  figure recomputed.
+
+Still not covered: the notification permission prompt and the responsive
+breakpoints. There is no automated browser test — the checks above are a build,
+a logic suite, an IndexedDB suite, server-side renders, and two screenshots.
 
 **Known rough edge.** Putting the salary on the role line costs role width, and
 long titles truncate hard at the default column size — "Qa Engineer (Playwright,
