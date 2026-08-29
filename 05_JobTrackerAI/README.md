@@ -1,9 +1,15 @@
 # JobTrackerAI — Local-First Job Tracker
 
+**Live: https://job-tracker-ai-jayamvishnudeep.vercel.app**
+
 A Kanban job-application tracker that runs entirely in the browser. No backend,
 no accounts, no network calls — every card lives in IndexedDB on the machine
 that created it. Close the tab and the data is still there; clear site data and
 it is gone, which is why the export is prominent.
+
+Because storage is per-browser, the live site and a local `npm run dev` do not
+share data — each keeps its own board. Opening the link gives you an empty board
+and a button to load the sample postings.
 
 Built from the spec in `job-tracker-build-prompt.md`.
 
@@ -55,10 +61,31 @@ npm run build    # production bundle into dist/
 npm run preview  # serve the built bundle
 ```
 
-## Deploying to Vercel
+## Hosting on Vercel
 
-The app is a static SPA — `vite build` emits `dist/` and nothing needs a server,
-so any static host works. Vercel specifics:
+### This deployment
+
+| | |
+|---|---|
+| URL | https://job-tracker-ai-jayamvishnudeep.vercel.app |
+| Vercel project | `vishnu-jayam-s/job-tracker-ai` |
+| Build | `npm run build` → `dist/`, ~7s |
+| Config | `vercel.json` (framework preset, build command, output dir) |
+
+**Why Vercel suits this app.** It is a static SPA — `vite build` emits plain
+HTML, JS, CSS and one JSON file, with no server to run. Vercel builds on push,
+serves the output from a CDN, and gives it HTTPS and a domain for free. There is
+nothing else to operate: no database (the browser is the database), no API, no
+serverless functions, no environment variables, no secrets at build time. Any
+static host — Netlify, GitHub Pages, Cloudflare Pages, S3 — would work the same
+way; Vercel is just the least setup.
+
+**Domains.** The auto-generated domain is `<project>-<random>.vercel.app`; this
+one started life as `job-tracker-ai-lovat.vercel.app`. Renaming it in
+**Settings → Domains** takes effect immediately with no DNS, but the previous
+domain stops resolving rather than redirecting — any link already shared breaks.
+
+### Deploying it yourself
 
 **The one setting that matters is Root Directory.** This app lives in a
 subfolder of a larger repo, so a default import points Vercel at the repo root,
@@ -85,22 +112,43 @@ vercel --prod   # promote to production
 Running `vercel` from inside this folder makes it the root, so the Root Directory
 problem does not arise.
 
-No environment variables, no build-time secrets, no serverless functions — there
-is no backend to configure. `public/seed-data.json` is copied into `dist/` and
-served at `/seed-data.json`, which is what the "Load my 26 JobKitAI postings"
-button fetches; it resolves through `import.meta.env.BASE_URL`, so it survives
-being served from a sub-path.
+`public/seed-data.json` is copied into `dist/` and served at `/seed-data.json`,
+which is what the "Load my 26 JobKitAI postings" button fetches. It resolves
+through `import.meta.env.BASE_URL`, so it survives being served from a sub-path.
 
-**Before you deploy, note what becomes public.** A Vercel deployment is
-world-readable by default, and `seed-data.json` is a live job search — the
-companies, the stage each application is at, the salary bands, and the
-`Stretch` / `JD mismatch` tags recording your own read on each role. Anyone with
-the URL can fetch it directly. This repo is already public, so the file is
-already exposed on GitHub and deploying adds no new category of disclosure — but
-if you would rather it were not on a shareable URL, delete
-`public/seed-data.json` before deploying (the app falls back to its normal empty
-state and the Import button still works), or set the project to require
-authentication under **Settings → Deployment Protection**.
+Two things that actually went wrong the first time, in case they bite again:
+
+- **The CLI derives the project name from the folder name**, and `05_JobTrackerAI`
+  has uppercase letters, which Vercel rejects. Fix: `vercel link --project
+  job-tracker-ai` before deploying, or set the name in the dashboard.
+- **Connecting the GitHub repo failed** with *"You need to add a Login Connection
+  to your GitHub account first"* — the Vercel account signed up by email, not
+  GitHub. Deploys still work from the CLI; only auto-deploy-on-push is missing.
+  Fix it under **Vercel → Settings → Login Connections**, then `vercel git connect`.
+
+If you deploy with a token, note that `vercel link` writes a `.env.local`
+containing a `VERCEL_OIDC_TOKEN` and a `.vercel/` directory holding the project
+and org ids. Both are gitignored here. Add `.vercel` **before** linking, not
+after, so there is never a window where they are stageable.
+
+> ### ⚠️ A deployment publishes `seed-data.json`
+>
+> A Vercel production domain is world-readable by default, and this app's seed
+> file is a real job search: the companies, the stage each application is at,
+> the salary bands, and the `Stretch` / `JD mismatch` tags recording a personal
+> read on each role. Anyone with the URL can fetch `/seed-data.json` directly —
+> no login, no scraping. The screenshots in [Results](#results) show the same
+> information.
+>
+> Deployment Protection sounds like it covers this and does not: it gated the
+> per-deployment URL while leaving the production domain open, so the data was
+> public even though the deploy URL asked for a login. Check the production
+> domain itself, anonymously, rather than trusting the setting name.
+>
+> To close it: **Settings → Deployment Protection → Standard Protection** locks
+> the whole project to the account, or delete `public/seed-data.json` and
+> redeploy — the app then ships an empty board with a working Import button,
+> which is the better option if the site is meant to be shared.
 
 ## Stack
 
