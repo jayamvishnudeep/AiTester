@@ -39,6 +39,7 @@ export default function App() {
 
   const [lastExport, setLastExport] = useState(undefined); // undefined = not loaded
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   const searchRef = useRef(null);
   const emptyImportRef = useRef(null);
@@ -47,6 +48,37 @@ export default function App() {
   useEffect(() => {
     getMeta('lastExportAt', null).then(setLastExport);
   }, []);
+
+  /**
+   * First visit on a given browser lands on a populated board rather than an
+   * empty one. Guarded by a `seeded` flag in the meta store, so clearing the
+   * board by hand stays cleared instead of refilling on the next reload.
+   */
+  useEffect(() => {
+    if (loading || jobs.length > 0) return;
+    let cancelled = false;
+
+    (async () => {
+      if (await getMeta('seeded', false)) return;
+      if (cancelled) return;
+      setSeeding(true);
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}seed-data.json`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const rows = parseBackup(await res.text());
+        if (cancelled) return;
+        await importJobs(rows, 'merge');
+        await setMeta('seeded', true);
+      } catch {
+        // No seed file, or it failed to parse — fall through to the empty
+        // state, which still offers the manual load and import buttons.
+      } finally {
+        if (!cancelled) setSeeding(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [loading, jobs.length, importJobs]);
 
   const daysSinceExport = lastExport ? daysSince(lastExport) : null;
   const showBackupBanner =
@@ -188,6 +220,7 @@ export default function App() {
       if (!res.ok) throw new Error(`seed-data.json not found (HTTP ${res.status}).`);
       const rows = parseBackup(await res.text());
       const all = await importJobs(rows, 'merge');
+      await setMeta('seeded', true);
       push({ message: `Loaded ${rows.length} postings — ${all.length} on the board.`, tone: 'success' });
     } catch (e) {
       push({ message: e.message, tone: 'error', timeout: 6000 });
@@ -263,12 +296,14 @@ export default function App() {
       )}
 
       <main className="min-h-0 flex-1">
-        {loading ? (
-          <p className="grid h-full place-items-center text-sm text-ink-faint">Loading…</p>
+        {loading || seeding ? (
+          <p className="grid h-full place-items-center text-sm text-ink-faint">
+            {seeding ? 'Loading job postings…' : 'Loading…'}
+          </p>
         ) : view === 'insights' ? (
           <Insights jobs={jobs} />
         ) : jobs.length === 0 ? (
-          /* First run: six empty columns give no hint that Import exists. */
+          /* Reached only if the seed failed or the board was cleared by hand. */
           <div className="grid h-full place-items-center px-6">
             <div className="max-w-sm text-center">
               <h2 className="text-base font-semibold text-ink">Your board is empty</h2>
