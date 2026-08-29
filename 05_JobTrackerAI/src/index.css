@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colour tokens as raw RGB triples so Tailwind's <alpha-value> works. */
+@layer base {
+  :root {
+    --surface: 255 255 255;
+    --surface-raised: 255 255 255;
+    --surface-sunken: 244 245 247;
+    --ink: 23 26 33;
+    --ink-muted: 90 98 112;
+    --ink-faint: 140 148 162;
+    --edge: 224 227 232;
+    --brand: 79 70 229;
+    color-scheme: light;
+
+    /* Status accents. Validated as a 6-slot categorical palette against the
+       light surface: all checks pass. The green/red adjacency sits in the
+       CVD 6-8 band, which is legal because every column and bar is also
+       labelled in text — colour never carries the meaning alone. */
+    --col-wishlist: #e87ba4;
+    --col-applied: #2a78d6;
+    --col-followup: #eda100;
+    --col-interview: #7e5bd9;
+    --col-offer: #1baf7a;
+    --col-rejected: #e34948;
+
+    /* Single-series magnitude hue, and the 3-step ordinal ramp for the funnel. */
+    --series-1: #2a78d6;
+    --funnel-1: #1c5cab;
+    --funnel-2: #2a78d6;
+    --funnel-3: #86b6ef;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+  }
+
+  .dark {
+    --surface: 20 22 28;
+    --surface-raised: 28 31 38;
+    --surface-sunken: 14 16 20;
+    --ink: 233 236 241;
+    --ink-muted: 154 162 175;
+    --ink-faint: 110 118 132;
+    --edge: 44 48 57;
+    --brand: 129 122 245;
+    color-scheme: dark;
+
+    /* The same six hues re-stepped for the dark surface and validated as a
+       set — not an automatic flip of the light values. */
+    --col-wishlist: #d55181;
+    --col-applied: #3987e5;
+    --col-followup: #c98500;
+    --col-interview: #9085e9;
+    --col-offer: #199e70;
+    --col-rejected: #e66767;
+
+    --series-1: #3987e5;
+    --funnel-1: #9ec5f4;
+    --funnel-2: #3987e5;
+    --funnel-3: #184f95;
+    --grid: #2c2c2a;
+    --axis: #383835;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-sunken text-ink antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Focus ring that reads on both themes without shouting. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand/60 ring-offset-2 ring-offset-surface;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium
+           transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply btn text-ink-muted hover:bg-surface-sunken hover:text-ink;
+  }
+  .btn-outline {
+    @apply btn border border-edge bg-surface text-ink hover:bg-surface-sunken;
+  }
+  .btn-danger {
+    @apply btn bg-rose-600 text-white hover:bg-rose-700;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-edge bg-surface px-3 py-2 text-sm text-ink
+           placeholder:text-ink-faint focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-ink-muted;
+  }
+  .card-surface {
+    @apply rounded-xl border border-edge bg-surface-raised;
+  }
+}
+
+/* Thin scrollbars so the six columns don't eat horizontal space. */
+@layer utilities {
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--edge)) transparent;
+  }
+  .scroll-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--edge));
+    border-radius: 9999px;
+  }
+}
