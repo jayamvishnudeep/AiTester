@@ -37,7 +37,16 @@ export default function JobCard({ job, compact, onOpen, onTogglePriority }) {
             className="min-w-0 flex-1 text-left"
           >
             <h3 className="truncate text-sm font-semibold text-ink">{job.company || 'Untitled'}</h3>
-            <p className="truncate text-xs text-ink-muted">{job.role}</p>
+            {/* Salary sits on the role line so it forms a scannable column down
+                the board; the role truncates around it rather than pushing it off. */}
+            <div className="flex items-baseline gap-2">
+              <p className="min-w-0 flex-1 truncate text-xs text-ink-muted">{job.role}</p>
+              {job.salary && (
+                <span className="shrink-0 text-[11px] font-medium tabular-nums text-ink-muted">
+                  {job.salary}
+                </span>
+              )}
+            </div>
           </button>
 
           <button
