@@ -1,0 +1,1654 @@
+{
+  "app": "job-tracker",
+  "version": 1,
+  "exportedAt": "2026-08-29T00:42:37.249Z",
+  "count": 26,
+  "jobs": [
+    {
+      "id": "jobkit-naukri-senior-qa-engineer-software",
+      "company": "Light & Wonder",
+      "role": "Senior QA Engineer , Software",
+      "url": "https://www.naukri.com/job-listings-senior-qa-engineer-software-light-wonder-bengaluru-4-to-8-years-120826027500",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-07-02T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 4-8 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "rejected",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Gaming:\nWelcome to the world of land-based gaming. At Light & Wonder, it's all about the games, and our Gaming team builds cutting-edge technology, products, and content for the most iconic casinos and operators across the globe.\nPosition Summary\nDebugs software products through the use of systematic tests to develop, apply and maintain quality standards for firm products. Develops, modifies and executes software test plans, automated scripts and programs for testing. Analyzes and writes test standards and procedures. Maintains documentation of test results to assist in debugging and modification of software. Analyzes test results to ensure existing functionality and recommends corrective action. Consults with development engineers in resolution of problems. Provides feedback in preparation of technical appraisals of programming languages, systems and computation software. Ensures qualit\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-06-28T00:42:37.243Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-02T00:42:37.246Z"
+        },
+        {
+          "status": "rejected",
+          "at": "2026-07-14T00:42:37.247Z"
+        }
+      ],
+      "order": 1782952957247,
+      "createdAt": "2026-06-28T00:42:37.243Z",
+      "updatedAt": "2026-07-14T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-catalog-quality-ai-automation-manager",
+      "company": "Xoxoday",
+      "role": "Catalog Quality & AI Automation Manager",
+      "url": "https://www.naukri.com/job-listings-catalog-quality-ai-automation-manager-xoxoday-bengaluru-4-to-7-years-250626504719",
+      "resume": "QA_Lead_v2",
+      "dateApplied": "2026-08-08T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 4-7 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "wishlist",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Manage and maintain high-quality product catalogs across various platforms.\nDevelop and implement AI-powered automation solutions to improve catalog management processes.\nCollaborate with cross-functional teams to ensure seamless integration of catalogs with other systems.\nAnalyze data to identify trends and areas for improvement in catalog management.\nImplement quality control measures to ensure accuracy and consistency in catalog content.\nLead a team of professionals in achieving departmental goals and objectives.\nDisclaimer: This job posting has been aggregated from external source. Role details, content, and availability are subject to change. Applicants are advised to confirm the latest information directly on the company website before applying.",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-08T00:42:37.247Z"
+        }
+      ],
+      "order": 1786149757247,
+      "createdAt": "2026-08-08T00:42:37.247Z",
+      "updatedAt": "2026-08-08T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-in-manager-qa-automation-data-and-analytics-ad",
+      "company": "PwC Service Delivery Center",
+      "role": "IN_Manager_QA Automation_Data and Analytics_Advisory_Bangalore",
+      "url": "https://www.naukri.com/job-listings-in-manager-qa-automation-data-and-analytics-advisory-bangalore-pricewaterhouse-coopers-service-delivery-center-kolkata-bengaluru-6-to-11-years-190826504520",
+      "resume": "QA_Lead_v2",
+      "dateApplied": "2026-07-26T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 6-11 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "interview",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Lead role",
+          "color": "#8b7cf0"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": true
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job Summary\nAt PwC, our people in data management focus on organising and maintaining data to enable accuracy and accessibility for effective decision-making. These individuals handle data governance, quality control, and data integration to support business operations.\nIn data quality assurance at PwC, you will be responsible for the accuracy and reliability of data through testing and validation processes. You will play a crucial role in maintaining data integrity and identifying areas for improvement in data management systems.\nResponsibilities\nDefine and lead test strategies for data-intensive systems, ensuring alignment with quality and compliance goals.\nDesign and implement scalable automation frameworks for ETL/ELT pipelines and cloud-based data platforms.\nGuide a team of QA engineers, driving best practices in test automation, data validation, and performance testing.\nIntegrate a\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-22T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-26T00:42:37.247Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-02T00:42:37.247Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-08T00:42:37.247Z"
+        }
+      ],
+      "order": 1785026557247,
+      "createdAt": "2026-07-22T00:42:37.247Z",
+      "updatedAt": "2026-08-08T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-senior-quality-assurance-engineer",
+      "company": "Tata Consultancy Services",
+      "role": "Senior Quality Assurance Engineer",
+      "url": "https://www.naukri.com/job-listings-senior-quality-assurance-engineer-tata-consultancy-services-bengaluru-5-to-10-years-240826030419",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-08-05T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 5-10 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "followup",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Senior Quality Assurance Engineer\nExperience: 5+ years\nLocation: Bengaluru, Karnataka\nRequired Qualifications\n5+ years of QA/SDET experience.\nProficiency in Java, TypeScript, and Python.\nExperience with Selenium, Appium, JUnit, Postman, and Insomnia.\nExperience with NodeJS, Mocha, and Cucumber.\nFamiliarity with Agile, TDD, and BDD.\nExperience with CI/CD tools such as Jenkins or Harness.\nStrong analytical and communication skills.\nPreferred Qualifications\nExperience with AWS, Azure, or other cloud services.\nFamiliarity with AngularJS, NodeJS, and modern web frameworks.\nExperience with GenAI, AI/ML, and advanced automation augmentation tools.\nExperience with JIRA, Xray, qTest, and Allure Reports.\nEducation\nBachelors degree in Computer Science, Information Systems, Engineering, or equivalent experience.",
+      "followUpBy": "2026-08-27T00:42:37.247Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-01T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-05T00:42:37.247Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-13T00:42:37.247Z"
+        }
+      ],
+      "order": 1785890557247,
+      "createdAt": "2026-08-01T00:42:37.247Z",
+      "updatedAt": "2026-08-13T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-tester-with-ai",
+      "company": "Tekskills India",
+      "role": "QA Tester with AI",
+      "url": "https://www.naukri.com/job-listings-qa-tester-with-ai-tekskills-bengaluru-5-to-10-years-180826928004",
+      "resume": "Generic_QA_v1",
+      "dateApplied": "2026-07-15T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 5-10 Yrs. Location: Bengaluru. Listed via Tekskills. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "rejected",
+      "recruiterName": "Tekskills",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job Description:\nMinimum experience:\nAt least 4 years of experience in software quality assurance, with a focus on AI solutions.\nMust have hands-on:\nDeep understanding of LLM behaviour including hallucinations, bias, edge-case handling\nExperience prompt engineering to design adversarial and robustness test cases\nConduct photo validation and recognition tests to ensure accuracy in AI-driven quality audits.\nAble to integrate LLM-focused test suites into CI/CD pipelines (Azure DevOps, GitHub Actions)\nExperience in LLM test case generation, RAG evaluation, and use of guardrails for secure, explainable testing\nStrong background in data pipeline testing, ensuring input/output integrity of training and retrieval systems\nExpertise in managing test data, generating synthetic data, and auditing data coverage\nDocument defects clearly and support triage with engineering tea",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-11T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-15T00:42:37.247Z"
+        },
+        {
+          "status": "rejected",
+          "at": "2026-07-27T00:42:37.247Z"
+        }
+      ],
+      "order": 1784076157247,
+      "createdAt": "2026-07-11T00:42:37.247Z",
+      "updatedAt": "2026-07-27T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-senior-qa-automation-engineer-playwright-curso",
+      "company": "CGI",
+      "role": "Senior QA Automation Engineer (Playwright + Cursor AI)",
+      "url": "https://www.naukri.com/job-listings-senior-qa-automation-engineer-playwright-cursor-ai-cgi-information-systems-and-management-consultants-bengaluru-5-to-8-years-270826919884",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-08-18T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 5-8 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "JD mismatch",
+          "color": "#e87ba4"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Position Description:\nCompany Profile:\nFounded in 1976, CGI is among the largest independent IT and business consulting services firms in the world. With 94,000 consultants and professionals across the globe, CGI delivers an end-to-end portfolio of capabilities, from strategic IT and business consulting to systems integration, managed IT and business process services and intellectual property solutions. CGI works with clients through a local relationship model complemented by a global delivery network that helps clients digitally transform their organizations and accelerate results. CGI Fiscal 2024 reported revenue is CA$14.68 billion and CGI shares are listed on the TSX (GIB.A) and the NYSE (GIB). Learn more at cgi.com.\nJob Title: Java Full Stack Developer with AWS\nPosition: Senior Software Engineer\nExperience: 6-9 Years\nCategory: Software Development/ Engineering\nShift: General\nMain lo\n\n[…truncated — see the original posting]",
+      "followUpBy": "2026-08-28T00:42:37.247Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-14T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-18T00:42:37.247Z"
+        }
+      ],
+      "order": 1787013757247,
+      "createdAt": "2026-08-14T00:42:37.247Z",
+      "updatedAt": "2026-08-18T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-cypress-automation-tester",
+      "company": "GSR Business Services",
+      "role": "Cypress Automation Tester",
+      "url": "https://www.naukri.com/job-listings-cypress-automation-tester-gsr-business-services-bengaluru-4-to-6-years-280826007471",
+      "resume": "Generic_QA_v1",
+      "dateApplied": "2026-08-12T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 4-6 Yrs. Location: Hybrid - Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "wishlist",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        },
+        {
+          "label": "Remote / hybrid",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job Description\nBrief Description\nWe look for self-starters who thrive in fast-paced agile environment. The ideal candidate should be able to change directions quickly, and keen to learn new technologies and best practices. The candidate should be able to work with a cross-functional, collaborative environment where excellent interpersonal and communication skills are a must. We look for people who can prioritize, multi-task and deliver. Should be able to test application both manually and with automated tools using black box, grey box and white box testing techniques. Should be capable of working with development engineers to understand the features and technical implementation without losing the appropriate tester mindset.\nChange the future with us!!!\nTo develop Test Automation scripts/framework for Lab Diagnostics products\nDevelop Test scripts using Cypress\nDesign and execute test scr\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-12T00:42:37.247Z"
+        }
+      ],
+      "order": 1786495357247,
+      "createdAt": "2026-08-12T00:42:37.247Z",
+      "updatedAt": "2026-08-12T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-c-and-oop-concepts-expert-bax",
+      "company": "Larsen & Toubro (L&T)",
+      "role": "C# and OOP concepts Expert_BAX",
+      "url": "https://www.naukri.com/job-listings-c-and-oop-concepts-expert-bax-larsen-toubro-l-t-bengaluru-5-to-9-years-290726033995",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-07-20T00:42:37.247Z",
+      "salary": "",
+      "notes": "Posting asks for 5-9 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "rejected",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Hands-on experience in C# and OOP concepts.\nHands-on experience in developing test automation frameworks (e.g., Page Object Model (POM), Behavior-Driven Development (BDD), Data-Driven Frameworks, etc.).\nHands-on experience in developing and automating REST API test scripts.\nHands-on experience with Selenium and Appium automation frameworks.\nGood understanding of software testing concepts:\nSDLC and STLC\nTest case design techniques\nFunctional, Regression, Smoke, and Sanity testing\nDefect life cycle and defect management\nTest execution process\nAPI testing concepts\nAutomation testing best practices and framework design",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-16T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-20T00:42:37.247Z"
+        },
+        {
+          "status": "rejected",
+          "at": "2026-08-01T00:42:37.247Z"
+        }
+      ],
+      "order": 1784508157247,
+      "createdAt": "2026-07-16T00:42:37.247Z",
+      "updatedAt": "2026-08-01T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-quality-engineer",
+      "company": "Grid Dynamics",
+      "role": "Quality Engineer",
+      "url": "https://www.naukri.com/job-listings-quality-engineer-grid-dynamics-bengaluru-6-to-11-years-270826014659",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-07-31T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 6-11 Yrs. Location: Hybrid - Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "interview",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        },
+        {
+          "label": "Remote / hybrid",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": true
+        },
+        {
+          "label": "Onsite",
+          "done": true
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "We are looking for a skilled Quality Engineer with strong experience in Playwright, JavaScript, Java, API testing, and AWS to own end-to-end quality assurance for scalable retail/order management platforms.\nKey Responsibilities\nOwn E2E QA across manual and automation testing.\nDesign, develop, and execute automation tests using Playwright, Cucumber, Selenium/Cypress/Appium.\nPerform API, integration, backend, and platform testing for Java-based applications.\nValidate JSON/XML, APIs, transactions, logs, metrics, and traces.\nWork with Kafka/Amazon MQ and distributed systems.\nUse Splunk, Grafana, and OpenTelemetry (OTEL) for monitoring and troubleshooting.\nPerform testing across build, release, and production-readiness phases.\nManage test coverage and traceability using Xray.\nCollaborate with engineering, product, and platform teams across geographies.\nLeverage AI tools such as Cursor to impr\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-27T00:42:37.247Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-31T00:42:37.247Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-07T00:42:37.247Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-13T00:42:37.247Z"
+        }
+      ],
+      "order": 1785458557248,
+      "createdAt": "2026-07-27T00:42:37.247Z",
+      "updatedAt": "2026-08-13T00:42:37.247Z"
+    },
+    {
+      "id": "jobkit-naukri-infosys-api-tester-pune-blr-noida-chn-hyd-tvm",
+      "company": "Infosys",
+      "role": "INFOSYS_ API Tester_ Pune/BLR/Noida/CHN/HYD /TVM",
+      "url": "https://www.naukri.com/job-listings-infosys-api-tester-pune-blr-noida-chn-hyd-tvm-glauben-technologies-hyderabad-pune-bengaluru-5-to-10-years-270826009131",
+      "resume": "API_RestAssured_v2",
+      "dateApplied": "2026-08-03T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 5-10 Yrs. Location: Bengaluru, Hyderabad, Pune. Listed via Glauben Technologies. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "interview",
+      "recruiterName": "Glauben Technologies",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job description\nCore Responsibilities\nDesign and Development: Create, develop, and maintain high-quality automation test scripts and frameworks using Selenium and Java.\nAPI Testing: Design and execute API tests, validating requests, responses, data integrity, and security aspects using tools like REST Assured, Postman, or Karate.\nCollaboration: Work closely with development teams, business analysts, and project managers to gather requirements, define test strategies, and ensure seamless integration and functionality.\nExecution and Analysis: Execute test plans, analyze results, identify defects, perform root cause analysis, and track issues to resolution.\nFramework Enhancement: Continuously enhance testing frameworks and processes for improved efficiency, effectiveness, and the creation of reusable, reliable code.\nDocumentation and Reporting: Document test procedures, test cases, and resu\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-30T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-03T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-10T00:42:37.248Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-16T00:42:37.248Z"
+        }
+      ],
+      "order": 1785717757248,
+      "createdAt": "2026-07-30T00:42:37.248Z",
+      "updatedAt": "2026-08-16T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-in-senior-associate-qa-automation-data-and-ana",
+      "company": "PwC Service Delivery Center",
+      "role": "IN_Senior Associate_QA Automation_Data and Analytics",
+      "url": "https://www.naukri.com/job-listings-in-senior-associate-qa-automation-data-and-analytics-pricewaterhouse-coopers-service-delivery-center-kolkata-bengaluru-3-to-6-years-180826501689",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-08-20T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 3-6 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job Summary\nAt PwC, our people in data management focus on organising and maintaining data to enable accuracy and accessibility for effective decision-making. These individuals handle data governance, quality control, and data integration to support business operations.\nThose in data quality and operations at PwC will focus on the accuracy, completeness, and accessibility of data for effective decision-making and business operations. Your work will involve implementing data quality control measures, performing data cleansing and validation, and monitoring data integrity. You will be responsible for managing data operations, including data acquisition, transformation, and loading processes, to enable the smooth functioning of data management systems and processes.\nA career within Data and Analytics services will provide you with the opportunity to help organizations uncover enterprise ins\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-16T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-20T00:42:37.248Z"
+        }
+      ],
+      "order": 1787186557248,
+      "createdAt": "2026-08-16T00:42:37.248Z",
+      "updatedAt": "2026-08-20T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-playwright-automation-tester",
+      "company": "HCLTech",
+      "role": "playwright Automation Tester",
+      "url": "https://www.naukri.com/job-listings-playwright-automation-tester-hcltech-noida-chennai-bengaluru-4-to-8-years-060826011000",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-07-19T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 4-8 Yrs. Location: Bengaluru, Noida, Chennai. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "offer",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": true
+        },
+        {
+          "label": "Onsite",
+          "done": true
+        },
+        {
+          "label": "HR",
+          "done": true
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Mandatory Skills - Playwright, JavaScript, Typescript\nDetail JD - Playwright, JavaScript, Typescript, TestNG, BDD Cucumber, Api Automation, Java/Selenium\nExperience - 4 to 8 Yrs\nLocation - Bangalore/Chennai/Noida/Hyderabad",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-15T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-19T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-07-25T00:42:37.248Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-02T00:42:37.248Z"
+        },
+        {
+          "status": "offer",
+          "at": "2026-08-18T00:42:37.248Z"
+        }
+      ],
+      "order": 1784421757248,
+      "createdAt": "2026-07-15T00:42:37.248Z",
+      "updatedAt": "2026-08-18T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-automation-engineer",
+      "company": "Siemens Healthcare",
+      "role": "QA Automation Engineer",
+      "url": "https://www.naukri.com/job-listings-qa-automation-engineer-sunovaa-tech-bengaluru-4-to-7-years-250826025193",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-08-16T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 4-7 Yrs. Location: Bengaluru. Listed via Sunovaa Tech. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "Sunovaa Tech",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Role & Responsibilities\nDesign, develop, and maintain scalable UI automation frameworks using Cypress with TypeScript/JavaScript.\nDevelop and maintain automated test suites using Playwright and Selenium.\nBuild reusable automation components using Page Object Model (POM) and framework best practices.\nPerform functional, regression, smoke, sanity, and integration testing.\nDevelop and execute API automation using REST APIs, Postman, REST Assured, or similar tools.\nIntegrate automation suites with Azure DevOps CI/CD pipelines for continuous testing.\nAnalyze automation failures, perform debugging and root-cause analysis, and improve test stability.\nCollaborate with Developers, Product Owners, DevOps, and QA teams in an Agile/Scrum environment.\nParticipate in test planning, execution, defect management, release validation, and quality improvement activities.\nMaintain test scripts, reusable uti\n\n[…truncated — see the original posting]",
+      "followUpBy": "2026-08-25T00:42:37.248Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-12T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-16T00:42:37.248Z"
+        }
+      ],
+      "order": 1786840957248,
+      "createdAt": "2026-08-12T00:42:37.248Z",
+      "updatedAt": "2026-08-16T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-automation-edi-test-engineer-us-healthcare-",
+      "company": "kezan",
+      "role": "QA Automation + EDI Test Engineer (US Healthcare)",
+      "url": "https://www.naukri.com/job-listings-qa-automation-edi-test-engineer-us-healthcare-kezan-consulting-gurugram-bengaluru-4-to-8-years-240826010643",
+      "resume": "API_RestAssured_v2",
+      "dateApplied": "2026-08-23T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 4-8 Yrs. Location: Hybrid - Bengaluru, Gurugram. Listed via Kezan Consulting. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "wishlist",
+      "recruiterName": "Kezan Consulting",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        },
+        {
+          "label": "Remote / hybrid",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "We are looking for a QA Automation Engineer with 4+ years of experience in software testing, automation, and Healthcare EDI testing. The candidate should have strong knowledge of healthcare EDI transactions, API testing, database validation, and automation frameworks.\nKey Responsibilities\nDesign, develop, and execute manual and automated test cases for healthcare applications.\nPerform end-to-end testing of Healthcare EDI transactions.\nValidate EDI files, segments, elements, data mapping, and transformation rules.\nTest healthcare transactions such as 837, 835, 270, 271, 276, 277, 278, 834, 999 and TA1.\nPerform EDI-to-application, EDI-to-database, and application-to-EDI validation.\nDevelop and maintain automation scripts using Selenium with Java/Python.\nPerform API testing using tools such as Postman and REST/SOAP APIs.\nWrite SQL queries for database validation and data reconciliation.\nPer\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-23T00:42:37.248Z"
+        }
+      ],
+      "order": 1787445757248,
+      "createdAt": "2026-08-23T00:42:37.248Z",
+      "updatedAt": "2026-08-23T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-engineer-playwright-rest-assured-api-automa",
+      "company": "MNC Group",
+      "role": "Qa Engineer (Playwright, Rest Assured API automation testing)",
+      "url": "https://www.naukri.com/job-listings-qa-engineer-playwright-rest-assured-api-automation-testing-advance-career-solutions-pune-chennai-bengaluru-6-to-10-years-240826004949",
+      "resume": "API_RestAssured_v2",
+      "dateApplied": "2026-08-09T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 6-10 Yrs. Location: Hybrid - Bengaluru, Pune, Chennai. Listed via Advance Career Solutions. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "interview",
+      "recruiterName": "Advance Career Solutions",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        },
+        {
+          "label": "Remote / hybrid",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": true
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Position Name- QA automation(Playwright , Rest Api)\nLocation: PAN india",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-05T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-09T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-16T00:42:37.248Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-22T00:42:37.248Z"
+        }
+      ],
+      "order": 1786236157248,
+      "createdAt": "2026-08-05T00:42:37.248Z",
+      "updatedAt": "2026-08-22T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-automation-engineer-playwright-bangalore-4-",
+      "company": "Tata Consultancy Services",
+      "role": "QA Automation Engineer (Playwright) | Bangalore | 4 To 10 Years",
+      "url": "https://www.naukri.com/job-listings-qa-automation-engineer-playwright-bangalore-4-to-10-years-tata-consultancy-services-bengaluru-5-to-10-years-210826008494",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-08-21T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 5-10 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Role & responsibilities\nRole: QA Automation Engineer\nLocation: Bangalore\nExperience: 4 to 10 Years\nMandatory Skills:\nMinimum 4 years of hands-on experience in Playwright\nStrong experience in JavaScript and TypeScript\nExpertise in Automation Testing and test script development\nExperience in Manual Testing, Test Case Creation, and Test Management tools (Jira/X-Ray, etc.)\nKnowledge of API testing using Postman\nExperience with automation tools such as Playwright, Selenium, JUnit\nGood to Have:\nTest Data Management\nFunctional, Integration, E2E, Performance, and Security Testing\nKnowledge of SAP Sales Processes\nRequirements:\nCandidates must be based in Bangalore\nStrong focus on application stability, regression testing, and automation framework maintenance\nInternal candidates preferred",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-17T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-21T00:42:37.248Z"
+        }
+      ],
+      "order": 1787272957248,
+      "createdAt": "2026-08-17T00:42:37.248Z",
+      "updatedAt": "2026-08-21T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-sr-sdet",
+      "company": "Tata Consultancy Services",
+      "role": "Sr. SDET",
+      "url": "https://www.naukri.com/job-listings-sr-sdet-tata-consultancy-services-bengaluru-6-to-10-years-090326012241",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-08-07T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 6-10 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "followup",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Lead role",
+          "color": "#8b7cf0"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Required Skills\nMinimum 5 years of related work experience\nComfortable working in an agile environment\nA visionary who motivates teams to excel and fosters creativity, consistently driving excellence in all endeavors\nAn advocate for a diverse and inclusive culture that encourages innovation and ensures every team member feels a sense of belonging\nFamiliar with a desire to further develop technical expertise in data engineering tools, methodologies, and emerging technologies:\nProgramming Languages: Java, TypeScript, Python\nTest Automation Frameworks: NodeJS, Mocha, Cucumber\nUI Test Automation Tools: Selenium\nAPI Test Automation: Postman, Insomnia\nCI/CD Tools: Jenkins, Harness\nTest Management / Reporting: JIRA, Xray, qTest, Allure Report\nRole & responsibilities\nCollaborate across technology teams optimizing the use of a shared framework where appropriate\nImpact higher-risk aspects, set pri\n\n[…truncated — see the original posting]",
+      "followUpBy": "2026-08-26T00:42:37.248Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-03T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-07T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-15T00:42:37.248Z"
+        }
+      ],
+      "order": 1786063357248,
+      "createdAt": "2026-08-03T00:42:37.248Z",
+      "updatedAt": "2026-08-15T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-automation-engineer-professional-services-r",
+      "company": "Okta",
+      "role": "QA Automation Engineer, Professional Services R&D",
+      "url": "https://www.naukri.com/job-listings-qa-automation-engineer-professional-services-r-d-okta-identity-india-private-limited-bengaluru-3-to-8-years-260826926253",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-08-13T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 3-8 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Secure Every Identity, from AI to Human\nIdentity is the key to unlocking the potential of AI. Okta secures AI by building the trusted, neutral infrastructure that enables organizations to safely embrace this new era. This work requires a relentless drive to solve complex challenges with real-world stakes. We are looking for builders and owners who operate with speed and urgency and execute with excellence.\nThis is an opportunity to do career-defining work. We're all in on this mission. If you are too, let's talk.\nAbout the Team\nThe Professional Services R&D team is a new, dynamic group at the forefront of innovation within Okta. Our mission is to design and build reusable, scalable assets and tools that empower our delivery teams and partners. By making customer engagements more efficient, streamlined, and cost-effective, we directly contribute to our customers' success and accelerate th\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-09T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-13T00:42:37.248Z"
+        }
+      ],
+      "order": 1786581757248,
+      "createdAt": "2026-08-09T00:42:37.248Z",
+      "updatedAt": "2026-08-13T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-qa-automation-engineer-camera-testing-",
+      "company": "Larsen & Toubro (L&T)",
+      "role": "QA Automation Engineer (Camera Testing)",
+      "url": "https://www.naukri.com/job-listings-qa-automation-engineer-camera-testing-larsen-toubro-l-t-bengaluru-3-to-8-years-260826031495",
+      "resume": "API_RestAssured_v2",
+      "dateApplied": "2026-08-19T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 3-8 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Immediate Joiners or candidates serving up to 1 month notice period will be considered.\nRole & responsibilities\nDesign and execute manual and automated test cases for camera-based applications.\nDevelop and maintain automation frameworks using Selenium with Java/Python.\nPerform Functional, Regression, System, Integration, and API testing.\nLog, track, and manage defects using JIRA.\nIntegrate automation suites with CI/CD pipelines using Jenkins and Git.\nCollaborate with Agile teams to ensure product quality and timely delivery.\nPreferred candidate profile\nCamera Testing\nSelenium WebDriver\nJava or Python\nAPI Testing (Postman / RestAssured)\nCucumber (BDD)\nManual & Automation Testing\nFunctional, Regression, System & Integration Testing\nJIRA\nJenkins & Git (CI/CD)",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-15T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-19T00:42:37.248Z"
+        }
+      ],
+      "order": 1787100157248,
+      "createdAt": "2026-08-15T00:42:37.248Z",
+      "updatedAt": "2026-08-19T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-lead-qa-automation-engineer-playwright-cursor-",
+      "company": "CGI",
+      "role": "Lead QA Automation Engineer (Playwright + Cursor AI)",
+      "url": "https://www.naukri.com/job-listings-lead-qa-automation-engineer-playwright-cursor-ai-cgi-information-systems-and-management-consultants-bengaluru-5-to-8-years-270826919861",
+      "resume": "QA_Lead_v2",
+      "dateApplied": "2026-08-17T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 5-8 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "applied",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Lead role",
+          "color": "#8b7cf0"
+        },
+        {
+          "label": "JD mismatch",
+          "color": "#e87ba4"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Position Description:\nCompany Profile:\nFounded in 1976, CGI is among the largest independent IT and business consulting services firms in the world. With 94,000 consultants and professionals across the globe, CGI delivers an end-to-end portfolio of capabilities, from strategic IT and business consulting to systems integration, managed IT and business process services and intellectual property solutions. CGI works with clients through a local relationship model complemented by a global delivery network that helps clients digitally transform their organizations and accelerate results. CGI Fiscal 2024 reported revenue is CA$14.68 billion and CGI shares are listed on the TSX (GIB.A) and the NYSE (GIB). Learn more at cgi.com.\nJob Title: Java Full Stack Developer with AWS\nPosition: Senior Software Engineer\nExperience: 6-9 Years\nCategory: Software Development/ Engineering\nShift: General\nMain lo\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-13T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-17T00:42:37.248Z"
+        }
+      ],
+      "order": 1786927357248,
+      "createdAt": "2026-08-13T00:42:37.248Z",
+      "updatedAt": "2026-08-17T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-naukri-senior-quantitative-model-solutions-specialist",
+      "company": "Wells Fargo",
+      "role": "Senior Quantitative Model Solutions Specialist (promoted listing)",
+      "url": "https://www.naukri.com/job-listings-senior-quantitative-model-solutions-specialist-wells-fargo-international-solutions-private-ltd-bengaluru-4-to-9-years-250826909502",
+      "resume": "Generic_QA_v1",
+      "dateApplied": "2026-07-23T00:42:37.248Z",
+      "salary": "",
+      "notes": "Posting asks for 4-9 Yrs. Location: Bengaluru. Tailored resume generated in 04_JobKitAI (naukri batch).",
+      "status": "rejected",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "India",
+          "color": "#eb6834"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Job Summary\nWells Fargo is seeking a Senior Quantitative Model Solutions Specialist.\nResponsibilities\nLead or participate in moderately complex model maintenance and optimization initiatives related to operating processes, controls, reporting, testing, implementation, and documentation\nReview and analyze moderately complex data sets, quantitative models, and model outputs to validate model efficiency and results in support of business initiatives\nAdvise and guide team on moderately complex model optimization and processes strategies\nIndependently resolve moderately complex issues and lead team to meet project deliverables while leveraging solid understanding of policies and compliance requirements\nCollaborate and consult with peers, colleagues, and managers to resolve issues and achieve goals\nRequired Qualifications\n4+ years of quantitative solutions engineering, model solutions or quant\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-19T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-23T00:42:37.248Z"
+        },
+        {
+          "status": "rejected",
+          "at": "2026-08-04T00:42:37.248Z"
+        }
+      ],
+      "order": 1784767357248,
+      "createdAt": "2026-07-19T00:42:37.248Z",
+      "updatedAt": "2026-08-04T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-stepstone-tosca-test-automation-engineer-all-genders-",
+      "company": "msg systems ag",
+      "role": "TOSCA Test Automation Engineer (all genders)",
+      "url": "",
+      "resume": "Generic_QA_v1",
+      "dateApplied": "2026-08-10T00:42:37.248Z",
+      "salary": "",
+      "notes": "Tailored resume generated in 04_JobKitAI (stepstone batch).",
+      "status": "wishlist",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "Germany",
+          "color": "#2a78d6"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Verstärke den Bereich msg Quality Assurance & Solutions, das Kompetenzzentrum für moderne Qualitätssicherung, Testmanagement und innovative Lösungsentwicklung. Als TOSCA Test Automation Engineer entwickelst du für namhafte Kunden moderne, hochwertige Automatisierungslösungen auf Basis von Tricentis TOSCA. Aufgaben: Entwicklung, Umsetzung und Wartung automatisierter Testfälle für vielfältige Systemlandschaften; Anwendung moderner TOSCA-Features wie API-Tests, TestCase Design oder Vision AI; Abstimmung von Automatisierungsanforderungen im Team und Definition effizienter Automatisierungsstrategien; Durchführung und Auswertung automatisierter Testläufe sowie Ableitung zielgerichteter Optimierungsmaßnahmen; Integration automatisierter Tests in CI/CD-Pipelines und Aufbau nachhaltiger Shift-Left-Ansätze; Leitung und Coaching von Projektteams und Kunden beim Aufbau und Betrieb professioneller TO\n\n[…truncated — see the original posting]",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-10T00:42:37.248Z"
+        }
+      ],
+      "order": 1786322557248,
+      "createdAt": "2026-08-10T00:42:37.248Z",
+      "updatedAt": "2026-08-10T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-stepstone-testautomatisierer-m-w-d-",
+      "company": "Sopra Steria",
+      "role": "Testautomatisierer (m/w/d)",
+      "url": "",
+      "resume": "Selenium_Java_v3",
+      "dateApplied": "2026-08-02T00:42:37.248Z",
+      "salary": "",
+      "notes": "Tailored resume generated in 04_JobKitAI (stepstone batch).",
+      "status": "followup",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "Germany",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Eine der führenden europäischen Management- und Technologieberatungen sucht Verstärkung, um das digitale Europa mitzugestalten. Aufgaben: Entwicklung und Automatisierung funktionaler sowie nicht-funktionaler Testfälle über alle Teststufen hinweg; strukturierte Dokumentation, Analyse und Bewertung von Testergebnissen; Erstellung und verständliche Präsentation von Testberichten für Kunden; Qualitätssicherung im agilen Team; Beratung von Kunden als professionelle Kontaktperson; Mitwirkung an konzeptionellen Aufgaben, Unterstützung im Pre-Sales und Ansprechperson für fachliche Fragen im Team; deutschlandweiter, flexibler Projekteinsatz (Office, beim Kunden vor Ort, remote).",
+      "followUpBy": "2026-08-23T00:42:37.248Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-29T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-02T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-10T00:42:37.248Z"
+        }
+      ],
+      "order": 1785631357248,
+      "createdAt": "2026-07-29T00:42:37.248Z",
+      "updatedAt": "2026-08-10T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-stepstone-test-automation-engineer-m-w-d-",
+      "company": "Materna Information & Communications SE",
+      "role": "Test Automation Engineer (m/w/d)",
+      "url": "",
+      "resume": "Playwright_TS_v3",
+      "dateApplied": "2026-07-29T00:42:37.248Z",
+      "salary": "",
+      "notes": "Tailored resume generated in 04_JobKitAI (stepstone batch).",
+      "status": "interview",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "Germany",
+          "color": "#2a78d6"
+        },
+        {
+          "label": "Strong match",
+          "color": "#1baf7a"
+        }
+      ],
+      "priority": true,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": true
+        },
+        {
+          "label": "Technical",
+          "done": true
+        },
+        {
+          "label": "Onsite",
+          "done": true
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Unterstützung von Landes- und Bundesbehörden, Kommunen sowie öffentlich-rechtlichen Organisationen auf ihrem Weg zur Digitalisierung als Teil der Test Factory, deutschlandweit oder im Home Office. Aufgaben: Entwicklung von Testautomatisierungsstrategien und -plänen für Kundenprojekte in enger Zusammenarbeit mit dem Entwicklungsteam; Beratung von Kunden zu Testautomatisierungspraktiken und -tools; Durchführung automatisierter Tests und Fehleridentifikation; Integration automatisierter Tests in Build- und Deploymentpipelines; Pflege und Erstellung automatisierter Testskripte für verschiedene Anwendungen und Plattformen (u.a. Playwright, Selenium, Appium); Arbeit in agilen und klassischen IT-Projekten inkl. mobiler Apps; Erstellung von Testfällen/-szenarien sowie Pflege von Regressions- und Smoke-Testsets.",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-07-25T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-07-29T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-05T00:42:37.248Z"
+        },
+        {
+          "status": "interview",
+          "at": "2026-08-11T00:42:37.248Z"
+        }
+      ],
+      "order": 1785285757248,
+      "createdAt": "2026-07-25T00:42:37.248Z",
+      "updatedAt": "2026-08-11T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-stepstone-test-automation-engineer-all-genders-",
+      "company": "msg systems ag",
+      "role": "Test Automation Engineer (all genders)",
+      "url": "",
+      "resume": "QA_Lead_v2",
+      "dateApplied": "2026-08-11T00:42:37.248Z",
+      "salary": "",
+      "notes": "Tailored resume generated in 04_JobKitAI (stepstone batch).",
+      "status": "followup",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "Germany",
+          "color": "#2a78d6"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Verstärke den Bereich msg Quality Assurance & Solutions, das Kompetenzzentrum für moderne Qualitätssicherung, Testmanagement und innovative Lösungsentwicklung. Als Test Automation Engineer entwickelst du für namhafte Kunden moderne Automatisierungslösungen für anspruchsvolle Software- und Cloud-Umgebungen. Aufgaben: Entwicklung und Umsetzung effizienter Testautomatisierungsstrategien in vielfältigen Kundenprojekten; Konzeption, Implementierung und Optimierung skalierbarer Automatisierungsframeworks für unterschiedliche Systeme; Integration der Tests in CI/CD-Pipelines im Rahmen von Shift-Left- und DevOps-Ansätzen; Analyse bestehender Testlandschaften und Ableitung gezielter Automatisierungs- und Optimierungsmaßnahmen; Beratung zu Methoden, Werkzeugen (inkl. KI-Tools) und Best Practices rund um Testautomatisierung; Durchführung von Workshops und Coachings zur Stärkung der Automatisierungs\n\n[…truncated — see the original posting]",
+      "followUpBy": "2026-09-02T00:42:37.249Z",
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-07T00:42:37.248Z"
+        },
+        {
+          "status": "applied",
+          "at": "2026-08-11T00:42:37.248Z"
+        },
+        {
+          "status": "followup",
+          "at": "2026-08-19T00:42:37.248Z"
+        }
+      ],
+      "order": 1786408957249,
+      "createdAt": "2026-08-07T00:42:37.248Z",
+      "updatedAt": "2026-08-19T00:42:37.248Z"
+    },
+    {
+      "id": "jobkit-stepstone-it-consultant-m-w-d-software-testing-test-auto",
+      "company": "puntus GmbH",
+      "role": "IT Consultant (m/w/d) Software Testing / Test Automation im Pega-Umfeld",
+      "url": "",
+      "resume": "Generic_QA_v1",
+      "dateApplied": "2026-08-25T00:42:37.249Z",
+      "salary": "",
+      "notes": "Tailored resume generated in 04_JobKitAI (stepstone batch).",
+      "status": "wishlist",
+      "recruiterName": "",
+      "recruiterContact": "",
+      "tags": [
+        {
+          "label": "Germany",
+          "color": "#2a78d6"
+        },
+        {
+          "label": "Stretch",
+          "color": "#eda100"
+        }
+      ],
+      "priority": false,
+      "rounds": [
+        {
+          "label": "Phone Screen",
+          "done": false
+        },
+        {
+          "label": "Technical",
+          "done": false
+        },
+        {
+          "label": "Onsite",
+          "done": false
+        },
+        {
+          "label": "HR",
+          "done": false
+        },
+        {
+          "label": "Final",
+          "done": false
+        }
+      ],
+      "jdSnapshot": "Rolle im Bereich Quality Engineering Services mit Fokus auf Cloud & Application Excellence, Customer Experience sowie Lösungen für die Digitale Verwaltung. Kunden aus dem öffentlichen Sektor sowie der Finanzdienstleistung (Versicherungen & Banken) werden mithilfe agiler Arbeitsmethoden bei optimaler Softwarequalität unterstützt. Aufgaben: Sicherstellung einer hohen Softwarequalität in Kundenprojekten; Entwurf und Analyse von Testfällen und Testszenarien in fachlich komplexen Systemen; Durchführung von strukturierten Softwaretests (funktional und nicht-funktional); Konzeption, Aufbau und Wartung von Testautomatisierung; Durchführung von Tests und Beratung zu Barrierefreiheit; Kommunikation mit relevanten Stakeholdern.",
+      "followUpBy": null,
+      "history": [
+        {
+          "status": "wishlist",
+          "at": "2026-08-25T00:42:37.249Z"
+        }
+      ],
+      "order": 1787618557249,
+      "createdAt": "2026-08-25T00:42:37.249Z",
+      "updatedAt": "2026-08-25T00:42:37.249Z"
+    }
+  ]
+}
