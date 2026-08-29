@@ -55,6 +55,53 @@ npm run build    # production bundle into dist/
 npm run preview  # serve the built bundle
 ```
 
+## Deploying to Vercel
+
+The app is a static SPA — `vite build` emits `dist/` and nothing needs a server,
+so any static host works. Vercel specifics:
+
+**The one setting that matters is Root Directory.** This app lives in a
+subfolder of a larger repo, so a default import points Vercel at the repo root,
+where there is no `package.json`, and the build fails. Set it to
+`05_JobTrackerAI`.
+
+Via the dashboard:
+
+1. **Add New → Project**, import `jayamvishnudeep/AiTester`.
+2. Set **Root Directory** to `05_JobTrackerAI`.
+3. Leave the rest alone — `vercel.json` already pins the framework preset,
+   `npm run build`, and `dist`.
+4. **Deploy.**
+
+Or from this folder with the CLI:
+
+```bash
+npm i -g vercel
+cd 05_JobTrackerAI
+vercel          # first run links the project and deploys a preview
+vercel --prod   # promote to production
+```
+
+Running `vercel` from inside this folder makes it the root, so the Root Directory
+problem does not arise.
+
+No environment variables, no build-time secrets, no serverless functions — there
+is no backend to configure. `public/seed-data.json` is copied into `dist/` and
+served at `/seed-data.json`, which is what the "Load my 26 JobKitAI postings"
+button fetches; it resolves through `import.meta.env.BASE_URL`, so it survives
+being served from a sub-path.
+
+**Before you deploy, note what becomes public.** A Vercel deployment is
+world-readable by default, and `seed-data.json` is a live job search — the
+companies, the stage each application is at, the salary bands, and the
+`Stretch` / `JD mismatch` tags recording your own read on each role. Anyone with
+the URL can fetch it directly. This repo is already public, so the file is
+already exposed on GitHub and deploying adds no new category of disclosure — but
+if you would rather it were not on a shareable URL, delete
+`public/seed-data.json` before deploying (the app falls back to its normal empty
+state and the Import button still works), or set the project to require
+authentication under **Settings → Deployment Protection**.
+
 ## Stack
 
 React 18 · Vite 6 · Tailwind 3 (class-based dark mode) · `idb` for IndexedDB ·
@@ -66,6 +113,7 @@ dependency. Plain JavaScript throughout, no TypeScript.
 ```
 05_JobTrackerAI/
 ├── index.html                  pre-paint theme script (avoids a flash of light mode)
+├── vercel.json                 static-build config for Vercel
 ├── job-tracker-build-prompt.md the spec this was built from
 ├── JobTrackerAI_Kanban_BoardResult.png     result screenshot — the board
 ├── JobTrackerAI_Analysis_Board_Result.png  result screenshot — Insights
