@@ -2,3 +2,7 @@ node_modules/
 dist/
 .vite/
 *.local
+
+# Vercel: .vercel holds the project link, .env.local the OIDC token it issues.
+.vercel
+.env*
