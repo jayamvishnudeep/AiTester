@@ -1,0 +1,188 @@
+{
+  "name": "Create Test Plan From Jira Ticket and append output to Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -336,
+        0
+      ],
+      "id": "4c6059f2-a793-4bd5-a074-99b12b6d9120",
+      "name": "When chat message received",
+      "webhookId": "6d2f8095-27a8-4ab0-8b68-cb84820ec6a0"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        0
+      ],
+      "id": "61d9edbb-3c79-4236-80f1-f8c55411dadd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        224
+      ],
+      "id": "095db2c4-9133-4c81-9215-25746928d1f6",
+      "name": "Brain",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rh2oykYvnl2GjxIT",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        128,
+        240
+      ],
+      "id": "3b031264-9b72-4cdc-9152-5030bf2d5dba",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        448,
+        224
+      ],
+      "id": "abd97a27-85b5-4b23-a403-e1f8cdb09747",
+      "name": "Get an issue in Jira Software",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "fX1BcARAqH2WZoUV",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "https://docs.google.com/document/d/1LR7cseVSdiBvnLnXmp3vy6EBWDRsQmHrYIOLG-L2yOk/edit?tab=t.0",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        496,
+        0
+      ],
+      "id": "e9c59678-513c-46ce-b7e9-224d4178cf15",
+      "name": "Test Plan Document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "hhjxh8v1jdd4zJ5l",
+          "name": "Google Docs account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an issue in Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Test Plan Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6d78aea1-a75f-42eb-9f51-c72359585c30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "94e558ec5fa1208d405ad1ad0cf3cea0d1b9b732b8c5c57a364f6d9ae2666f35"
+  },
+  "nodeGroups": [],
+  "id": "viISfyO9rCKNYCZT",
+  "tags": []
+}
