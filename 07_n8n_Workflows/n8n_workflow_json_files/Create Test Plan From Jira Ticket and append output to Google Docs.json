@@ -1,5 +1,5 @@
 {
-  "name": "Create Test  Strategy from Jira ticket and append output to Google Sheet",
+  "name": "Create Test Plan From Jira Ticket and append output to Google Docs",
   "nodes": [
     {
       "parameters": {
@@ -11,9 +11,9 @@
         -336,
         0
       ],
-      "id": "ceb5b879-a7de-42c6-8b1d-fa7328549cd9",
+      "id": "4c6059f2-a793-4bd5-a074-99b12b6d9120",
       "name": "When chat message received",
-      "webhookId": "e6e447db-39b6-41b3-8c31-20818392416f"
+      "webhookId": "6d2f8095-27a8-4ab0-8b68-cb84820ec6a0"
     },
     {
       "parameters": {
@@ -25,7 +25,7 @@
         48,
         0
       ],
-      "id": "b9855f7f-de59-4768-a9c0-55967af77846",
+      "id": "61d9edbb-3c79-4236-80f1-f8c55411dadd",
       "name": "AI Agent"
     },
     {
@@ -44,7 +44,7 @@
         -160,
         224
       ],
-      "id": "9aa4acb8-1258-452f-91d8-9104a2adf4d1",
+      "id": "095db2c4-9133-4c81-9215-25746928d1f6",
       "name": "Brain",
       "credentials": {
         "openAiApi": {
@@ -61,7 +61,7 @@
         128,
         240
       ],
-      "id": "4c550ca9-017c-4b52-b622-8d35431eaa94",
+      "id": "3b031264-9b72-4cdc-9152-5030bf2d5dba",
       "name": "Simple Memory"
     },
     {
@@ -76,7 +76,7 @@
         448,
         224
       ],
-      "id": "2d863c4d-40a8-406d-acc0-0fae00c157a4",
+      "id": "abd97a27-85b5-4b23-a403-e1f8cdb09747",
       "name": "Get an issue in Jira Software",
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -104,8 +104,8 @@
         496,
         0
       ],
-      "id": "04fefe42-cb83-41fa-8e0d-f62f0a59ba0f",
-      "name": "Test Strategy document",
+      "id": "e9c59678-513c-46ce-b7e9-224d4178cf15",
+      "name": "Test Plan Document",
       "credentials": {
         "googleDocsOAuth2Api": {
           "id": "hhjxh8v1jdd4zJ5l",
@@ -164,7 +164,7 @@
       "main": [
         [
           {
-            "node": "Test Strategy document",
+            "node": "Test Plan Document",
             "type": "main",
             "index": 0
           }
@@ -177,12 +177,12 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "a54222a2-d324-4885-993c-a52e1dbbc3ff",
+  "versionId": "6d78aea1-a75f-42eb-9f51-c72359585c30",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "94e558ec5fa1208d405ad1ad0cf3cea0d1b9b732b8c5c57a364f6d9ae2666f35"
   },
   "nodeGroups": [],
-  "id": "iDvoyNDvvrg32MWA",
+  "id": "viISfyO9rCKNYCZT",
   "tags": []
 }

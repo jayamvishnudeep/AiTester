@@ -1,20 +1,6 @@
 {
-  "name": "Create Test Plan From Jira Ticket and append output to Google Sheet",
+  "name": "Fetch JIRA Ticket using n8n and append output to Google Docs",
   "nodes": [
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
-      "position": [
-        -336,
-        0
-      ],
-      "id": "4c6059f2-a793-4bd5-a074-99b12b6d9120",
-      "name": "When chat message received",
-      "webhookId": "6d2f8095-27a8-4ab0-8b68-cb84820ec6a0"
-    },
     {
       "parameters": {
         "options": {}
@@ -22,10 +8,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        48,
-        0
+        -32,
+        -80
       ],
-      "id": "61d9edbb-3c79-4236-80f1-f8c55411dadd",
+      "id": "1a990dc0-c8af-4d2c-bcd9-64d60fb4fd1e",
       "name": "AI Agent"
     },
     {
@@ -41,10 +27,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -160,
+        -112,
         224
       ],
-      "id": "095db2c4-9133-4c81-9215-25746928d1f6",
+      "id": "11ac2427-51e1-4200-83c8-3dc87f1c0233",
       "name": "Brain",
       "credentials": {
         "openAiApi": {
@@ -58,11 +44,11 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [
-        128,
-        240
+        64,
+        224
       ],
-      "id": "3b031264-9b72-4cdc-9152-5030bf2d5dba",
-      "name": "Simple Memory"
+      "id": "96fb4f0e-3914-4785-9304-2d26d567c924",
+      "name": "Memory"
     },
     {
       "parameters": {
@@ -73,10 +59,10 @@
       "type": "n8n-nodes-base.jiraTool",
       "typeVersion": 1,
       "position": [
-        448,
+        224,
         224
       ],
-      "id": "abd97a27-85b5-4b23-a403-e1f8cdb09747",
+      "id": "e4eed86b-59ed-4de4-a205-e3e3e8ee11b9",
       "name": "Get an issue in Jira Software",
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -84,6 +70,20 @@
           "name": "Jira SW Cloud account"
         }
       }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "ec44764d-9005-4746-9db9-1af7debec487",
+      "name": "When chat message received",
+      "webhookId": "ea667f9c-aa58-4136-94f8-7a92c558b706"
     },
     {
       "parameters": {
@@ -101,11 +101,11 @@
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
       "position": [
-        496,
-        0
+        352,
+        -80
       ],
-      "id": "e9c59678-513c-46ce-b7e9-224d4178cf15",
-      "name": "Test Plan Document",
+      "id": "f5ac4d85-b439-4547-938d-c6c402c4a618",
+      "name": "Fetched Jira Ticket",
       "credentials": {
         "googleDocsOAuth2Api": {
           "id": "hhjxh8v1jdd4zJ5l",
@@ -116,17 +116,6 @@
   ],
   "pinData": {},
   "connections": {
-    "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Brain": {
       "ai_languageModel": [
         [
@@ -138,7 +127,7 @@
         ]
       ]
     },
-    "Simple Memory": {
+    "Memory": {
       "ai_memory": [
         [
           {
@@ -160,11 +149,22 @@
         ]
       ]
     },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "AI Agent": {
       "main": [
         [
           {
-            "node": "Test Plan Document",
+            "node": "Fetched Jira Ticket",
             "type": "main",
             "index": 0
           }
@@ -177,12 +177,12 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "6d78aea1-a75f-42eb-9f51-c72359585c30",
+  "versionId": "008d5bd2-9df8-4fc1-9ca1-a9f44013caec",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "94e558ec5fa1208d405ad1ad0cf3cea0d1b9b732b8c5c57a364f6d9ae2666f35"
   },
   "nodeGroups": [],
-  "id": "viISfyO9rCKNYCZT",
+  "id": "0vUDLJX5angu3qsP",
   "tags": []
 }
