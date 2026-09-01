@@ -1,0 +1,369 @@
+{
+  "name": "Production Bug RCA Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Setup checklist before activating\n1. Replace the JQL below with your real project key.\n2. Attach your Jira credential to the Jira node.\n3. Attach your Google Sheets credential and select your real spreadsheet + tab in both Google Sheets nodes.\n4. Attach your OpenAI (or other) credential to the AI node and pick a model.\n5. Test with Loop batch size 1 and a small JQL result set first.",
+        "height": 220,
+        "width": 380,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-1040, -320],
+      "id": "sticky-setup",
+      "name": "Setup Notes"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-1040, 0],
+      "id": "trigger-schedule",
+      "name": "Every 15 Minutes"
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "jql": "project = \"YOUR_PROJECT_KEY\" AND issuetype = Bug AND (environment ~ \"Production\" OR labels = \"production\" OR priority in (Highest, High)) AND status != Done"
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [-800, 0],
+      "id": "jira-search",
+      "name": "Search Production Bugs in Jira",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "REPLACE_WITH_YOUR_JIRA_CREDENTIAL_ID",
+          "name": "Jira account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-560, 0],
+      "id": "loop-issues",
+      "name": "Loop Over Issues"
+    },
+    {
+      "parameters": {
+        "content": "Output 0 = \"done\" (fires once, after every issue in this run has been processed)\nOutput 1 = \"loop\" (fires once per issue) \u2014 wire your per-issue chain off output 1, and connect the end of that chain back into this node's input.",
+        "height": 140,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-560, -220],
+      "id": "sticky-loop",
+      "name": "Loop Notes"
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Production Bug RCAs"
+        },
+        "lookupColumn": "jira_key",
+        "lookupValue": "={{ $json.key }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [-320, 100],
+      "id": "sheets-lookup",
+      "name": "Check If Already In Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.jira_key }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-80, 100],
+      "id": "if-already-processed",
+      "name": "Already Processed?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [140, 220],
+      "id": "noop-skip",
+      "name": "Skip - Already Processed"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "1", "name": "jira_key", "type": "string", "value": "={{ $('Loop Over Issues').item.json.key }}" },
+            { "id": "2", "name": "jira_url", "type": "string", "value": "={{ $('Loop Over Issues').item.json.self }}" },
+            { "id": "3", "name": "summary", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.summary }}" },
+            { "id": "4", "name": "description", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.description }}" },
+            { "id": "5", "name": "issue_type", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.issuetype.name }}" },
+            { "id": "6", "name": "status", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.status.name }}" },
+            { "id": "7", "name": "priority", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.priority.name }}" },
+            { "id": "8", "name": "reporter", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.reporter.displayName }}" },
+            { "id": "9", "name": "assignee", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.assignee?.displayName || 'Unassigned' }}" },
+            { "id": "10", "name": "created_date", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.created }}" },
+            { "id": "11", "name": "updated_date", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.updated }}" },
+            { "id": "12", "name": "resolution_date", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.resolutiondate || 'Not Resolved Yet' }}" },
+            { "id": "13", "name": "environment", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.environment || 'Not Provided' }}" },
+            { "id": "14", "name": "labels", "type": "string", "value": "={{ ($('Loop Over Issues').item.json.fields.labels || []).join(', ') }}" },
+            { "id": "15", "name": "components", "type": "string", "value": "={{ ($('Loop Over Issues').item.json.fields.components || []).map(c => c.name).join(', ') }}" },
+            { "id": "16", "name": "resolution", "type": "string", "value": "={{ $('Loop Over Issues').item.json.fields.resolution?.name || 'Unresolved' }}" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-80, -140],
+      "id": "normalize-fields",
+      "name": "Normalize Jira Fields"
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a senior QA engineer and Root Cause Analysis specialist. Given the details of a single production Jira bug ticket, produce a structured Root Cause Analysis.\n\nUse ONLY the information provided in the ticket data. Never invent facts, logs, dates, or outcomes that are not present in the input. If information needed for a field is missing, write \"Not Provided\" for that field rather than guessing.\n\nProduce the following fields exactly:\n\njira_key, jira_url, summary, reporter, assignee, severity_priority, environment,\nwhat_happened, impact_blast_radius, business_impact,\ndate_introduced, date_detected, date_resolved, detection_method,\nwhy_1, why_2, why_3, why_4, why_5,\ntechnical_factors, process_factors,\ndetection_gap,\nfix_description, fix_verification,\nprocess_improvement, suggested_owner, suggested_target_date,\nconfidence, missing_information, rca_generated_date\n\nRules:\n- why_1 through why_5 form a logical chain of \"why did this happen\" reasoning based on the ticket's description, steps to reproduce, and comments. If evidence runs out before reaching why_5, stop at the deepest supported level and state in that field that further investigation is needed.\n- confidence is High / Medium / Low based on how much of the RCA required inference vs. direct evidence.\n- missing_information is a semicolon-separated list of what would improve this RCA.\n- rca_generated_date is today's date in ISO 8601 format.\n- Return ONLY valid JSON with these exact field names as a single flat object. No markdown, no code fences, no commentary."
+            },
+            {
+              "role": "user",
+              "content": "=Jira Key: {{ $json.jira_key }}\nURL: {{ $json.jira_url }}\nSummary: {{ $json.summary }}\nDescription: {{ $json.description }}\nIssue Type: {{ $json.issue_type }}\nStatus: {{ $json.status }}\nPriority: {{ $json.priority }}\nReporter: {{ $json.reporter }}\nAssignee: {{ $json.assignee }}\nCreated: {{ $json.created_date }}\nUpdated: {{ $json.updated_date }}\nResolution Date: {{ $json.resolution_date }}\nEnvironment: {{ $json.environment }}\nLabels: {{ $json.labels }}\nComponents: {{ $json.components }}\nResolution: {{ $json.resolution }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.8,
+      "position": [140, -140],
+      "id": "openai-generate-rca",
+      "name": "Generate RCA (AI)",
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.first().json.message?.content || $input.first().json.text || $input.first().json.content;\n\nif (typeof raw !== 'string') {\n  raw = JSON.stringify(raw);\n}\n\n// Strip accidental code fences if the model added them anyway\nraw = raw.replace(/```json/gi, '').replace(/```/g, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  parsed = {\n    jira_key: $('Normalize Jira Fields').first().json.jira_key,\n    jira_url: $('Normalize Jira Fields').first().json.jira_url,\n    summary: $('Normalize Jira Fields').first().json.summary,\n    confidence: 'Low',\n    missing_information: 'AI generation failed to return valid JSON \u2014 manual RCA needed',\n    rca_generated_date: new Date().toISOString().slice(0, 10)\n  };\n}\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [360, -140],
+      "id": "parse-rca-json",
+      "name": "Parse RCA JSON"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Production Bug RCAs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": ["jira_key"],
+          "value": {
+            "jira_key": "={{ $json.jira_key }}",
+            "jira_url": "={{ $json.jira_url }}",
+            "summary": "={{ $json.summary }}",
+            "reporter": "={{ $json.reporter }}",
+            "assignee": "={{ $json.assignee }}",
+            "severity_priority": "={{ $json.severity_priority }}",
+            "environment": "={{ $json.environment }}",
+            "what_happened": "={{ $json.what_happened }}",
+            "impact_blast_radius": "={{ $json.impact_blast_radius }}",
+            "business_impact": "={{ $json.business_impact }}",
+            "date_introduced": "={{ $json.date_introduced }}",
+            "date_detected": "={{ $json.date_detected }}",
+            "date_resolved": "={{ $json.date_resolved }}",
+            "detection_method": "={{ $json.detection_method }}",
+            "why_1": "={{ $json.why_1 }}",
+            "why_2": "={{ $json.why_2 }}",
+            "why_3": "={{ $json.why_3 }}",
+            "why_4": "={{ $json.why_4 }}",
+            "why_5": "={{ $json.why_5 }}",
+            "technical_factors": "={{ $json.technical_factors }}",
+            "process_factors": "={{ $json.process_factors }}",
+            "detection_gap": "={{ $json.detection_gap }}",
+            "fix_description": "={{ $json.fix_description }}",
+            "fix_verification": "={{ $json.fix_verification }}",
+            "process_improvement": "={{ $json.process_improvement }}",
+            "suggested_owner": "={{ $json.suggested_owner }}",
+            "suggested_target_date": "={{ $json.suggested_target_date }}",
+            "confidence": "={{ $json.confidence }}",
+            "missing_information": "={{ $json.missing_information }}",
+            "rca_generated_date": "={{ $json.rca_generated_date }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [580, -140],
+      "id": "sheets-append-update",
+      "name": "Append or Update RCA Row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 15 Minutes": {
+      "main": [
+        [
+          { "node": "Search Production Bugs in Jira", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Search Production Bugs in Jira": {
+      "main": [
+        [
+          { "node": "Loop Over Issues", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Loop Over Issues": {
+      "main": [
+        [],
+        [
+          { "node": "Check If Already In Sheet", "type": "main", "index": 0 },
+          { "node": "Normalize Jira Fields", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Check If Already In Sheet": {
+      "main": [
+        [
+          { "node": "Already Processed?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Already Processed?": {
+      "main": [
+        [
+          { "node": "Skip - Already Processed", "type": "main", "index": 0 }
+        ],
+        []
+      ]
+    },
+    "Skip - Already Processed": {
+      "main": [
+        [
+          { "node": "Loop Over Issues", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Normalize Jira Fields": {
+      "main": [
+        [
+          { "node": "Generate RCA (AI)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Generate RCA (AI)": {
+      "main": [
+        [
+          { "node": "Parse RCA JSON", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Parse RCA JSON": {
+      "main": [
+        [
+          { "node": "Append or Update RCA Row", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Append or Update RCA Row": {
+      "main": [
+        [
+          { "node": "Loop Over Issues", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b1e0e5b0-0000-4000-8000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "productionBugRcaAutomation",
+  "tags": []
+}
