@@ -1,0 +1,1179 @@
+{
+  "name": "Root Cause Analysis(RCA) AI Agent created by n8n AI Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "events": [
+          "jira:issue_created",
+          "jira:issue_updated"
+        ],
+        "additionalFields": {
+          "filter": "<__PLACEHOLDER_VALUE__JQL to match production bugs, e.g. project = \"KEY\" AND issuetype = Bug AND (environment ~ \"Production\" OR labels = \"production\" OR priority in (Highest, High)) AND status != Done__>"
+        }
+      },
+      "id": "372f1e03-8e36-44bc-8354-82f8e16b6650",
+      "name": "Jira Production Bug Event",
+      "type": "n8n-nodes-base.jiraTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        416
+      ],
+      "webhookId": "29a2a702-669f-4006-a2d6-586d02375b2d",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "fX1BcARAqH2WZoUV",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst NP = 'Not Provided';\nfunction s(v){\n  if (v === null || v === undefined) return NP;\n  const t = String(v).replace(/[\\r\\n\\t]+/g, ' ').replace(/\\s+/g, ' ').trim();\n  return t.length ? t : NP;\n}\nfunction adf(v){\n  if (!v) return NP;\n  if (typeof v === 'string') return s(v);\n  let out = '';\n  const walk = (n) => {\n    if (!n) return;\n    if (typeof n.text === 'string') out += n.text + ' ';\n    if (Array.isArray(n.content)) n.content.forEach(walk);\n  };\n  try { walk(v); } catch (e) { return NP; }\n  return s(out);\n}\n\nconst results = [];\nfor (const item of $input.all()) {\n  const b = item.json || {};\n  const issue = b.issue || b;\n  const f = issue.fields || {};\n  const key = issue.key || NP;\n\n  const self = issue.self || '';\n  let host = '';\n  if (self.indexOf('/rest/') > -1) host = self.split('/rest/')[0];\n  const jira_url = host && key !== NP ? host + '/browse/' + key : NP;\n\n  const labels = Array.isArray(f.labels) && f.labels.length ? f.labels.join(', ') : NP;\n  const components = Array.isArray(f.components) && f.components.length\n    ? f.components.map(c => c && c.name).filter(Boolean).join(', ') : NP;\n  const affected_version = Array.isArray(f.versions) && f.versions.length\n    ? f.versions.map(v => v && v.name).filter(Boolean).join(', ') : NP;\n  const fix_version = Array.isArray(f.fixVersions) && f.fixVersions.length\n    ? f.fixVersions.map(v => v && v.name).filter(Boolean).join(', ') : NP;\n\n  let linked = NP;\n  if (Array.isArray(f.issuelinks) && f.issuelinks.length) {\n    const parts = [];\n    for (const l of f.issuelinks) {\n      const rel = l && l.type ? (l.type.outward || l.type.name || 'linked') : 'linked';\n      const other = (l && l.outwardIssue && l.outwardIssue.key) || (l && l.inwardIssue && l.inwardIssue.key);\n      if (other) parts.push(rel + ' ' + other);\n    }\n    if (parts.length) linked = parts.join('; ');\n  }\n\n  let comments = NP;\n  if (f.comment && Array.isArray(f.comment.comments) && f.comment.comments.length) {\n    const parts = [];\n    for (const c of f.comment.comments) {\n      const who = (c && c.author && c.author.displayName) || 'Unknown';\n      const body = adf(c && c.body);\n      parts.push(who + ': ' + body);\n    }\n    comments = s(parts.join(' | '));\n  }\n\n  results.push({ json: {\n    jira_key: s(key),\n    jira_url: s(jira_url),\n    project: s(f.project && f.project.key),\n    summary: s(f.summary),\n    description: adf(f.description),\n    issue_type: s(f.issuetype && f.issuetype.name),\n    status: s(f.status && f.status.name),\n    priority: s(f.priority && f.priority.name),\n    severity: NP,\n    reporter: s(f.reporter && f.reporter.displayName),\n    assignee: s(f.assignee && f.assignee.displayName),\n    created_date: s(f.created),\n    updated_date: s(f.updated),\n    resolved_date: s(f.resolutiondate),\n    environment: adf(f.environment),\n    affected_version: s(affected_version),\n    fix_version: s(fix_version),\n    labels: s(labels),\n    components: s(components),\n    resolution: s(f.resolution && f.resolution.name),\n    linked_issues: s(linked),\n    comments: comments,\n  }});\n}\nreturn results;\n"
+      },
+      "id": "48b39945-042e-4fad-82d4-90fe8fb87b23",
+      "name": "Normalize Jira Issue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Production Bug RCAs"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "jira_key",
+              "lookupValue": "={{ $json.jira_key }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "00de428f-0bea-4dee-9fb9-93b51e9693fb",
+      "name": "Lookup Existing RCA Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        416
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "twVgnKCEc23nurbt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst norm = $('Normalize Jira Issue').first().json;\nconst existing = $input.all().filter(i => i.json && i.json.jira_key);\nlet should_process = true;\nif (existing.length > 0) {\n  // Already RCA'd — only refresh if the ticket is now resolved/closed.\n  const st = String(norm.status || '').toLowerCase();\n  should_process = ['done', 'resolved', 'closed'].includes(st);\n}\nreturn [{ json: Object.assign({}, norm, { should_process: should_process }) }];\n"
+      },
+      "id": "09346d4e-e6b4-4003-a08e-c899e2755aa6",
+      "name": "Decide Process or Skip",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "proc",
+              "leftValue": "={{ $json.should_process }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7cd4e997-b3d9-478f-80a1-decf7e794d68",
+      "name": "Should Generate RCA?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Produce the RCA for this Jira production bug ticket. Ticket data (JSON):\n{{ JSON.stringify($json) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a senior QA engineer and Root Cause Analysis specialist. Given the details of a\nsingle production Jira bug ticket, produce a structured Root Cause Analysis.\n\nUse ONLY the information provided in the ticket data. Never invent facts, logs, dates, or\noutcomes that are not present in the input. If information needed for a field is missing,\nwrite \"Not Provided\" for that field rather than guessing.\n\nProduce the following fields exactly, matching this structure:\n\n1. TICKET REFERENCE\n   - jira_key, jira_url, summary, reporter, assignee, severity_priority, environment\n\n2. PROBLEM STATEMENT\n   - what_happened: a clear, factual description of the observed issue (2-4 sentences)\n   - impact_blast_radius: who/what was affected\n   - business_impact: revenue, compliance, customer trust, SLA implications if evident from the ticket\n\n3. TIMELINE\n   - date_introduced: only if evidence in the ticket suggests when the root cause was introduced (e.g. a mentioned deploy/release); otherwise \"Not Provided\"\n   - date_detected: created date of the ticket, or date mentioned as first noticed\n   - date_resolved: resolution date if the ticket is closed/resolved, else \"Not Resolved Yet\"\n   - detection_method: how it was found (customer report, automated test, monitoring, manual QA), based on ticket content\n\n4. ROOT CAUSE ANALYSIS (5 WHYS)\n   - why_1 through why_5: a logical chain of \"why did this happen\" reasoning based on the\n     ticket's description, steps to reproduce, and comments. If the ticket does not contain\n     enough evidence to complete all 5 levels, stop at the deepest level the evidence supports\n     and note in why_5 (or the last completed level) that further investigation is needed.\n\n5. CONTRIBUTING FACTORS\n   - technical_factors: any technical conditions mentioned (e.g. missing validation, config drift, race condition)\n   - process_factors: any process gaps evident from the ticket (e.g. missing test coverage, no code review mentioned)\n\n6. DETECTION GAP\n   - detection_gap: why this wasn't caught before reaching production, if inferable from the ticket\n\n7. CORRECTIVE ACTIONS\n   - fix_description: what was done or is planned to resolve the issue, from resolution/comments\n   - fix_verification: how the fix was or will be verified, if mentioned\n\n8. PREVENTIVE ACTIONS\n   - process_improvement: a reasonable suggested long-term preventive action based on the root cause (e.g. \"Add regression test for X\", \"Add monitoring alert for Y\") — this may be a reasonable inference, but must be clearly grounded in the root cause identified, not generic boilerplate\n   - suggested_owner: leave as \"Not Provided\" unless the ticket assigns a specific team\n   - suggested_target_date: leave as \"Not Provided\" unless the ticket specifies one\n\n9. METADATA\n   - confidence: High / Medium / Low, based on how much of the above required inference vs.\n     direct evidence from the ticket\n   - missing_information: semicolon-separated list of what would improve this RCA if available\n   - rca_generated_date: today's date in ISO 8601 format\n\nReturn ONLY valid JSON with these exact field names (flatten nested sections into individual\nkeys, e.g. \"why_1\", \"why_2\", \"technical_factors\", \"process_factors\", etc.) — no markdown, no\ncommentary, no code fences. Do not use line breaks inside any field value."
+        }
+      },
+      "id": "d9fa13bd-ec2f-4a3c-9c02-4ba447dc4bcf",
+      "name": "Generate RCA",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1120,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "a938db4e-dae6-49bc-ace2-99081532595d",
+      "name": "RCA Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1136,
+        224
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Rh2oykYvnl2GjxIT",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"jira_key\":\"PROD-142\",\"jira_url\":\"https://example.atlassian.net/browse/PROD-142\",\"summary\":\"Short summary\",\"reporter\":\"Reporter Name\",\"assignee\":\"Assignee Name\",\"severity_priority\":\"Highest\",\"environment\":\"Production\",\"what_happened\":\"Factual description of the issue.\",\"impact_blast_radius\":\"Who or what was affected.\",\"business_impact\":\"Revenue / SLA / customer trust impact or Not Provided.\",\"date_introduced\":\"Not Provided\",\"date_detected\":\"2026-08-31\",\"date_resolved\":\"Not Resolved Yet\",\"detection_method\":\"Customer report\",\"why_1\":\"First why.\",\"why_2\":\"Second why.\",\"why_3\":\"Third why.\",\"why_4\":\"Fourth why.\",\"why_5\":\"Fifth why or further investigation needed.\",\"technical_factors\":\"Technical conditions or Not Provided.\",\"process_factors\":\"Process gaps or Not Provided.\",\"detection_gap\":\"Why it was not caught earlier or Not Provided.\",\"fix_description\":\"What was or will be done or Not Provided.\",\"fix_verification\":\"How the fix is verified or Not Provided.\",\"process_improvement\":\"Grounded preventive action.\",\"suggested_owner\":\"Not Provided\",\"suggested_target_date\":\"Not Provided\",\"confidence\":\"Medium\",\"missing_information\":\"Item A; Item B\",\"rca_generated_date\":\"2026-09-02\"}",
+        "autoFix": true
+      },
+      "id": "88fba4e6-c684-4911-9b6b-6282c65994ab",
+      "name": "RCA JSON Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "74728881-b02b-4d19-a512-f7e2fe32f4b9",
+      "name": "RCA Fix Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        432
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "Rh2oykYvnl2GjxIT",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst NP = 'Not Provided';\nfunction s(v){\n  if (v === null || v === undefined) return NP;\n  const t = String(v).replace(/[\\r\\n\\t]+/g, ' ').replace(/\\s+/g, ' ').trim();\n  return t.length ? t : NP;\n}\nconst today = new Date().toISOString().slice(0, 10);\nconst norm = $('Normalize Jira Issue').first().json;\nconst raw = $input.first().json || {};\nconst ai = raw.output || raw || {};\n\nreturn [{ json: {\n  jira_key: s(norm.jira_key),\n  jira_url: s(norm.jira_url),\n  summary: s(norm.summary),\n  reporter: s(norm.reporter),\n  assignee: s(norm.assignee),\n  severity_priority: s(norm.priority),\n  environment: s(norm.environment),\n  what_happened: s(ai.what_happened),\n  impact_blast_radius: s(ai.impact_blast_radius),\n  business_impact: s(ai.business_impact),\n  date_introduced: s(ai.date_introduced),\n  date_detected: s(ai.date_detected !== undefined && ai.date_detected !== null && String(ai.date_detected).length ? ai.date_detected : norm.created_date),\n  date_resolved: s(ai.date_resolved),\n  detection_method: s(ai.detection_method),\n  why_1: s(ai.why_1),\n  why_2: s(ai.why_2),\n  why_3: s(ai.why_3),\n  why_4: s(ai.why_4),\n  why_5: s(ai.why_5),\n  technical_factors: s(ai.technical_factors),\n  process_factors: s(ai.process_factors),\n  detection_gap: s(ai.detection_gap),\n  fix_description: s(ai.fix_description),\n  fix_verification: s(ai.fix_verification),\n  process_improvement: s(ai.process_improvement),\n  suggested_owner: s(ai.suggested_owner),\n  suggested_target_date: s(ai.suggested_target_date),\n  confidence: s(ai.confidence),\n  missing_information: s(ai.missing_information),\n  rca_generated_date: today,\n}}];\n"
+      },
+      "id": "9bf306e2-ccfe-45fa-8c61-6203f0fa6a4b",
+      "name": "Build RCA Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Production Bug RCAs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "jira_key"
+          ],
+          "value": {
+            "jira_key": "={{ $json.jira_key }}",
+            "jira_url": "={{ $json.jira_url }}",
+            "summary": "={{ $json.summary }}",
+            "reporter": "={{ $json.reporter }}",
+            "assignee": "={{ $json.assignee }}",
+            "severity_priority": "={{ $json.severity_priority }}",
+            "environment": "={{ $json.environment }}",
+            "what_happened": "={{ $json.what_happened }}",
+            "impact_blast_radius": "={{ $json.impact_blast_radius }}",
+            "business_impact": "={{ $json.business_impact }}",
+            "date_introduced": "={{ $json.date_introduced }}",
+            "date_detected": "={{ $json.date_detected }}",
+            "date_resolved": "={{ $json.date_resolved }}",
+            "detection_method": "={{ $json.detection_method }}",
+            "why_1": "={{ $json.why_1 }}",
+            "why_2": "={{ $json.why_2 }}",
+            "why_3": "={{ $json.why_3 }}",
+            "why_4": "={{ $json.why_4 }}",
+            "why_5": "={{ $json.why_5 }}",
+            "technical_factors": "={{ $json.technical_factors }}",
+            "process_factors": "={{ $json.process_factors }}",
+            "detection_gap": "={{ $json.detection_gap }}",
+            "fix_description": "={{ $json.fix_description }}",
+            "fix_verification": "={{ $json.fix_verification }}",
+            "process_improvement": "={{ $json.process_improvement }}",
+            "suggested_owner": "={{ $json.suggested_owner }}",
+            "suggested_target_date": "={{ $json.suggested_target_date }}",
+            "confidence": "={{ $json.confidence }}",
+            "missing_information": "={{ $json.missing_information }}",
+            "rca_generated_date": "={{ $json.rca_generated_date }}"
+          },
+          "schema": [
+            {
+              "id": "jira_key",
+              "displayName": "jira_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jira_url",
+              "displayName": "jira_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "reporter",
+              "displayName": "reporter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "assignee",
+              "displayName": "assignee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "severity_priority",
+              "displayName": "severity_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "what_happened",
+              "displayName": "what_happened",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "impact_blast_radius",
+              "displayName": "impact_blast_radius",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "business_impact",
+              "displayName": "business_impact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_introduced",
+              "displayName": "date_introduced",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_detected",
+              "displayName": "date_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_resolved",
+              "displayName": "date_resolved",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "detection_method",
+              "displayName": "detection_method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_1",
+              "displayName": "why_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_2",
+              "displayName": "why_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_3",
+              "displayName": "why_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_4",
+              "displayName": "why_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_5",
+              "displayName": "why_5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "technical_factors",
+              "displayName": "technical_factors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "process_factors",
+              "displayName": "process_factors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "detection_gap",
+              "displayName": "detection_gap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "fix_description",
+              "displayName": "fix_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "fix_verification",
+              "displayName": "fix_verification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "process_improvement",
+              "displayName": "process_improvement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "suggested_owner",
+              "displayName": "suggested_owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "suggested_target_date",
+              "displayName": "suggested_target_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "missing_information",
+              "displayName": "missing_information",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "rca_generated_date",
+              "displayName": "rca_generated_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "090a7c10-d450-4d32-941e-caf5615bafc1",
+      "name": "Append or Update RCA Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        112
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "twVgnKCEc23nurbt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst NP = 'Not Provided';\nfunction s(v){\n  if (v === null || v === undefined) return NP;\n  const t = String(v).replace(/[\\r\\n\\t]+/g, ' ').replace(/\\s+/g, ' ').trim();\n  return t.length ? t : NP;\n}\nconst today = new Date().toISOString().slice(0, 10);\nconst norm = $('Normalize Jira Issue').first().json;\n\nreturn [{ json: {\n  jira_key: s(norm.jira_key),\n  jira_url: s(norm.jira_url),\n  summary: s(norm.summary),\n  reporter: s(norm.reporter),\n  assignee: s(norm.assignee),\n  severity_priority: s(norm.priority),\n  environment: s(norm.environment),\n  what_happened: s(norm.description),\n  impact_blast_radius: NP,\n  business_impact: NP,\n  date_introduced: NP,\n  date_detected: s(norm.created_date),\n  date_resolved: s(norm.resolved_date),\n  detection_method: NP,\n  why_1: NP,\n  why_2: NP,\n  why_3: NP,\n  why_4: NP,\n  why_5: NP,\n  technical_factors: NP,\n  process_factors: NP,\n  detection_gap: NP,\n  fix_description: NP,\n  fix_verification: NP,\n  process_improvement: NP,\n  suggested_owner: NP,\n  suggested_target_date: NP,\n  confidence: 'Low',\n  missing_information: 'AI generation failed — manual RCA needed',\n  rca_generated_date: today,\n}}];\n"
+      },
+      "id": "ecc46b7c-8e14-431e-b351-62c607cbfe3b",
+      "name": "Build Fallback Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Production Bug RCAs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "jira_key"
+          ],
+          "value": {
+            "jira_key": "={{ $json.jira_key }}",
+            "jira_url": "={{ $json.jira_url }}",
+            "summary": "={{ $json.summary }}",
+            "reporter": "={{ $json.reporter }}",
+            "assignee": "={{ $json.assignee }}",
+            "severity_priority": "={{ $json.severity_priority }}",
+            "environment": "={{ $json.environment }}",
+            "what_happened": "={{ $json.what_happened }}",
+            "impact_blast_radius": "={{ $json.impact_blast_radius }}",
+            "business_impact": "={{ $json.business_impact }}",
+            "date_introduced": "={{ $json.date_introduced }}",
+            "date_detected": "={{ $json.date_detected }}",
+            "date_resolved": "={{ $json.date_resolved }}",
+            "detection_method": "={{ $json.detection_method }}",
+            "why_1": "={{ $json.why_1 }}",
+            "why_2": "={{ $json.why_2 }}",
+            "why_3": "={{ $json.why_3 }}",
+            "why_4": "={{ $json.why_4 }}",
+            "why_5": "={{ $json.why_5 }}",
+            "technical_factors": "={{ $json.technical_factors }}",
+            "process_factors": "={{ $json.process_factors }}",
+            "detection_gap": "={{ $json.detection_gap }}",
+            "fix_description": "={{ $json.fix_description }}",
+            "fix_verification": "={{ $json.fix_verification }}",
+            "process_improvement": "={{ $json.process_improvement }}",
+            "suggested_owner": "={{ $json.suggested_owner }}",
+            "suggested_target_date": "={{ $json.suggested_target_date }}",
+            "confidence": "={{ $json.confidence }}",
+            "missing_information": "={{ $json.missing_information }}",
+            "rca_generated_date": "={{ $json.rca_generated_date }}"
+          },
+          "schema": [
+            {
+              "id": "jira_key",
+              "displayName": "jira_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jira_url",
+              "displayName": "jira_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "reporter",
+              "displayName": "reporter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "assignee",
+              "displayName": "assignee",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "severity_priority",
+              "displayName": "severity_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "what_happened",
+              "displayName": "what_happened",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "impact_blast_radius",
+              "displayName": "impact_blast_radius",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "business_impact",
+              "displayName": "business_impact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_introduced",
+              "displayName": "date_introduced",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_detected",
+              "displayName": "date_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date_resolved",
+              "displayName": "date_resolved",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "detection_method",
+              "displayName": "detection_method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_1",
+              "displayName": "why_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_2",
+              "displayName": "why_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_3",
+              "displayName": "why_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_4",
+              "displayName": "why_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "why_5",
+              "displayName": "why_5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "technical_factors",
+              "displayName": "technical_factors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "process_factors",
+              "displayName": "process_factors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "detection_gap",
+              "displayName": "detection_gap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "fix_description",
+              "displayName": "fix_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "fix_verification",
+              "displayName": "fix_verification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "process_improvement",
+              "displayName": "process_improvement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "suggested_owner",
+              "displayName": "suggested_owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "suggested_target_date",
+              "displayName": "suggested_target_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "missing_information",
+              "displayName": "missing_information",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "rca_generated_date",
+              "displayName": "rca_generated_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e1e5f925-4c4c-4655-b0f6-a1f926974d52",
+      "name": "Append or Update Fallback Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        304
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "twVgnKCEc23nurbt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "13281cf1-4174-44ef-8959-5ad2672a4c44",
+      "name": "Skip (Already Processed)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "id": "787e2127-1ee6-47db-88a0-f413584c2fb7",
+      "name": "Weekly Export Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "19FU5DoI7YgjEjjAuuRzXjlqjPlCe2EFdE9npy8t3G94",
+          "mode": "list",
+          "cachedResultName": "RCA Document ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19FU5DoI7YgjEjjAuuRzXjlqjPlCe2EFdE9npy8t3G94/edit?usp=drivesdk"
+        },
+        "options": {
+          "binaryPropertyName": "data",
+          "googleFileConversion": {
+            "conversion": {
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          },
+          "fileName": "Production Bug RCAs.xlsx"
+        }
+      },
+      "id": "01195254-dcab-4c6e-8855-b6d4290f464a",
+      "name": "Export RCA Sheet as XLSX",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        832
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "bfVXriRAA1Go1xNk",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Jira Production Bug Event": {
+      "main": [
+        [
+          {
+            "node": "Normalize Jira Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Jira Issue": {
+      "main": [
+        [
+          {
+            "node": "Lookup Existing RCA Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Existing RCA Row": {
+      "main": [
+        [
+          {
+            "node": "Decide Process or Skip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Process or Skip": {
+      "main": [
+        [
+          {
+            "node": "Should Generate RCA?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Generate RCA?": {
+      "main": [
+        [
+          {
+            "node": "Generate RCA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip (Already Processed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate RCA": {
+      "main": [
+        [
+          {
+            "node": "Build RCA Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Fallback Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RCA Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate RCA",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RCA JSON Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Generate RCA",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RCA Fix Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RCA JSON Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build RCA Row": {
+      "main": [
+        [
+          {
+            "node": "Append or Update RCA Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fallback Row": {
+      "main": [
+        [
+          {
+            "node": "Append or Update Fallback Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Export Schedule": {
+      "main": [
+        [
+          {
+            "node": "Export RCA Sheet as XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7b5c06b2-c629-4f0c-a55b-ea57ecbe268f",
+  "meta": {
+    "instanceId": "94e558ec5fa1208d405ad1ad0cf3cea0d1b9b732b8c5c57a364f6d9ae2666f35"
+  },
+  "nodeGroups": [
+    {
+      "id": "09b20e26-d62b-4faa-b15c-d1f2d56b2a40",
+      "name": "Detect & Deduplicate",
+      "nodeIds": [
+        "48b39945-042e-4fad-82d4-90fe8fb87b23",
+        "00de428f-0bea-4dee-9fb9-93b51e9693fb",
+        "09346d4e-e6b4-4003-a08e-c899e2755aa6"
+      ],
+      "description": "Normalize the Jira bug and decide whether an RCA row already exists."
+    },
+    {
+      "id": "dade2a27-1dc4-4f9b-91fe-b97bc112304e",
+      "name": "Weekly XLSX Export",
+      "nodeIds": [
+        "01195254-dcab-4c6e-8855-b6d4290f464a"
+      ],
+      "description": "Export the live sheet to an .xlsx copy on a weekly schedule."
+    }
+  ],
+  "id": "ZToioAvnPrk5Ynjm",
+  "tags": []
+}
