@@ -1,0 +1,374 @@
+{
+  "name": "Daily QA LinkedIn Post │Agent Hugging face free image generator │Telegram - Working",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Generate one fresh & Trending from mdeium.com to a specific LinkedIn post topic for a software testing and AI-in-QA audience. Avoid generic themes. Return the topic, a one-line angle, and the target reader.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a content strategist for a software testing community. Output only what the schema asks for."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -304,
+        -64
+      ],
+      "id": "df477135-562f-4188-9815-a86ee404a890",
+      "name": "Content Topic Generator"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.7-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        128
+      ],
+      "id": "21e05a09-6c75-4d17-88ee-b5c5a5abb44c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"topic\": { \"type\": \"string\" },\n    \"angle\": { \"type\": \"string\" },\n    \"audience\": { \"type\": \"string\" }\n  },\n  \"required\": [\"topic\", \"angle\", \"audience\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        192
+      ],
+      "id": "2e97fa49-bcaa-4304-bd04-24e5022dd6f9",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        128
+      ],
+      "id": "fcfc55b4-bbc8-40a2-8abe-5b820acf5d2b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rh2oykYvnl2GjxIT",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a LinkedIn post.\n\nTopic:{{ $json.output.properties.topic.type }}\nAngle:{{ $json.output.properties.angle.type }}\nAudience:{{ $json.output.properties.audience.type }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You write LinkedIn posts for a software testing and QA audience.\n\nRules: no contractions, no emojis, plain declarative sentences, short paragraphs, one clear takeaway, 150-250 words. Also produce a post title and an image prompt describing a clean technical illustration for this post. The image prompt must NOT ask for any text, words, labels, numbers, or captions inside the image — free image models render text as garbled, misspelled nonsense. Describe only abstract shapes, icons, symbols, colors, and composition (e.g. gears, arrows, checkmarks, layered blocks, flowing lines) that convey the idea visually without any writing. Keep the image prompt under 20 words, simple and concrete, one scene, one subject.\n\nOutput only the fields required by the schema."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        64,
+        -64
+      ],
+      "id": "398b2f8f-9f2b-4b05-a1a1-403a57698d68",
+      "name": "Content Creator (LinkedIn Post)"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"post_title\": { \"type\": \"string\" },\n    \"post_body\": { \"type\": \"string\" },\n    \"hash_tags\": { \"type\": \"string\"},\n    \"image_prompt\": { \"type\": \"string\" }\n  },\n  \"required\": [\"post_title\", \"post_body\", \"hash_tags\", \"image_prompt\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        160
+      ],
+      "id": "f160bbf2-2d91-48a4-8785-2410734e0dbd",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "person": "9aH7GgjCx8",
+        "text": "={{ $('Content Creator (LinkedIn Post)').item.json.output.post_body }}\n\n{{ $('Content Creator (LinkedIn Post)').item.json.output.hash_tags.replace(/,/g, ' ') }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {
+          "title": "={{ $('Content Creator (LinkedIn Post)').item.json.output.post_title }}",
+          "visibility": "PUBLIC"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -48
+      ],
+      "id": "01902e55-9358-44a8-b60e-ab084cc4aa37",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "g0TAoVxTyxtAqJij",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-3-medium-diffusers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=   { \"inputs\": \"{{ $json.output.image_prompt }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "5c53f929-cfb3-4ae2-8386-922a08e13ed3",
+      "name": "Generate Image (Hugging Face)",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "sg8h7Wx4UfNMuGSU",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "831685806",
+        "message": "=📝 Today's QA LinkedIn post is ready for your review:\n\n {{ $json.output.post_body }}\n\n{{ $json.output.hash_tags }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        -64
+      ],
+      "id": "50837c11-330c-4411-869a-f63e5d7da335",
+      "name": "Send a text message",
+      "webhookId": "886c0e6b-aa2b-4664-ab88-a5c1d13afafe",
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        880,
+        176
+      ],
+      "id": "5aa1d8a4-a65d-484d-8624-e8e90cb64c12",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -592,
+        -64
+      ],
+      "id": "c55db243-07fb-4937-bb69-a8ecedf74f55",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Content Topic Generator": {
+      "main": [
+        [
+          {
+            "node": "Content Creator (LinkedIn Post)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Topic Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Topic Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Creator (LinkedIn Post)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Creator (LinkedIn Post)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator (LinkedIn Post)": {
+      "main": [
+        [
+          {
+            "node": "Generate Image (Hugging Face)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        []
+      ]
+    },
+    "Generate Image (Hugging Face)": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Content Topic Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f2d22bca-b470-4ae4-a484-f8d092d85103",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "94e558ec5fa1208d405ad1ad0cf3cea0d1b9b732b8c5c57a364f6d9ae2666f35"
+  },
+  "nodeGroups": [],
+  "id": "Exi6nfW77c9H6FEf",
+  "tags": []
+}
