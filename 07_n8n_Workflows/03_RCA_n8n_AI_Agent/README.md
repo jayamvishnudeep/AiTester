@@ -11,7 +11,7 @@ The spec is `resource/rca-automation-n8n-prompt.md.md`.
 
 ## Built by Claude
 
-![The Claude-built workflow: schedule trigger, Jira search, batch loop, sheet dedupe check, an IF, normalize, OpenAI, a JSON parser and the sheet write](Root%20Cause%20Analysis(RCA)%20AI%20Agent%20created%20by%20claude_screenshot.png)
+![The Claude-built workflow: schedule trigger, Jira search, batch loop, sheet dedupe check, an IF, normalize, OpenAI, a JSON parser and the sheet write](Root%20Cause%20Analysis%28RCA%29%20AI%20Agent%20created%20by%20claude_screenshot.png)
 
 `Root Cause Analysis(RCA) AI Agent created by Claude.json` — 12 nodes.
 
@@ -38,7 +38,7 @@ node rather than trusted.
 
 ## Built by the n8n AI Assistant
 
-![The n8n-Assistant-built workflow: a Jira trigger, normalize and dedupe code nodes, an agent with a structured output parser and a fixing model, a fallback row path, and a weekly XLSX export](Root%20Cause%20Analysis(RCA)%20AI%20Agent%20created%20by%20n8n%20AI%20Assistant_screenshot.png)
+![The n8n-Assistant-built workflow: a Jira trigger, normalize and dedupe code nodes, an agent with a structured output parser and a fixing model, a fallback row path, and a weekly XLSX export](Root%20Cause%20Analysis%28RCA%29%20AI%20Agent%20created%20by%20n8n%20AI%20Assistant_screenshot.png)
 
 `Root Cause Analysis(RCA) AI Agent created by n8n AI Assistant.json` — 16 nodes.
 
