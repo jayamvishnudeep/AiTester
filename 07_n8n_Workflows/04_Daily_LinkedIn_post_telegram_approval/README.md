@@ -6,6 +6,20 @@ look, and publishes it to LinkedIn.
 
 Exported as `Daily QA LinkedIn Post │Agent Hugging face free image generator │Telegram - Working.json`.
 
+## The workflow
+
+![The workflow on the n8n canvas, showing the run split between Telegram and the generated image before Merge recombines them](Daily%20LinkedIn%20post%20n8n%20workflow.png)
+
+A completed run, end to end in **1 minute 41 seconds** for roughly 529 tokens.
+The shape worth noticing is on the right: after the image is generated the run
+splits, one branch waiting on Telegram and the other carrying the PNG, and
+`Merge` puts them back together before LinkedIn publishes. That is the reason
+the Merge node exists — see below.
+
+The two agents each hang off their own chat model and structured output
+parser, which is what forces the topic and the post into fixed fields instead
+of free prose.
+
 ## What it does
 
 Every day at **06:30** the workflow runs on its own:
