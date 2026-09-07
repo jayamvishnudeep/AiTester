@@ -4,8 +4,10 @@ playwright-report/
 test-results/
 *.class
 *.jar
-README.md
-Notes.md
+# Root README and notes only. A bare "README.md" would match at every level and
+# hide the per-project READMEs too; the leading slash pins it to the repo root.
+/README.md
+/Notes.md
 .env
 *.env
 config.json
