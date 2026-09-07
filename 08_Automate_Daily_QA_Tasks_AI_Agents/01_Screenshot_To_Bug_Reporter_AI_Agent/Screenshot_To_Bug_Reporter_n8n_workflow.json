@@ -1,0 +1,349 @@
+{
+  "name": "Screenshot to Bug Reporter",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Report a Bug from a Screenshot",
+        "formDescription": "Upload the screenshot and the rest is drafted for you. The two optional boxes are the only things the image cannot show, so anything you leave blank is marked Not Provided rather than guessed.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Screenshot",
+              "fieldType": "file",
+              "acceptFileTypes": ".png,.jpg,.jpeg,.webp",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Environment",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Production"
+                  },
+                  {
+                    "option": "Staging"
+                  },
+                  {
+                    "option": "QA"
+                  },
+                  {
+                    "option": "Local"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What were you doing",
+              "fieldType": "textarea",
+              "placeholder": "The steps you actually took. A screenshot cannot show this, so anything you leave out here will be marked Not Provided rather than guessed.",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Error logs or console output",
+              "fieldType": "textarea",
+              "placeholder": "Paste any console, network or server output. Optional.",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Your name",
+              "fieldType": "text",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "File the bug",
+          "path": "report-bug",
+          "ignoreBots": true,
+          "customCss": "/* Screenshot to Bug Reporter - submission form, dark.\n   Every colour goes through the variables n8n's own form template reads\n   (packages/cli/templates/form-trigger.handlebars), and the few extra rules\n   below target that template's real class names: .container, .card,\n   .form-header, .form-group, .form-input, .select-input, .file-input-wrapper,\n   .clear-button, #submit-btn.\n   The previous pass guessed with attribute-substring selectors instead, which\n   is what produced the buggy form: one of them matched .inputs-wrapper and\n   drew a box around every field, another matched .file-input-wrapper and made\n   it dashed, and colouring anything matching \"required\" hit label.form-required\n   - the label itself - so every required label turned red. */\n@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');\n\n:root {\n  --font-family: \"IBM Plex Sans\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif;\n  --font-weight-normal: 400;\n  --font-weight-bold: 600;\n  --font-size-header: 26px;\n  --font-size-paragraph: 14px;\n  --font-size-label: 13px;\n  --font-size-input: 15px;\n  --font-size-body: 14px;\n  --font-size-link: 12.5px;\n  --font-size-error: 12.5px;\n\n  --color-background: #0b0e17;\n  --color-card-bg: #151b2b;\n  --color-card-border: #252d42;\n  --color-card-shadow: rgba(0, 0, 0, .55);\n  --color-header: #eef2fb;\n  --color-header-subtext: #96a1bd;\n  --color-label: #cfd7ea;\n  --color-link: #96a1bd;\n\n  /* Read by \"form .form-input\" in the template but absent from n8n's own\n     defaults - without it every field keeps a white background on a dark page. */\n  --color-input-bg: #0f1422;\n  --color-input-border: #2b344c;\n  --color-input-text: #e8ecf7;\n  --color-focus-border: #5c7cfa;\n\n  --color-submit-btn-bg: #5c7cfa;\n  --color-submit-btn-text: #ffffff;\n  --color-required: #ff8f7a;\n  --color-error: #ff6b6b;\n  --color-clear-button-bg: #2b344c;\n\n  --border-radius-card: 16px;\n  --border-radius-input: 10px;\n  --card-border-radius: 16px;\n  --padding-card: 30px;\n  --card-padding: 30px;\n  --container-width: 520px;\n  --submit-btn-height: 52px;\n  --box-shadow-card: 0 24px 60px -24px var(--color-card-shadow);\n}\n\nbody {\n  min-height: 100vh;\n  -webkit-font-smoothing: antialiased;\n}\n\n.container { max-width: calc(100vw - 32px); }\n\n/* Accent rail as a real border rather than a positioned pseudo-element, so it\n   cannot drift away from the card's rounded corner. */\n.card { border-left: 3px solid #5c7cfa; }\n\n.form-header h1 {\n  font-weight: 600;\n  letter-spacing: -.022em;\n  text-wrap: balance;\n}\n.form-header p { line-height: 1.6; }\n\n/* The template ships no rules at all for these two, so spacing is whatever the\n   browser defaults to. Set it deliberately. */\n.form-group { margin-bottom: 20px; text-align: left; }\n.form-group:last-of-type { margin-bottom: 4px; }\n.form-label { letter-spacing: -.005em; }\n\nform .form-input {\n  transition: border-color .14s ease, box-shadow .14s ease, background-color .14s ease;\n}\nform .form-input:hover { border-color: #37425f; }\nform .form-input:focus,\nform textarea:focus,\nform input:focus {\n  box-shadow: 0 0 0 3px rgba(92, 124, 250, .22);\n}\nform textarea.form-input { min-height: 112px; line-height: 1.55; }\n::placeholder { color: #6f7b98; opacity: 1; }\n\n.select-input { background-color: var(--color-input-bg); }\nform select { color: var(--color-input-text); }\nform select option { background-color: #151b2b; color: #e8ecf7; }\n\n/* The screenshot field carries the whole workflow, so it gets to look like a\n   drop target. Scoped to the input, not to .file-input-wrapper - the wrapper\n   contains the label, so bordering it boxes the label in with the control. */\n.file-input-wrapper { position: relative; }\n.file-input-wrapper .form-input {\n  border-style: dashed;\n  border-color: #35405c;\n  padding: 16px 14px;\n  cursor: pointer;\n  color: #96a1bd;\n  font-family: var(--font-family);\n  font-size: 13.5px;\n}\n.file-input-wrapper .form-input:hover {\n  border-color: #5c7cfa;\n  background-color: #121a2c;\n}\ninput[type=\"file\"]::file-selector-button {\n  margin-right: 12px;\n  padding: 9px 15px;\n  border: 0;\n  border-radius: 8px;\n  background-color: #232c44;\n  color: #e8ecf7;\n  font-family: var(--font-family);\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: background-color .14s ease;\n}\ninput[type=\"file\"]::file-selector-button:hover { background-color: #2e3a58; }\n\n.clear-button {\n  background-color: var(--color-clear-button-bg);\n  color: #e8ecf7;\n  border: 0;\n  border-radius: 50%;\n  width: 22px;\n  height: 22px;\n  line-height: 1;\n  cursor: pointer;\n}\n.clear-button:hover { background-color: #3a4664; }\n\n#submit-btn {\n  letter-spacing: .01em;\n  transition: filter .14s ease, transform .14s ease;\n}\n/* n8n fades the button to 0.7 on hover, which reads as disabled on dark. */\n#submit-btn:hover { opacity: 1; filter: brightness(1.12); }\n#submit-btn:active { transform: translateY(1px); }\n#submit-btn:focus-visible { outline: 2px solid #5c7cfa; outline-offset: 3px; }\n\n#submit-hint { color: var(--color-link); }\n\n/* No n8n branding on a page a tester is asked to trust */\n.n8n-link { display: none !important; }\n\n@media (prefers-reduced-motion: reduce) {\n  * { transition: none !important; animation: none !important; }\n}"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -620,
+        0
+      ],
+      "id": "a1f0c4d2-1b7e-4c88-9a31-6f2e5d0b7c11",
+      "name": "Bug Report Form",
+      "webhookId": "6b1d9c74-3a52-4e0f-8d16-2c9b4f7a5e30"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "Screenshot",
+        "destinationKey": "imageBase64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        0
+      ],
+      "id": "b2e1d5c3-2c8f-4d99-8b42-7a3f6e1c8d22",
+      "name": "Screenshot to Base64"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assemble the Groq vision request.\n// A Code node rather than inline expressions because the payload is a nested\n// array of content parts, which is painful to express in the HTTP node.\n\nconst form = $('Bug Report Form').first();\nconst f = form.json;\nconst b64 = $input.first().json.imageBase64;\n\n// The form names the binary property after the field label. Read the mime type\n// off whatever binary key actually arrived rather than assuming PNG.\nconst binary = form.binary || {};\nconst binKey = Object.keys(binary)[0];\nconst mime = (binKey && binary[binKey].mimeType) || 'image/png';\n\nconst pick = (...keys) => {\n  for (const k of keys) {\n    if (f[k] !== undefined && String(f[k]).trim() !== '') return String(f[k]).trim();\n  }\n  return '';\n};\n\nconst env = pick('Environment') || 'Not Provided';\nconst notes = pick('What were you doing');\nconst logs = pick('Error logs or console output');\nconst who = pick('Your name');\n\nconst instructions = [\n  'You are a senior QA engineer writing a defect report from a screenshot.',\n  '',\n  'Read the image carefully and describe what is actually wrong on screen. Then',\n  'produce a bug report as JSON.',\n  '',\n  '## THE RULE THAT MATTERS MOST',\n  'A screenshot cannot show how the user got there. You must NEVER invent steps',\n  'to reproduce. Do not write plausible-sounding navigation such as \"Navigate to',\n  'the login page\" or \"Enter valid credentials\" unless the tester actually said so',\n  'below, or it is unambiguously visible in the image.',\n  'If you do not have enough to write real steps, return exactly one step reading',\n  '\"Not Provided - tester to complete\" and set confidence to \"Low\".',\n  'Invented steps are worse than no steps, because they look authoritative and',\n  'send a developer down a path nobody took.',\n  '',\n  '## OTHER RULES',\n  '- Transcribe error text visible in the image exactly. Never complete, correct',\n  '  or paraphrase a truncated message. If it is cut off, say it is cut off.',\n  '- Never claim a cause you cannot see. Describe symptoms, not diagnoses.',\n  '- Anything you cannot determine is the string \"Not Provided\". Do not guess.',\n  '- Keep every value a single line. No markdown, no line breaks inside values.',\n  '',\n  '## SEVERITY (technical impact, objective)',\n  'S0 - Blocker  : data loss, security exposure, wrong money, total failure of a',\n  '                core journey.',\n  'S1 - Critical : major feature completely broken, no workaround.',\n  'S2 - Major    : feature impaired or partly wrong, workaround exists.',\n  'S3 - Minor    : cosmetic, layout, wording. Function still works.',\n  'S4 - Trivial  : typo, alignment nitpick.',\n  '',\n  '## PRIORITY (business urgency)',\n  'P0 - Immediate, P1 - Current Sprint, P2 - Next Sprint, P3 - Opportunistic,',\n  'P4 - Backlog.',\n  'Severity and priority are different. When they differ, explain it in',\n  'severity_priority_explanation.',\n  '',\n  '## CATEGORY (pick exactly one)',\n  'Functional Logic, Data and Calculation, UI/UX and Layout, Performance,',\n  'Security, API and Integration, Compatibility, Configuration and Deployment,',\n  'Regression, Usability and Content, Unable to Determine.',\n  '',\n  '## RETURN ONLY THIS JSON, no prose, no code fences',\n  '{',\n  '  \"summary\": \"one line, no Bug: prefix, names the screen and the symptom\",',\n  '  \"visible_symptom\": \"what is wrong on screen\",',\n  '  \"visual_details\": \"layout, overlap, truncation, colour, alignment, broken image, cut-off text\",',\n  '  \"error_text_on_screen\": \"verbatim, or Not Provided\",',\n  '  \"affected_screen\": \"page or component, or Not Provided\",',\n  '  \"steps_to_reproduce\": [\"...\"],',\n  '  \"expected_result\": \"...\",',\n  '  \"actual_result\": \"...\",',\n  '  \"recommended_severity\": \"S0 - Blocker | S1 - Critical | S2 - Major | S3 - Minor | S4 - Trivial\",',\n  '  \"recommended_priority\": \"P0 - Immediate | P1 - Current Sprint | P2 - Next Sprint | P3 - Opportunistic | P4 - Backlog\",',\n  '  \"severity_priority_explanation\": \"...\",',\n  '  \"category\": \"...\",',\n  '  \"confidence\": \"High | Medium | Low\",',\n  '  \"missing_information\": \"semicolon separated\"',\n  '}',\n  '',\n  '## WHAT THE TESTER PROVIDED',\n  'Environment: ' + env,\n  'What they were doing: ' + (notes || 'Not Provided'),\n  'Error logs they pasted: ' + (logs || 'Not Provided'),\n].join('\\n');\n\nreturn [{\n  json: {\n    _env: env,\n    _notes: notes,\n    _logs: logs,\n    _reporter: who,\n    model: 'qwen/qwen3.6-27b',\n    temperature: 0.2,\n    // No response_format here on purpose. Groq rejects\n    // response_format: {type:'json_object'} when the message carries an image\n    // (400 json_validate_failed), so the JSON contract is enforced by the\n    // prompt and by defensive parsing in the next node instead.\n    //\n    // reasoning_effort 'none' is load-bearing, not a tweak. qwen3.6 is a\n    // thinking model: left on, it spends the whole completion budget reasoning\n    // and the JSON comes back truncated mid-object. Measured on one screenshot:\n    // 900 completion tokens and unparseable with reasoning on, 128 tokens and\n    // clean JSON with it off.\n    reasoning_effort: 'none',\n    // Groq counts this ceiling against the output-tokens-per-minute limit as\n    // 'requested', not what is actually used, so keep it tight.\n    max_completion_tokens: 800,\n    messages: [\n      {\n        role: 'user',\n        content: [\n          { type: 'text', text: instructions },\n          { type: 'image_url', image_url: { url: 'data:' + mime + ';base64,' + b64 } },\n        ],\n      },\n    ],\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        0
+      ],
+      "id": "c3d2e6b4-3d9a-4eaa-9c53-8b4a7f2d9e33",
+      "name": "Build Groq Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $json.model, temperature: $json.temperature, reasoning_effort: $json.reasoning_effort, max_completion_tokens: $json.max_completion_tokens, messages: $json.messages }) }}",
+        "options": {},
+        "nodeCredentialType": "groqApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        0
+      ],
+      "id": "d4e3f7c5-4eab-4fbb-8d64-9c5b8a3e0f44",
+      "name": "Analyze Screenshot (Groq)",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "groqApi": {
+          "id": "uur0A2QqUBroX2ua",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and harden the model's output before anything reaches Jira.\n// The model returns JSON as a *string* inside choices[0].message.content, so a\n// malformed response is a normal case, not an exceptional one.\n\nconst res = $input.first().json;\nconst ctx = $('Build Groq Request').first().json;\n\nconst content = res?.choices?.[0]?.message?.content ?? '';\n\nlet bug = null;\ntry {\n  bug = JSON.parse(content);\n} catch (e) {\n  // Salvage the first {...} block, in case the model wrapped it in prose or\n  // code fences despite being asked not to.\n  const m = String(content).match(/\\{[\\s\\S]*\\}/);\n  if (m) {\n    try { bug = JSON.parse(m[0]); } catch (e2) { bug = null; }\n  }\n}\n\nconst parseFailed = bug === null;\nif (parseFailed) bug = {};\n\nconst str = (v, fallback = 'Not Provided') => {\n  if (v === undefined || v === null) return fallback;\n  const s = String(v).trim();\n  return s === '' ? fallback : s;\n};\n\n// Steps must survive being a string, an array, or missing entirely.\nlet steps = bug.steps_to_reproduce;\nif (typeof steps === 'string') steps = steps.split(/\\r?\\n/);\nif (!Array.isArray(steps)) steps = [];\nsteps = steps.map((s) => String(s).trim()).filter(Boolean);\nif (steps.length === 0) steps = ['Not Provided - tester to complete'];\n\nconst summary = str(bug.summary, 'Bug reported from screenshot');\nconst confidence = parseFailed ? 'Low' : str(bug.confidence, 'Low');\n\nconst missing = [\n  str(bug.missing_information, ''),\n  parseFailed ? 'Model returned unparseable output; fields below are defaults' : '',\n  !ctx._notes ? 'Tester did not describe what they were doing' : '',\n  !ctx._logs ? 'No error logs supplied' : '',\n].filter(Boolean).join('; ') || 'None';\n\nconst description = [\n  'Filed automatically from a screenshot by the Screenshot to Bug Reporter agent.',\n  '',\n  'ENVIRONMENT',\n  ctx._env,\n  '',\n  'WHAT IS WRONG',\n  str(bug.visible_symptom),\n  '',\n  'VISUAL DETAIL',\n  str(bug.visual_details),\n  '',\n  'ERROR TEXT VISIBLE ON SCREEN',\n  str(bug.error_text_on_screen),\n  '',\n  'AFFECTED SCREEN',\n  str(bug.affected_screen),\n  '',\n  'STEPS TO REPRODUCE',\n  steps.map((s, i) => (s.startsWith('Not Provided') ? s : (i + 1) + '. ' + s)).join('\\n'),\n  '',\n  'EXPECTED RESULT',\n  str(bug.expected_result),\n  '',\n  'ACTUAL RESULT',\n  str(bug.actual_result),\n  '',\n  'TRIAGE',\n  'Severity: ' + str(bug.recommended_severity, 'Unable to Determine'),\n  'Priority: ' + str(bug.recommended_priority, 'Unable to Determine'),\n  'Category: ' + str(bug.category, 'Unable to Determine'),\n  'Why they differ: ' + str(bug.severity_priority_explanation, 'Not Provided'),\n  'Confidence: ' + confidence,\n  '',\n  'REPORTER NOTES',\n  ctx._notes || 'Not Provided',\n  '',\n  'ERROR LOGS PASTED BY REPORTER',\n  ctx._logs || 'Not Provided',\n  '',\n  'MISSING INFORMATION',\n  missing,\n  '',\n  'Reported by: ' + (ctx._reporter || 'Not Provided'),\n  'Severity and priority above are a suggestion from an automated first pass.',\n  'Confidence \"Low\" means the screenshot did not carry enough to be sure.',\n].join('\\n');\n\nreturn [{\n  json: {\n    summary: summary.slice(0, 250),\n    description,\n    confidence,\n    parseFailed,\n    severity: str(bug.recommended_severity, 'Unable to Determine'),\n    priority: str(bug.recommended_priority, 'Unable to Determine'),\n    category: str(bug.category, 'Unable to Determine'),\n    environment: ctx._env,\n    missingInformation: missing,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "id": "e5f4a8d6-5fbc-40cc-9e75-0d6c9b4f1a55",
+      "name": "Parse Bug Report"
+    },
+    {
+      "parameters": {
+        "project": "10000",
+        "issueType": "10003",
+        "summary": "={{ $json.summary }}",
+        "additionalFields": {
+          "description": "={{ $json.description }}",
+          "labels": [
+            "bug",
+            "screenshot-reported",
+            "ai-drafted"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "f6a5b9e7-60cd-41dd-8f86-1e7d0c5a2b66",
+      "name": "Create Jira Bug",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "fX1BcARAqH2WZoUV",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Re-attach the screenshot for the Jira attachment step.\n//\n// Binary data does not flow through Code or HTTP nodes: \"Build Groq\n// Request\" returns plain json, so everything downstream of it has lost\n// the file. The Jira create node then outputs its own API response. By\n// the attach node the binary is gone, its binaryPropertyName matches\n// nothing, and the ticket is filed with no image - which is exactly the\n// \"Screenshot not attached\" state the tester was seeing.\n//\n// Read it back off the trigger and hand it over under a fixed key, so\n// the attach node never has to guess what the form named it.\n\nconst created = $input.first().json;\nconst form = $('Bug Report Form').first();\nconst bin = form.binary || {};\nconst key = Object.keys(bin)[0];\n\nif (!key) {\n  throw new Error('No binary on the form submission - nothing to attach');\n}\n\nreturn [{ json: created, binary: { Screenshot: bin[key] } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        0
+      ],
+      "id": "f1a2b3c4-5d6e-4f70-8a91-b2c3d4e5f601",
+      "name": "Carry Screenshot Forward"
+    },
+    {
+      "parameters": {
+        "resource": "issueAttachment",
+        "issueKey": "={{ $json.key }}",
+        "binaryPropertyName": "Screenshot"
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        920,
+        0
+      ],
+      "id": "a7b6c0f8-71de-42ee-9a97-2f8e1d6b3c77",
+      "name": "Attach Screenshot to Issue",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "fX1BcARAqH2WZoUV",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the tester's confirmation page as one HTML string.\n// Written as code rather than a template in the Form node so the severity /\n// confidence tone logic is real logic, and the Form node needs one expression.\n\nconst bug = $('Parse Bug Report').first().json;\nconst issue = $('Create Jira Bug').first().json;\n\n// The attachment step is allowed to fail without taking the run down, so a\n// missing result means \"not attached\" rather than an error.\nlet attached = false;\ntry {\n  const att = $('Attach Screenshot to Issue').first().json;\n  attached = !!(att && (att.id || att.filename || (Array.isArray(att) && att.length)));\n} catch (e) { attached = false; }\n\nconst key = issue.key || 'the ticket';\n// Derive the browse URL from the API self link, so this works on any Jira\n// site without a hardcoded host.\nlet browseUrl = '#';\nif (issue.self) {\n  const m = String(issue.self).match(/^(https?:\\/\\/[^/]+)/);\n  if (m) browseUrl = m[1] + '/browse/' + key;\n}\n\nfunction esc(s) {\n  return String(s == null ? '' : s)\n    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n}\n\nfunction buildRecord(d, esc) {\n  var tone = function (v, crit, warn) { return crit.test(v) ? 'crit' : warn.test(v) ? 'warn' : 'calm'; };\n  var sevTone = tone(d.severity, /S0|S1/, /S2/);\n  var priTone = tone(d.priority, /P0/, /P1|P2/);\n  var confTone = d.confidence === 'High' ? 'good' : d.confidence === 'Medium' ? 'warn' : 'crit';\n  var missing = String(d.missingInformation || '').split(';').map(function (s) { return s.trim(); }).filter(Boolean);\n  var tick = '<svg viewBox=\"0 0 24 24\"><path d=\"M20 6 9 17l-5-5\"/></svg>';\n  var bang = '<svg viewBox=\"0 0 24 24\"><path d=\"M12 8v5M12 17h.01\"/></svg>';\n\n  return [\n    '<main class=\"record\" data-sev=\"' + sevTone + '\">',\n    '<div class=\"stripe\" aria-hidden=\"true\"></div>',\n    '<div class=\"inner\">',\n      '<header>',\n        '<p class=\"eyebrow\">' + tick + 'Filed in Bug-Tracking</p>',\n        '<div class=\"keyrow\">',\n          '<h1 class=\"key\">' + esc(d.key) + '</h1>',\n          d.attached\n            ? '<span class=\"pill good\">' + tick + 'Screenshot attached</span>'\n            : '<span class=\"pill warn\">' + bang + 'Screenshot not attached</span>',\n        '</div>',\n        '<p class=\"lead\">' + esc(d.summary) + '</p>',\n      '</header>',\n      '<dl class=\"triage\">',\n        '<div><dt>Severity</dt><dd class=\"' + sevTone + '\">' + esc(d.severity) + '</dd></div>',\n        '<div><dt>Priority</dt><dd class=\"' + priTone + '\">' + esc(d.priority) + '</dd></div>',\n        '<div><dt>Category</dt><dd>' + esc(d.category) + '</dd></div>',\n        '<div><dt>Confidence</dt><dd class=\"' + confTone + '\">' + esc(d.confidence) + '</dd></div>',\n      '</dl>',\n      '<a class=\"cta\" href=\"' + esc(d.browseUrl) + '\" target=\"_blank\" rel=\"noopener\">',\n        'Open ' + esc(d.key) + ' in Jira',\n        '<svg viewBox=\"0 0 24 24\"><path d=\"M7 17 17 7M9 7h8v8\"/></svg>',\n      '</a>',\n      d.confidence !== 'High'\n        ? ('<section class=\"callout\">' +\n             '<h2>Steps to reproduce are still blank</h2>' +\n             '<p>A screenshot cannot show how you got there, so the steps were left empty rather than invented. Open the ticket and add them while it is fresh.</p>' +\n             (missing.length\n               ? '<ul>' + missing.slice(0, 5).map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ul>'\n               : '') +\n           '</section>')\n        : '',\n      '<footer class=\"foot\">',\n        '<dl class=\"meta\">',\n          '<div><dt>Environment</dt><dd>' + esc(d.environment) + '</dd></div>',\n          '<div><dt>Reported</dt><dd id=\"filed\">just now</dd></div>',\n        '</dl>',\n        '<a class=\"again\" id=\"again\" href=\"#\">Report another bug</a>',\n      '</footer>',\n    '</div>',\n    '</main>',\n  ].join('');\n}\n\nconst record = buildRecord({\n  key: key,\n  browseUrl: browseUrl,\n  attached: attached,\n  summary: bug.summary || '',\n  severity: bug.severity || 'Unable to Determine',\n  priority: bug.priority || 'Unable to Determine',\n  category: bug.category || 'Unable to Determine',\n  confidence: bug.confidence || 'Low',\n  environment: bug.environment || 'Not Provided',\n  missingInformation: bug.missingInformation || '',\n}, esc);\n\n// Committed dark design, so the page paints its own ground and never inherits\n// a light one. The closing tag is concatenated rather than escaped - writing it\n// as one literal is what shipped a stray backslash last time.\nconst CLOSE_SCRIPT = '<' + '/script>';\n\nconst html = [\n  '<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">',\n  '<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">',\n  '<meta name=\"color-scheme\" content=\"dark\">',\n  '<title>' + esc(key) + ' filed</title>',\n  '<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap\">',\n  '<style>' + \":root{\\n  --paper:#0b0e17; --card:#151b2b; --card-2:#1b2233;\\n  --ink:#eef2fb; --ink-2:#a3aec9; --ink-3:#6f7b98;\\n  --line:#252d42; --line-soft:#1d2437;\\n  --accent:#5c7cfa; --accent-ink:#ffffff;\\n  --good:#3ecf8e; --good-bg:#11291f;\\n  --warn:#f0b429; --warn-bg:#2b2211;\\n  --crit:#ff6b6b; --crit-bg:#2d1518;\\n  --calm:#7c8bb0; --calm-bg:#1b2233;\\n  --shadow:0 32px 72px -28px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.04) inset;\\n}\\n*{box-sizing:border-box}\\nbody{\\n  margin:0; min-height:100vh; padding:44px 20px;\\n  display:flex; align-items:flex-start; justify-content:center;\\n  background:var(--paper); color:var(--ink);\\n  font-family:\\\"IBM Plex Sans\\\",ui-sans-serif,system-ui,-apple-system,\\\"Segoe UI\\\",Roboto,sans-serif;\\n  -webkit-font-smoothing:antialiased;\\n}\\n.record{\\n  width:100%; max-width:660px; display:flex;\\n  background:var(--card); border:1px solid var(--line); border-radius:16px;\\n  box-shadow:var(--shadow); overflow:hidden;\\n}\\n.stripe{width:5px; flex:0 0 5px; background:var(--calm)}\\n.record[data-sev=\\\"crit\\\"] .stripe{background:var(--crit)}\\n.record[data-sev=\\\"warn\\\"] .stripe{background:var(--warn)}\\n.record[data-sev=\\\"calm\\\"] .stripe{background:var(--accent)}\\n.inner{flex:1 1 auto; min-width:0; padding:32px 34px 28px; display:flex; flex-direction:column; gap:26px}\\n.eyebrow{\\n  display:flex; align-items:center; gap:8px; margin:0 0 16px;\\n  font-size:11.5px; font-weight:600; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);\\n}\\n.eyebrow svg{width:14px;height:14px;stroke:var(--good);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}\\n.keyrow{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 14px}\\n.key{\\n  margin:0; font-family:\\\"IBM Plex Mono\\\",ui-monospace,SFMono-Regular,Menlo,monospace;\\n  font-size:40px; font-weight:600; letter-spacing:-.03em; line-height:1; color:var(--ink);\\n}\\n.lead{margin:0; font-size:16.5px; line-height:1.55; color:var(--ink-2); text-wrap:balance; max-width:58ch}\\n.pill{\\n  display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px;\\n  font-size:11.5px; font-weight:600; letter-spacing:.02em; line-height:1.4; white-space:nowrap;\\n  border:1px solid transparent;\\n}\\n.pill svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}\\n.pill.good{background:var(--good-bg); color:var(--good); border-color:rgba(62,207,142,.28)}\\n.pill.warn{background:var(--warn-bg); color:var(--warn); border-color:rgba(240,180,41,.28)}\\n.triage{\\n  display:grid; grid-template-columns:repeat(auto-fit,minmax(136px,1fr));\\n  gap:1px; margin:0; background:var(--line);\\n  border:1px solid var(--line); border-radius:12px; overflow:hidden;\\n}\\n.triage>div{background:var(--card-2); padding:12px 14px; min-width:0}\\n.triage dt{\\n  margin:0 0 5px; font-size:10.5px; font-weight:600; letter-spacing:.09em;\\n  text-transform:uppercase; color:var(--ink-3);\\n}\\n.triage dd{\\n  margin:0; font-family:\\\"IBM Plex Mono\\\",ui-monospace,monospace; font-size:13px; font-weight:500;\\n  color:var(--ink); overflow-wrap:anywhere;\\n}\\n.triage dd.crit{color:var(--crit)} .triage dd.warn{color:var(--warn)} .triage dd.good{color:var(--good)}\\n.cta{\\n  display:inline-flex; align-items:center; justify-content:center; gap:9px;\\n  padding:14px 24px; border-radius:10px; background:var(--accent); color:var(--accent-ink);\\n  text-decoration:none; font-size:15px; font-weight:600; align-self:flex-start;\\n  transition:filter .14s ease, transform .14s ease;\\n}\\n.cta:hover{filter:brightness(1.12)} .cta:active{transform:translateY(1px)}\\n.cta:focus-visible{outline:2px solid var(--accent); outline-offset:3px}\\n.cta svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.3;fill:none;stroke-linecap:round;stroke-linejoin:round}\\n.callout{\\n  padding:17px 19px; border-radius:12px; background:var(--warn-bg);\\n  border:1px solid rgba(240,180,41,.22); border-left:3px solid var(--warn);\\n}\\n.callout h2{margin:0 0 7px; font-size:14px; font-weight:700; color:var(--warn); letter-spacing:-.005em}\\n.callout p{margin:0; font-size:13.5px; line-height:1.6; color:var(--ink-2)}\\n.callout ul{margin:11px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:4px}\\n.callout li{font-size:12.5px; line-height:1.55; color:var(--ink-2)}\\n.foot{\\n  display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;\\n  padding-top:22px; border-top:1px solid var(--line);\\n}\\n.meta{display:flex; gap:28px; margin:0; flex-wrap:wrap}\\n.meta dt{margin:0 0 4px; font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}\\n.meta dd{margin:0; font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums}\\n.again{font-size:13.5px; font-weight:600; color:var(--accent); text-decoration:none; white-space:nowrap}\\n.again:hover{text-decoration:underline}\\n.again:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}\\n@media (max-width:560px){\\n  body{padding:22px 12px}\\n  .inner{padding:26px 22px 24px; gap:22px}\\n  .key{font-size:32px}\\n}\\n@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}\" + '</style>',\n  '</head><body>',\n  record,\n  '<script>',\n  'document.getElementById(\"filed\").textContent=new Date().toLocaleString();',\n  // The confirmation page is served from the same host as the form, so the\n  // \"report another\" link is the origin plus the trigger's form path.\n  'document.getElementById(\"again\").href=window.location.origin+\"/form/report-bug\";',\n  CLOSE_SCRIPT + '</body></html>',\n].join('');\n\nreturn [{ json: { html, key, browseUrl, attached } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "c9d8e2ba-93f0-4400-9bb9-4b0a3f8d5e99",
+      "name": "Build Result Page"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "b8c7d1a9-82ef-43ff-8ba8-3a9f2e7c4d88",
+      "name": "Show Result to Tester",
+      "webhookId": "7c2e0d85-4b63-4f10-9e27-3daf5b8c6f41"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Bug Report Form": {
+      "main": [
+        [
+          {
+            "node": "Screenshot to Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Screenshot to Base64": {
+      "main": [
+        [
+          {
+            "node": "Build Groq Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Groq Request": {
+      "main": [
+        [
+          {
+            "node": "Analyze Screenshot (Groq)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Screenshot (Groq)": {
+      "main": [
+        [
+          {
+            "node": "Parse Bug Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Bug Report": {
+      "main": [
+        [
+          {
+            "node": "Create Jira Bug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Bug": {
+      "main": [
+        [
+          {
+            "node": "Carry Screenshot Forward",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Screenshot to Issue": {
+      "main": [
+        [
+          {
+            "node": "Build Result Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Result Page": {
+      "main": [
+        [
+          {
+            "node": "Show Result to Tester",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Carry Screenshot Forward": {
+      "main": [
+        [
+          {
+            "node": "Attach Screenshot to Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
