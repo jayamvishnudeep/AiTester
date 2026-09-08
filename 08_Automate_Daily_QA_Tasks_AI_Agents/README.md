@@ -8,6 +8,7 @@ it works.
 | | Agent | What it replaces |
 |---|---|---|
 | 01 | [Screenshot to Bug Reporter](01_Screenshot_To_Bug_Reporter_AI_Agent) | Writing up a bug from a screenshot by hand |
+| 02 | [Flaky Test RCA Analyzer](02_Flaky_Test_RCA_Analyzer) | Reading a dozen CI logs by eye to find what the failures share |
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -24,6 +25,24 @@ bad model response cannot reach Jira.
 
 See its [README](01_Screenshot_To_Bug_Reporter_AI_Agent) for the full walkthrough
 and screenshots.
+
+## 02 — Flaky Test RCA Analyzer
+
+An SDET points it at a test that keeps flapping. It reads several runs' logs,
+finds what the failures share — `Network Timeout`, a stale locator, a
+shared-state collision — and returns a named cause, the lines it read that from,
+and a concrete fix.
+
+Where agent 01 reads **one** artefact and describes it, this one reads **many**
+and has to find what they have in common. That makes the token budget, not the
+model, the binding constraint: Groq's free tier allows 8,000 tokens a minute and
+that ceiling is on *input*, so choosing which log lines matter is done in code.
+The counting is too — flakiness is a frequency claim, and models miscount.
+
+Its guard rail is the direct analogue of 01's refusal to invent repro steps:
+**one failing run is a stack trace, not a pattern.**
+
+See its [README](02_Flaky_Test_RCA_Analyzer).
 
 ## What this section adds over 07
 
