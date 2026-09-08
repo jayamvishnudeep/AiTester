@@ -64,6 +64,18 @@ Webhook          POST /flaky-rca  {test_name, runs_url | runs[]}
 | Send to Telegram | `telegram` | The active output |
 | Respond to Caller | `respondToWebhook` | Usable from a script, not just a chat app |
 
+![The workflow on the n8n canvas after a successful run: every node green with one item flowing through each connection, and Post to Slack greyed out as Deactivated between Validate Analysis and Send to Telegram](Flaky_Test_RCA_Analyser_n8n_workflow.png)
+
+A completed run. The thing to notice is on the right: **Post to Slack sits in the
+chain marked "(Deactivated)" and one item still flows straight through it** to
+Send to Telegram. That is the pass-through behaviour the linear wiring depends
+on — switching messengers later is two toggles, not a rewire.
+
+`Fetch Run Logs` is green rather than red even though there was no `runs_url` to
+fetch. Between `neverError` and `onError: continueRegularOutput`, a missing CI
+is a normal state rather than a failed execution, and `Budget The Evidence`
+picks up the inline runs instead.
+
 ### Budget The Evidence
 
 Four jobs, and the agent is only trustworthy because of them:
@@ -141,15 +153,36 @@ curl -X POST https://<your-n8n-host>/webhook/flaky-rca \
   --data @sample_runs.json
 ```
 
-Expected result — this is the measured output from the live model:
+## Proven end to end
 
-```
-pattern:  Network Timeout  (5 of 6 failures)
-category: Network or Timeout    confidence: High    fix_type: Test Fix
-tokens:   3,924 of the 8,000/minute allowance, 3.5s
-```
+That exact request was run against the live workflow on n8n Cloud — **HTTP 200
+in 5.8 seconds** — and this is what arrived on the phone:
+
+![The Telegram message: pattern Network Timeout (ECONNRESET) at 5 of 6 failures, category Network or Timeout, confidence High, flakiness 66.7%, four quoted evidence lines with run ids, the suspected cause, a suggested Test Fix, and Recommendation Fix Now](Reported%20to%20Telegram.jpg)
+
+Every design decision is visible in that message:
+
+- **5 of 6 failures**, counted in the Code node rather than by the model.
+- **The distractor was resisted.** Run 8871 fails on an unrelated rounding
+  assertion — a genuine failure and a plausible-sounding cause — and it is
+  correctly absent from the pattern, surviving only as the lone `1x` in the
+  signature tally.
+- **The evidence is quoted with run ids**, and all ten quotes passed
+  verification against the logs actually sent: `validation_notes` came back
+  `["No corrections were needed"]`, so nothing was fabricated and nothing had to
+  be clamped.
+- **The fix is specific** — retry with exponential backoff around
+  `CheckoutPage.awaitQuote`, raise the timeout to 60000ms — rather than "add a
+  wait".
+
+Measured cost: **3,924 tokens of the 8,000/minute allowance** (prompt 2,492,
+completion 1,432).
 
 Against a real CI, send `runs_url` instead and the HTTP node fetches the history.
+
+Worth keeping `sample_runs.json` around as a regression test: change the prompt
+later and a re-run should still give `Network Timeout` at 5/6 and still ignore
+the rounding assertion.
 
 ## Setting it up
 
