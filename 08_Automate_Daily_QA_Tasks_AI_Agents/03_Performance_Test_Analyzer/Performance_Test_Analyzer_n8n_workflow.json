@@ -1,0 +1,316 @@
+{
+  "name": "Performance Test Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "perf-report",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7001",
+      "name": "Perf Test Webhook",
+      "webhookId": "a37c9d52-4e18-4b60-8f29-6d0b3a7c5e21"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.csv_url || 'https://example.invalid/no-csv-url' }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -500,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7002",
+      "name": "Fetch CSV",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn a load-test CSV into statistics, and decide Pass or Fail.\n//\n// Two rules drive everything here:\n//\n//   1. The model never sees a row. A single request taking 4 seconds means\n//      nothing; the 95th percentile taking 4 seconds is the whole story. Only\n//      the statistics computed here are ever sent.\n//   2. The verdict is arithmetic, so it is computed here rather than asked for.\n//      This report goes to people who cannot check it.\n//\n// Percentiles come from a single-pass histogram rather than sorting. A one hour\n// run at 200 rps is ~720,000 rows; sorting that in a Code node is slow and\n// memory-hungry, while a histogram is one pass and constant memory.\n\nconst FINE_MAX = 10000;   // 1ms buckets below 10s\nconst COARSE_MS = 50;     // 50ms buckets from 10s\nconst COARSE_MAX = 60000; // then a single overflow bucket\nconst MAX_LABELS = 50;\n\nconst hook = $('Perf Test Webhook').first().json;\nconst body = (hook && hook.body) || hook || {};\n\n// ---------------------------------------------------------------- input ----\n// Three ways in, because a 100MB .jtl cannot travel in a webhook body but a\n// sample can, and a tester with a file in their hand should not need a URL.\nlet csv = '';\nlet source = 'none';\nif (typeof body.csv_text === 'string' && body.csv_text.trim()) {\n  csv = body.csv_text;\n  source = 'inline';\n} else {\n  let fetched = null;\n  try { fetched = $input.first(); } catch (e) { fetched = null; }\n  const bin = fetched && fetched.binary;\n  const binKey = bin && Object.keys(bin)[0];\n  if (binKey && bin[binKey].data) {\n    csv = Buffer.from(bin[binKey].data, 'base64').toString('utf8');\n    source = 'file';\n  } else if (fetched && fetched.json) {\n    const j = fetched.json;\n    const text = typeof j === 'string' ? j : (j.data || j.body || j.csv || '');\n    if (typeof text === 'string' && text.includes(',')) { csv = text; source = 'url'; }\n  }\n}\n\n// ------------------------------------------------------------ slo config ----\nconst slo = Object.assign(\n  { p95_ms: 2000, p99_ms: 5000, error_rate_pct: 1.0, min_throughput_rps: null },\n  body.slo || {}\n);\nconst testName = String(body.test_name || 'Load test').trim();\n\n// --------------------------------------------------------------- parsing ----\n// Hand-rolled because JMeter's failureMessage regularly contains commas and\n// quotes, and splitting on \",\" corrupts every row after the first bad one.\nfunction splitCsvLine(line) {\n  const out = [];\n  let cur = '';\n  let quoted = false;\n  for (let i = 0; i < line.length; i++) {\n    const c = line[i];\n    if (quoted) {\n      if (c === '\"') {\n        if (line[i + 1] === '\"') { cur += '\"'; i++; } else { quoted = false; }\n      } else cur += c;\n    } else if (c === '\"') quoted = true;\n    else if (c === ',') { out.push(cur); cur = ''; }\n    else cur += c;\n  }\n  out.push(cur);\n  return out;\n}\n\nconst lines = csv.split(/\\r?\\n/);\nlet headerIdx = lines.findIndex((l) => l.trim() !== '');\nconst header = headerIdx === -1 ? [] : splitCsvLine(lines[headerIdx]).map((h) => h.trim());\nconst col = {};\nheader.forEach((h, i) => { col[h] = i; });\n\n// Detect the tool from the header rather than being told which it is.\nlet format = 'unknown';\nif (col.elapsed !== undefined && col.timeStamp !== undefined) format = 'jmeter';\nelse if (col.metric_name !== undefined && col.metric_value !== undefined) format = 'k6';\n\n// -------------------------------------------------------------- counters ----\nconst fine = new Int32Array(FINE_MAX);\nconst coarse = new Int32Array(Math.ceil((COARSE_MAX - FINE_MAX) / COARSE_MS) + 1);\nlet over = 0;\nlet total = 0, failed = 0, sum = 0, min = Infinity, max = 0;\nlet tsMin = Infinity, tsMax = -Infinity;\nconst labels = new Map();\nconst codes = new Map();\n\nfunction record(ms) {\n  if (ms < FINE_MAX) fine[Math.max(0, ms)]++;\n  else if (ms < COARSE_MAX) coarse[Math.floor((ms - FINE_MAX) / COARSE_MS)]++;\n  else over++;\n}\n\nfunction labelBucket(name) {\n  if (!labels.has(name)) {\n    if (labels.size >= MAX_LABELS) name = '(other)';\n    if (!labels.has(name)) labels.set(name, { count: 0, errors: 0, sum: 0, max: 0, lat: [] });\n  }\n  return labels.get(name);\n}\n\nfor (let i = headerIdx + 1; i < lines.length; i++) {\n  const raw = lines[i];\n  if (!raw || !raw.trim()) continue;\n  const f = splitCsvLine(raw);\n\n  let ms = NaN, ok = true, label = 'unknown', ts = NaN, code = '';\n\n  if (format === 'jmeter') {\n    ms = Number(f[col.elapsed]);\n    ok = String(f[col.success]).toLowerCase() !== 'false';\n    label = f[col.label] || 'unknown';\n    ts = Number(f[col.timeStamp]);\n    code = String(f[col.responseCode] || '').trim();\n  } else if (format === 'k6') {\n    // k6 emits one row per metric sample, so only the duration rows are\n    // requests. Everything else (vus, iterations, data_sent) is noise here.\n    if (String(f[col.metric_name]).trim() !== 'http_req_duration') continue;\n    ms = Number(f[col.metric_value]);\n    const expected = String(f[col.expected_response] || '').toLowerCase();\n    const status = Number(f[col.status]);\n    ok = expected === 'false' ? false : !(status >= 400);\n    label = f[col.name] || f[col.url] || 'unknown';\n    ts = Number(f[col.timestamp]) * 1000; // k6 timestamps are seconds\n    code = String(f[col.status] || '').trim();\n  } else {\n    continue;\n  }\n\n  if (!Number.isFinite(ms) || ms < 0) continue;\n\n  total++;\n  sum += ms;\n  if (ms < min) min = ms;\n  if (ms > max) max = ms;\n  record(Math.round(ms));\n  if (Number.isFinite(ts)) { if (ts < tsMin) tsMin = ts; if (ts > tsMax) tsMax = ts; }\n  if (!ok) {\n    failed++;\n    const key = code || 'unknown';\n    codes.set(key, (codes.get(key) || 0) + 1);\n  }\n\n  const b = labelBucket(label);\n  b.count++;\n  b.sum += ms;\n  if (ms > b.max) b.max = ms;\n  if (!ok) b.errors++;\n  if (b.lat.length < 20000) b.lat.push(ms); // enough for a per-label p95\n}\n\n// ----------------------------------------------------------- percentiles ----\nfunction percentile(p) {\n  if (!total) return 0;\n  const target = Math.ceil((p / 100) * total);\n  let seen = 0;\n  for (let i = 0; i < FINE_MAX; i++) {\n    seen += fine[i];\n    if (seen >= target) return i;\n  }\n  for (let i = 0; i < coarse.length; i++) {\n    seen += coarse[i];\n    if (seen >= target) return FINE_MAX + i * COARSE_MS + COARSE_MS / 2;\n  }\n  return COARSE_MAX;\n}\n\nfunction labelP95(arr) {\n  if (!arr.length) return 0;\n  const s = arr.slice().sort((a, b) => a - b);\n  return Math.round(s[Math.min(s.length - 1, Math.ceil(0.95 * s.length) - 1)]);\n}\n\nconst round1 = (n) => Math.round(n * 10) / 10;\nconst errorRate = total ? round1((failed / total) * 100) : 0;\nconst durationSec = (Number.isFinite(tsMin) && Number.isFinite(tsMax) && tsMax > tsMin)\n  ? (tsMax - tsMin) / 1000 : 0;\nconst throughput = durationSec ? round1(total / durationSec) : 0;\n\nconst p50 = percentile(50), p90 = percentile(90), p95 = percentile(95), p99 = percentile(99);\n\nconst perEndpoint = Array.from(labels.entries())\n  .map(([name, v]) => ({\n    label: name,\n    count: v.count,\n    error_rate: v.count ? round1((v.errors / v.count) * 100) : 0,\n    p95_ms: labelP95(v.lat),\n    mean_ms: v.count ? Math.round(v.sum / v.count) : 0,\n    max_ms: Math.round(v.max),\n  }))\n  .sort((a, b) => b.p95_ms - a.p95_ms);\n\nconst errorBreakdown = Array.from(codes.entries())\n  .map(([code, count]) => ({ code, count }))\n  .sort((a, b) => b.count - a.count)\n  .slice(0, 10);\n\n// ---------------------------------------------------------- the verdict ----\n// Arithmetic, not judgement. WARN exists because a run that squeaks through at\n// 1,950ms against a 2,000ms SLO is not a clean pass, and saying so is the\n// difference between a report and a rubber stamp.\nconst breaches = [];\nconst warnings = [];\nconst WARN_BAND = 0.9;\n\nfunction judge(name, actual, threshold, unit) {\n  if (threshold === null || threshold === undefined) return;\n  if (actual > threshold) {\n    breaches.push({\n      slo: name, threshold, actual, unit,\n      over_by_pct: threshold ? Math.round(((actual - threshold) / threshold) * 100) : 0,\n    });\n  } else if (actual >= threshold * WARN_BAND) {\n    warnings.push({ slo: name, threshold, actual, unit });\n  }\n}\n\njudge('p95 response time', p95, slo.p95_ms, 'ms');\njudge('p99 response time', p99, slo.p99_ms, 'ms');\njudge('error rate', errorRate, slo.error_rate_pct, '%');\nif (slo.min_throughput_rps) {\n  if (throughput < slo.min_throughput_rps) {\n    breaches.push({\n      slo: 'throughput', threshold: slo.min_throughput_rps, actual: throughput, unit: 'rps',\n      over_by_pct: -Math.round(((slo.min_throughput_rps - throughput) / slo.min_throughput_rps) * 100),\n    });\n  }\n}\n\nlet verdict;\nif (format === 'unknown' || total === 0) verdict = 'NO DATA';\nelse if (breaches.length) verdict = 'FAIL';\nelse if (warnings.length) verdict = 'WARN';\nelse verdict = 'PASS';\n\nreturn [{\n  json: {\n    test_name: testName,\n    source,\n    format,\n    verdict,\n    total_requests: total,\n    failed_requests: failed,\n    error_rate: errorRate,\n    p50_ms: p50, p90_ms: p90, p95_ms: p95, p99_ms: p99,\n    min_ms: total ? Math.round(min) : 0,\n    max_ms: Math.round(max),\n    mean_ms: total ? Math.round(sum / total) : 0,\n    throughput_rps: throughput,\n    duration_seconds: Math.round(durationSec),\n    started_at: Number.isFinite(tsMin) ? new Date(tsMin).toISOString() : '',\n    ended_at: Number.isFinite(tsMax) ? new Date(tsMax).toISOString() : '',\n    slo,\n    breaches,\n    warnings,\n    per_endpoint: perEndpoint.slice(0, 15),\n    endpoint_count: perEndpoint.length,\n    error_breakdown: errorBreakdown,\n    requests_over_60s: over,\n    no_data: total === 0,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7003",
+      "name": "Parse CSV Stats"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=PERFORMANCE RUN: {{ $json.test_name }}\nSource format: {{ $json.format }}\n\nVERDICT (already decided by comparing measurements against agreed thresholds - do not argue with it):\n  {{ $json.verdict }}\n\nMEASURED - these are the only figures you may use:\n  Requests: {{ $json.total_requests }}   Failed: {{ $json.failed_requests }}   Error rate: {{ $json.error_rate }}%\n  Response times (ms): p50 {{ $json.p50_ms }}, p90 {{ $json.p90_ms }}, p95 {{ $json.p95_ms }}, p99 {{ $json.p99_ms }}\n  Mean {{ $json.mean_ms }}ms, slowest {{ $json.max_ms }}ms\n  Throughput: {{ $json.throughput_rps }} requests/second over {{ $json.duration_seconds }} seconds\n\nAGREED THRESHOLDS:\n  p95 {{ $json.slo.p95_ms }}ms, p99 {{ $json.slo.p99_ms }}ms, error rate {{ $json.slo.error_rate_pct }}%\n\nBREACHED:\n{{ JSON.stringify($json.breaches, null, 1) }}\n\nCLOSE TO THE LIMIT (within 10%):\n{{ JSON.stringify($json.warnings, null, 1) }}\n\nPER ENDPOINT (slowest first):\n{{ JSON.stringify($json.per_endpoint, null, 1) }}\n\nERRORS BY RESPONSE CODE:\n{{ JSON.stringify($json.error_breakdown, null, 1) }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a performance engineer who has spent years presenting load test results to people who do not read percentile tables: product managers, delivery leads, and executives deciding whether to release.\n\nYour job is translation. The numbers have already been computed and the verdict has already been decided. You explain what they mean.\n\n## WHAT YOU DO NOT DO\n\n**You do not decide Pass or Fail.** The verdict is given to you. It was computed by comparing measured values against agreed thresholds. Do not argue with it, soften it, or imply a different one. If the verdict is FAIL, write as though it is FAIL.\n\n**You do not produce numbers.** Every figure you use must be one that appears in the statistics given to you. Do not calculate new ones, do not estimate, do not compare against runs you have not been shown, and never write a figure you cannot point at. Figures in your text are checked against the computed statistics, and invented ones are reported.\n\n**You do not diagnose causes you cannot see.** You have summary statistics, not traces, profiles or infrastructure metrics. \"The p95 is 4,210ms against a 2,000ms threshold, concentrated in the checkout endpoint\" is supported. \"The database connection pool is exhausted\" is not, unless the data says so. Where a cause is plausible but unproven, say so in those words.\n\n## WHO YOU ARE WRITING FOR\n\nSomeone who will not ask what p95 means, and will not admit they do not know.\n\n- Explain a percentile the first time you use one: \"the slowest 5% of requests took over 4.2 seconds\".\n- Prefer seconds to milliseconds for anything above about a second.\n- Say what a user experiences, not what a server does. \"One in twenty checkouts took more than four seconds\" beats \"p95 latency degraded\".\n- No jargon without a plain-language gloss: throughput, tail latency, saturation.\n- Never use the words \"simply\", \"just\" or \"obviously\".\n\n## WHAT TO WRITE\n\nheadline\n  One sentence. What happened, and whether it matters. A person reading only\n  this line should know whether to worry.\n\nbusiness_impact\n  Two or three sentences on what this means for real users and the business.\n  Translate the worst figure into an experience. If the run passed, say what\n  headroom there is rather than declaring victory.\n\nrisk_level\n  Low, Moderate, High or Critical. Your judgement of the risk of releasing on\n  these numbers. It is checked against the verdict: a failing run is never\n  Low risk.\n\nkey_findings\n  Three to five bullets. Each one must cite a figure you were given. Lead with\n  the finding that matters most, not the first one in the table.\n\nworst_offender_note\n  One or two sentences on the endpoint with the worst p95, and why it stands\n  out relative to the others. If nothing stands out, say that instead.\n\nrecommended_actions\n  Two to four concrete next steps, ordered by impact. Say who would do them and\n  what they would look at. \"Investigate the checkout endpoint, which is four\n  times slower than any other, starting with its database queries\" is useful.\n  \"Optimise performance\" is not.\n  If the data does not support a specific action, recommend the measurement\n  that would.\n\ncaveats\n  What this test does not prove. Load shape, duration, environment, whether it\n  is representative of production traffic. Be honest here - a stakeholder\n  acting on an unrepresentative test is a worse outcome than one who knows the\n  limits of what they have.\n\n## WHEN THERE IS NO DATA\n\nIf you are told the verdict is NO DATA, the file contained nothing readable. Say exactly that, state plainly that it is not a pass, and recommend checking the export. Do not speculate about performance."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -40,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7004",
+      "name": "Performance Analyst"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "maxTokensToSample": 3000,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        220
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7005",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "uur0A2QqUBroX2ua",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"headline\",\n    \"business_impact\",\n    \"risk_level\",\n    \"key_findings\",\n    \"worst_offender_note\",\n    \"recommended_actions\",\n    \"caveats\"\n  ],\n  \"properties\": {\n    \"headline\": {\n      \"type\": \"string\",\n      \"description\": \"One sentence. A reader who sees only this line should know whether to worry.\"\n    },\n    \"business_impact\": {\n      \"type\": \"string\",\n      \"description\": \"Two or three sentences on what this means for real users, in plain language.\"\n    },\n    \"risk_level\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Low\",\n        \"Moderate\",\n        \"High\",\n        \"Critical\"\n      ]\n    },\n    \"key_findings\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Three to five bullets, each citing a figure supplied in the statistics.\"\n    },\n    \"worst_offender_note\": {\n      \"type\": \"string\",\n      \"description\": \"One or two sentences on the endpoint with the worst p95 and why it stands out.\"\n    },\n    \"recommended_actions\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Two to four concrete next steps, ordered by impact.\"\n    },\n    \"caveats\": {\n      \"type\": \"string\",\n      \"description\": \"What this test does not prove: load shape, duration, environment, representativeness.\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        100,
+        220
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7006",
+      "name": "Report Schema"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge the computed statistics with the model's narrative, and refuse to let\n// the narrative contradict them.\n//\n// This report is read by people who cannot check it, which changes what\n// \"validation\" has to mean. It is not enough for the JSON to be well shaped:\n//   - the verdict must be the one arithmetic produced, not the one the model\n//     liked;\n//   - every figure quoted in the prose must be a figure the parser actually\n//     computed;\n//   - an empty test must never read as a passing one.\n\nconst stats = $('Parse CSV Stats').first().json;\nconst incoming = $input.first().json;\nconst model = (incoming && incoming.output) || incoming || {};\n\nconst RISKS = ['Low', 'Moderate', 'High', 'Critical', 'Unknown'];\nconst notes = [];\n\nconst str = (v, fallback) => {\n  if (v === undefined || v === null) return fallback;\n  const s = String(v).trim();\n  return s === '' ? fallback : s;\n};\nconst arr = (v) => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []);\nconst esc = (s) => String(s == null ? '' : s)\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\n\n// --- guard rail 1: the verdict is not the model's to give -------------------\nconst verdict = stats.verdict;\nlet risk = RISKS.includes(str(model.risk_level, '')) ? str(model.risk_level, '') : 'Unknown';\n\nif (verdict === 'NO DATA') {\n  risk = 'Unknown';\n  notes.push('No parseable requests were found, so no verdict was possible');\n} else if (verdict === 'FAIL' && (risk === 'Low' || risk === 'Unknown')) {\n  // A breached SLO is not low risk, whatever the prose says.\n  risk = 'High';\n  notes.push('Verdict is FAIL, so risk was raised to High');\n} else if (verdict === 'PASS' && risk === 'Critical') {\n  risk = 'Moderate';\n  notes.push('Verdict is PASS with no breaches, so Critical risk was lowered');\n}\n\n// --- guard rail 2: no figure may appear that the parser did not produce ------\n// Build the set of numbers that legitimately exist, then read every number out\n// of the model's prose and flag the ones that do not.\nconst allowed = new Set();\nconst allow = (n) => {\n  if (n === null || n === undefined || !Number.isFinite(Number(n))) return;\n  const v = Number(n);\n  allowed.add(v);\n  allowed.add(Math.round(v));\n  allowed.add(Math.round(v * 10) / 10);\n  if (v >= 1000) allowed.add(Math.round(v / 1000 * 10) / 10); // \"4.2 seconds\" for 4210ms\n};\n[\n  stats.total_requests, stats.failed_requests, stats.error_rate, stats.p50_ms, stats.p90_ms,\n  stats.p95_ms, stats.p99_ms, stats.min_ms, stats.max_ms, stats.mean_ms, stats.throughput_rps,\n  stats.duration_seconds, stats.endpoint_count, stats.requests_over_60s,\n  stats.slo && stats.slo.p95_ms, stats.slo && stats.slo.p99_ms,\n  stats.slo && stats.slo.error_rate_pct, stats.slo && stats.slo.min_throughput_rps,\n].forEach(allow);\n(stats.per_endpoint || []).forEach((e) => { allow(e.count); allow(e.p95_ms); allow(e.error_rate); allow(e.mean_ms); allow(e.max_ms); });\n(stats.error_breakdown || []).forEach((e) => { allow(e.count); allow(Number(e.code)); });\n(stats.breaches || []).forEach((b) => { allow(b.threshold); allow(b.actual); allow(Math.abs(b.over_by_pct)); });\n\nconst prose = [\n  str(model.headline, ''), str(model.business_impact, ''), str(model.worst_offender_note, ''),\n  str(model.caveats, ''), arr(model.key_findings).join(' '), arr(model.recommended_actions).join(' '),\n].join(' ');\n\nconst unverified = [];\n// Only check figures big enough to be claims. Small integers are ordinals and\n// list counts far more often than they are invented statistics.\nfor (const m of prose.matchAll(/\\b\\d[\\d,]*(?:\\.\\d+)?\\b/g)) {\n  const n = Number(m[0].replace(/,/g, ''));\n  if (!Number.isFinite(n) || n < 10) continue;\n  let ok = false;\n  for (const a of allowed) {\n    if (a === 0) { if (n === 0) { ok = true; break; } continue; }\n    if (Math.abs(n - a) / Math.abs(a) <= 0.01) { ok = true; break; }\n  }\n  if (!ok && !unverified.includes(m[0])) unverified.push(m[0]);\n}\nif (unverified.length) {\n  notes.push('figures not produced by the parser appear in the narrative: ' + unverified.join(', '));\n}\n\n// --- assemble ---------------------------------------------------------------\nconst headline = verdict === 'NO DATA'\n  ? 'No usable data was found in the supplied report'\n  : str(model.headline, 'Performance run completed');\n\nconst report = {\n  test_name: stats.test_name,\n  verdict,\n  risk_level: risk,\n  headline,\n  business_impact: verdict === 'NO DATA'\n    ? 'The file contained no rows this analyser could read, so nothing can be said about performance. This is not a pass.'\n    : str(model.business_impact, 'Not Provided'),\n  key_findings: arr(model.key_findings).slice(0, 6),\n  worst_offender_note: str(model.worst_offender_note, 'Not Provided'),\n  recommended_actions: arr(model.recommended_actions).slice(0, 6),\n  caveats: str(model.caveats, 'Not Provided'),\n\n  // every number below comes from the parser, never the model\n  total_requests: stats.total_requests,\n  failed_requests: stats.failed_requests,\n  error_rate: stats.error_rate,\n  p50_ms: stats.p50_ms, p90_ms: stats.p90_ms, p95_ms: stats.p95_ms, p99_ms: stats.p99_ms,\n  mean_ms: stats.mean_ms, max_ms: stats.max_ms,\n  throughput_rps: stats.throughput_rps,\n  duration_seconds: stats.duration_seconds,\n  format: stats.format,\n  slo: stats.slo,\n  breaches: stats.breaches,\n  warnings: stats.warnings,\n  per_endpoint: stats.per_endpoint,\n  error_breakdown: stats.error_breakdown,\n  figures_unverified: unverified.length > 0,\n  validation_notes: notes.length ? notes : ['No corrections were needed'],\n};\n\n// --- fragments for the HTML node --------------------------------------------\n// The HTML node interpolates expressions but cannot loop, so the repeating\n// parts are rendered here.\nconst VERDICT_COLOUR = { PASS: '#0f7a52', WARN: '#96620a', FAIL: '#b02a20', 'NO DATA': '#55607a' };\n\nreport.verdict_colour = VERDICT_COLOUR[verdict] || '#55607a';\n\nreport.findings_html = report.key_findings.length\n  ? report.key_findings.map((f) => '<li>' + esc(f) + '</li>').join('')\n  : '<li>Not Provided</li>';\n\nreport.actions_html = report.recommended_actions.length\n  ? report.recommended_actions.map((a) => '<li>' + esc(a) + '</li>').join('')\n  : '<li>Not Provided</li>';\n\nreport.breaches_html = (report.breaches || []).length\n  ? report.breaches.map((b) =>\n      '<tr><td>' + esc(b.slo) + '</td><td class=\"num\">' + esc(b.threshold) + esc(b.unit) +\n      '</td><td class=\"num bad\">' + esc(b.actual) + esc(b.unit) + '</td><td class=\"num bad\">+' +\n      esc(b.over_by_pct) + '%</td></tr>').join('')\n  : '<tr><td colspan=\"4\">No thresholds were breached.</td></tr>';\n\nreport.endpoints_html = (report.per_endpoint || []).length\n  ? report.per_endpoint.map((e) =>\n      '<tr><td>' + esc(e.label) + '</td><td class=\"num\">' + esc(e.count) +\n      '</td><td class=\"num\">' + esc(e.p95_ms) + 'ms</td><td class=\"num' +\n      (e.error_rate > 0 ? ' bad' : '') + '\">' + esc(e.error_rate) + '%</td></tr>').join('')\n  : '<tr><td colspan=\"4\">No endpoint breakdown available.</td></tr>';\n\n// --- Telegram body ----------------------------------------------------------\nconst mark = { PASS: 'PASS', WARN: 'WARN', FAIL: 'FAIL', 'NO DATA': 'NO DATA' }[verdict];\nreport.telegram_text = [\n  mark + ' - ' + report.test_name,\n  '',\n  report.headline,\n  '',\n  'Requests: ' + report.total_requests + '   Errors: ' + report.failed_requests + ' (' + report.error_rate + '%)',\n  'p95: ' + report.p95_ms + 'ms   p99: ' + report.p99_ms + 'ms   throughput: ' + report.throughput_rps + '/s',\n  'SLO: p95 ' + report.slo.p95_ms + 'ms, p99 ' + report.slo.p99_ms + 'ms, errors ' + report.slo.error_rate_pct + '%',\n  '',\n  (report.breaches || []).length\n    ? 'Breached: ' + report.breaches.map((b) => b.slo + ' ' + b.actual + b.unit + ' vs ' + b.threshold + b.unit).join('; ')\n    : 'No thresholds breached.',\n  '',\n  'Impact: ' + report.business_impact,\n  '',\n  'Actions:',\n  report.recommended_actions.length ? report.recommended_actions.map((a, i) => (i + 1) + '. ' + a).join('\\n') : 'Not Provided',\n  '',\n  'Risk: ' + report.risk_level,\n].join('\\n');\n\nreturn [{ json: report }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7007",
+      "name": "Compose Report"
+    },
+    {
+      "parameters": {
+        "operation": "generateHtmlTemplate",
+        "html": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>{{ $json.test_name }} — performance summary</title>\n<style>\n  :root{\n    --ink:#131826; --ink-2:#4d5871; --ink-3:#8a94ab;\n    --line:#e4e7f0; --line-soft:#eef0f7; --paper:#f6f7fb; --card:#ffffff;\n    --accent:#3452d4;\n    --good:#0f7a52; --good-bg:#e8f4ef;\n    --warn:#96620a; --warn-bg:#fbf3e3;\n    --bad:#b02a20;  --bad-bg:#fbeceb;\n  }\n  *{box-sizing:border-box}\n  body{\n    margin:0; padding:32px 20px; background:var(--paper); color:var(--ink);\n    font-family:\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;\n    -webkit-font-smoothing:antialiased; line-height:1.55;\n  }\n  .sheet{max-width:760px; margin:0 auto; background:var(--card);\n    border:1px solid var(--line); border-radius:14px; overflow:hidden;\n    box-shadow:0 1px 2px rgba(19,24,38,.04), 0 24px 48px -28px rgba(19,24,38,.22);}\n  .band{padding:26px 34px 22px; border-bottom:1px solid var(--line); border-top:5px solid {{ $json.verdict_colour }};}\n  .eyebrow{margin:0 0 10px; font-size:11px; font-weight:700; letter-spacing:.12em;\n    text-transform:uppercase; color:var(--ink-3);}\n  .verdictrow{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin:0 0 12px}\n  .verdict{font-size:38px; font-weight:700; letter-spacing:-.02em; line-height:1; color:{{ $json.verdict_colour }};}\n  .risk{font-size:12.5px; font-weight:600; padding:4px 11px; border-radius:999px;\n    background:var(--line-soft); color:var(--ink-2);}\n  h1{margin:0; font-size:19px; font-weight:600; letter-spacing:-.01em; line-height:1.4;}\n  .sub{margin:6px 0 0; font-size:13px; color:var(--ink-3)}\n  .body{padding:26px 34px 30px}\n  h2{margin:26px 0 10px; font-size:12px; font-weight:700; letter-spacing:.1em;\n    text-transform:uppercase; color:var(--ink-3);}\n  h2:first-child{margin-top:0}\n  p{margin:0 0 12px; font-size:15px; color:var(--ink-2)}\n  ul{margin:0; padding-left:20px; display:block}\n  li{margin:0 0 7px; font-size:14.5px; color:var(--ink-2)}\n  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));\n    gap:1px; background:var(--line); border:1px solid var(--line); border-radius:10px; overflow:hidden;}\n  .tile{background:var(--card); padding:13px 15px}\n  .tile dt{margin:0 0 4px; font-size:10.5px; font-weight:700; letter-spacing:.08em;\n    text-transform:uppercase; color:var(--ink-3)}\n  .tile dd{margin:0; font-size:19px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--ink)}\n  table{width:100%; border-collapse:collapse; margin:0; font-size:13.5px}\n  th{text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;\n    color:var(--ink-3); padding:8px 10px; border-bottom:1px solid var(--line);}\n  td{padding:9px 10px; border-bottom:1px solid var(--line-soft); color:var(--ink-2)}\n  td.num{text-align:right; font-variant-numeric:tabular-nums}\n  td.bad{color:var(--bad); font-weight:600}\n  .note{margin-top:22px; padding:13px 16px; border-radius:9px; background:var(--warn-bg);\n    border-left:3px solid var(--warn); font-size:13px; color:var(--ink-2)}\n  .foot{padding:16px 34px 22px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-3)}\n  .scroll{overflow-x:auto}\n  @media print{body{background:#fff; padding:0} .sheet{border:0; box-shadow:none}}\n</style>\n</head>\n<body>\n<div class=\"sheet\">\n\n  <div class=\"band\">\n    <p class=\"eyebrow\">Executive performance summary</p>\n    <div class=\"verdictrow\">\n      <span class=\"verdict\">{{ $json.verdict }}</span>\n      <span class=\"risk\">{{ $json.risk_level }} risk</span>\n    </div>\n    <h1>{{ $json.headline }}</h1>\n    <p class=\"sub\">{{ $json.test_name }} &middot; {{ $json.total_requests }} requests over {{ $json.duration_seconds }}s &middot; {{ $json.format }} report</p>\n  </div>\n\n  <div class=\"body\">\n\n    <h2>What this means</h2>\n    <p>{{ $json.business_impact }}</p>\n\n    <h2>The numbers</h2>\n    <dl class=\"tiles\">\n      <div class=\"tile\"><dt>Median</dt><dd>{{ $json.p50_ms }}ms</dd></div>\n      <div class=\"tile\"><dt>p95</dt><dd>{{ $json.p95_ms }}ms</dd></div>\n      <div class=\"tile\"><dt>p99</dt><dd>{{ $json.p99_ms }}ms</dd></div>\n      <div class=\"tile\"><dt>Errors</dt><dd>{{ $json.error_rate }}%</dd></div>\n      <div class=\"tile\"><dt>Throughput</dt><dd>{{ $json.throughput_rps }}/s</dd></div>\n    </dl>\n\n    <h2>Against the agreed thresholds</h2>\n    <div class=\"scroll\">\n      <table>\n        <tr><th>Threshold</th><th style=\"text-align:right\">Agreed</th><th style=\"text-align:right\">Measured</th><th style=\"text-align:right\">Over by</th></tr>\n        {{ $json.breaches_html }}\n      </table>\n    </div>\n\n    <h2>Key findings</h2>\n    <ul>{{ $json.findings_html }}</ul>\n\n    <h2>Slowest endpoints</h2>\n    <div class=\"scroll\">\n      <table>\n        <tr><th>Endpoint</th><th style=\"text-align:right\">Requests</th><th style=\"text-align:right\">p95</th><th style=\"text-align:right\">Errors</th></tr>\n        {{ $json.endpoints_html }}\n      </table>\n    </div>\n    <p style=\"margin-top:10px; font-size:13px; color:var(--ink-3)\">{{ $json.worst_offender_note }}</p>\n\n    <h2>Recommended actions</h2>\n    <ul>{{ $json.actions_html }}</ul>\n\n    <div class=\"note\"><strong>What this test does not prove.</strong> {{ $json.caveats }}</div>\n\n  </div>\n\n  <div class=\"foot\">\n    Thresholds: p95 {{ $json.slo.p95_ms }}ms &middot; p99 {{ $json.slo.p99_ms }}ms &middot; error rate {{ $json.slo.error_rate_pct }}%.\n    Every figure above was computed from the raw report; the commentary was drafted automatically and reviewed against those figures.\n  </div>\n\n</div>\n</body>\n</html>"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7008",
+      "name": "Build HTML Report"
+    },
+    {
+      "parameters": {
+        "chatId": "831685806",
+        "text": "={{ $('Compose Report').first().json.telegram_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7009",
+      "name": "Send to Telegram",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "REPLACE_WITH_YOUR_FROM_ADDRESS",
+        "toEmail": "REPLACE_WITH_YOUR_STAKEHOLDER_ADDRESS",
+        "subject": "={{ $('Compose Report').first().json.verdict }} - {{ $('Compose Report').first().json.test_name }} performance summary",
+        "emailFormat": "html",
+        "html": "={{ $('Build HTML Report').first().json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7010",
+      "name": "Email Report",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify(Object.assign({}, $('Compose Report').first().json, { html: $('Build HTML Report').first().json.html })) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        0
+      ],
+      "id": "e2b8f41c-6a35-4d18-9c07-1b4e5f6a7011",
+      "name": "Respond to Caller"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Perf Test Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Stats": {
+      "main": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Performance Analyst": {
+      "main": [
+        [
+          {
+            "node": "Compose Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose Report": {
+      "main": [
+        [
+          {
+            "node": "Build HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Email Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Report": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Performance Analyst",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
