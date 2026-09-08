@@ -81,6 +81,15 @@ Webhook            POST /perf-report  {csv_url | csv_text | file, slo{...}}
 | Email Report | `emailSend` | Built, shipped **disabled** — no SMTP credential |
 | Respond to Caller | `respondToWebhook` | Returns the report and the HTML |
 
+![The workflow on the n8n canvas after a successful run: every node green with one item flowing through each connection, Email Report greyed out as Deactivated, and the webhook body showing a 667KB csv_text payload](Performance_Test_Analyzer_n8n_workflow.png)
+
+A completed run, reported by n8n as **2,583 tokens**. Two things are visible
+here that are otherwise only claims: `Email Report` sits in the chain marked
+"(Deactivated)" with an item still flowing through it into `Respond to Caller`,
+and the webhook body panel shows the raw `csv_text` going in at a
+`content-length` of 667,461 bytes — the whole CSV, none of which reaches the
+model.
+
 ### Two formats, detected not declared
 
 The parser reads the header row and works out which tool produced the file.
@@ -143,15 +152,37 @@ curl -X POST "https://<your-n8n-host>/webhook-test/perf-report" \
   -d "{\"test_name\":\"Checkout load test\",\"csv_text\":$(node -e "console.log(JSON.stringify(require('fs').readFileSync('sample_jmeter.csv','utf8')))")}"
 ```
 
-Measured result:
+## Proven end to end
+
+That request was run against the live workflow on n8n Cloud — a 667 KB payload,
+**HTTP 200 in 5.1 seconds**:
 
 ```
-verdict   FAIL      p95 2271ms vs 2000, error rate 2.0% vs 1.0%
+verdict   FAIL      p95 2271ms vs 2000 (+14%), error rate 2.0% vs 1.0% (+100%)
 p99       3565ms    inside its threshold, correctly not flagged
 worst     POST /api/checkout   p95 4067ms, 13.6% errors
 errors    504 x53, 500 x48
-cost      2,807 tokens, 2.4s
+figures   figures_unverified: false — "No corrections were needed"
 ```
+
+The histogram matched the raw data exactly: p50 254 ms, p95 2271 ms, p99
+3565 ms, all identical to the true values, computed in one pass without sorting.
+
+### What arrives on a phone
+
+![The Telegram message: FAIL - Checkout load test, the request and latency figures, the two breached thresholds, the plain-language impact paragraph, four numbered actions and Risk High](Reported%20to%20Telegram.jpg)
+
+### What goes to a stakeholder
+
+[`Executive_Performance_Summary.pdf`](Executive_Performance_Summary.pdf) is the
+report from that run, printed straight from the HTML the workflow returned —
+which is the "two clicks to a PDF" claim made concrete rather than asserted.
+
+Note what the narrative does with the numbers. The parser produced `2271` and
+`4067` milliseconds; the model wrote "2.27 seconds" and "4.07 seconds", and the
+figure checker passed both. That unit conversion is exactly what the checker
+rejected on its first build, and fixing it is what stopped the guard rail from
+punishing the translation the agent exists to perform.
 
 Send `csv_url` instead to pull a real artefact from CI, or POST the file itself.
 
