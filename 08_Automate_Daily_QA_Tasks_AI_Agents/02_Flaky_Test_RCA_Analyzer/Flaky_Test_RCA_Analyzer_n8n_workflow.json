@@ -1,0 +1,282 @@
+{
+  "name": "Flaky Test RCA Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flaky-rca",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        0
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a01",
+      "name": "Flaky Test Webhook",
+      "webhookId": "d94f1a26-8c37-4b05-9e61-2a7c8f3b5d10"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.runs_url || 'https://example.invalid/no-runs-url' }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -440,
+        0
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a02",
+      "name": "Fetch Run Logs",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn a pile of multi-run logs into the smallest evidence block that can still\n// prove a pattern, and count everything the model must not be asked to count.\n//\n// This node exists because of one number: Groq's free tier allows 8,000 tokens\n// per minute, and that ceiling is on INPUT. A single Playwright failure log is\n// bigger than the whole per-minute allowance, so the logs cannot simply be\n// forwarded. Choosing which lines matter is code's job, not the prompt's.\n//\n// It also does all the arithmetic. Flakiness is a frequency claim, and models\n// are unreliable at counting - so runs, failures and the rate are computed here\n// and the model is only asked to explain the pattern.\n\n// ~3k tokens at ~4 chars/token. The rest of the 8,000/minute ceiling goes on\n// the system message (~1.1k), the schema the parser injects (~0.4k) and the\n// answer. The answer needs far more room than it looks: gpt-oss reasons before\n// it replies, that reasoning is billed as completion, and n8n's Groq node has\n// no reasoning_effort setting to turn it down - so the budget below is what is\n// left after leaving ~3k for it.\nconst CHAR_BUDGET = 12000;\nconst MIN_PER_RUN = 350;\nconst CONTEXT_LINES = 3;\nconst MAX_FAILING_SHOWN = 12;\n\n// Lines worth keeping. A 4,000 line log usually has about 20 of them.\nconst SIGNAL = /(error|exception|timeout|timed out|econnre|econnrefused|etimedout|refused|unreachable|stale|not found|no such element|assert|expect(ed)?|actual|received|fail(ed|ure)?|retry|retrying|flake|panic|fatal|traceback|unhandled|at [A-Za-z0-9_$.]+\\()/i;\nconst PASS_WORD = /(pass|success|ok\\b|green|completed)/i;\nconst FAIL_WORD = /(fail|error|broken|timed_out|timeout|cancel|red)/i;\n\nconst hook = $('Flaky Test Webhook').first().json;\nconst body = (hook && hook.body) || hook || {};\nconst testName = String(body.test_name || 'Unnamed test').trim();\n\n// Runs arrive one of two ways: inline on the webhook, or fetched by the HTTP\n// node from whatever CI is in use. Inline wins - it is what makes this\n// workflow runnable without a CI attached.\nfunction pickRuns(payload) {\n  if (!payload) return [];\n  if (Array.isArray(payload)) return payload;\n  for (const key of ['runs', 'items', 'data', 'results', 'workflow_runs', 'builds', 'executions']) {\n    if (Array.isArray(payload[key])) return payload[key];\n  }\n  if (payload.log || payload.logs || payload.output || payload.stdout) return [payload];\n  return [];\n}\n\nlet source = 'inline';\nlet raw = pickRuns(body.runs);\nif (!raw.length) {\n  source = 'fetched';\n  let fetched = null;\n  try { fetched = $input.first().json; } catch (e) { fetched = null; }\n  raw = pickRuns(fetched);\n}\n\nfunction normalize(run, i) {\n  const log = String(\n    run.log ?? run.logs ?? run.output ?? run.stdout ?? run.stderr ?? run.message ?? run.body ?? ''\n  );\n  const statusRaw = String(run.status ?? run.conclusion ?? run.result ?? run.outcome ?? '').trim();\n  let status;\n  if (PASS_WORD.test(statusRaw)) status = 'passed';\n  else if (FAIL_WORD.test(statusRaw)) status = 'failed';\n  else status = log && SIGNAL.test(log) ? 'failed' : 'unknown';\n\n  return {\n    run_id: String(run.run_id ?? run.id ?? run.number ?? run.build ?? 'run-' + (i + 1)),\n    status,\n    started_at: String(run.started_at ?? run.created_at ?? run.timestamp ?? run.date ?? ''),\n    duration_ms: Number(run.duration_ms ?? run.duration ?? 0) || 0,\n    log,\n  };\n}\n\n// Keep the lines around every signal hit rather than a blind tail - the useful\n// part of a long log is rarely at the end.\nfunction failureRegion(log, budget) {\n  const lines = String(log).split(/\\r?\\n/);\n  const keep = new Set();\n  lines.forEach((line, i) => {\n    if (SIGNAL.test(line)) {\n      for (let j = Math.max(0, i - CONTEXT_LINES); j <= Math.min(lines.length - 1, i + CONTEXT_LINES); j++) {\n        keep.add(j);\n      }\n    }\n  });\n\n  let picked = Array.from(keep).sort((a, b) => a - b);\n  let matched = picked.length > 0;\n  if (!matched) picked = lines.map((_, i) => i).slice(-20); // nothing matched: the tail is next best\n\n  const out = [];\n  let used = 0;\n  let prev = -1;\n  let clipped = false;\n  for (const i of picked) {\n    if (prev !== -1 && i > prev + 1) { out.push('...'); used += 4; }\n    const line = String(lines[i]).trim();\n    if (!line) { prev = i; continue; }\n    if (used + line.length + 1 > budget) { out.push('... [truncated to fit the token budget]'); clipped = true; break; }\n    out.push(line);\n    used += line.length + 1;\n    prev = i;\n  }\n  return { text: out.join('\\n'), clipped, matched };\n}\n\n// Collapse a line into something comparable across runs: no numbers, no paths,\n// no hex, no timestamps. Two runs failing \"after 30012ms\" and \"after 30004ms\"\n// have to land on the same signature or nothing clusters.\nfunction signature(line) {\n  return String(line)\n    .replace(/\\d{4}-\\d{2}-\\d{2}[T ][\\d:.,]+Z?/g, '<ts>')\n    .replace(/0x[0-9a-fA-F]+/g, '<hex>')\n    .replace(/[A-Za-z]:\\\\[^\\s:]+/g, '<path>')\n    .replace(/\\/[\\w./-]+\\.(js|ts|py|java|rb|go|cs)\\b/g, '<path>')\n    .replace(/\\b\\d+(\\.\\d+)?\\s*(ms|s|sec|seconds|minutes)?\\b/gi, '<n>')\n    .replace(/\\s+/g, ' ')\n    .trim()\n    .slice(0, 120);\n}\n\n// Pick the line the run actually failed on, not merely the first interesting\n// one. Taking the first match keys the signature on whatever noise came\n// earliest - a DEBUG \"retrying request\" line - so two runs that died on the\n// identical timeout end up in different buckets and no pattern clusters.\nconst SEVERE = /(^\\s*(Error|Exception|AssertionError|FATAL|PANIC)\\b|Timeout \\d+\\s*ms exceeded|ECONNRESET|ECONNREFUSED|ETIMEDOUT|StaleElement|NoSuchElement)/i;\nconst MODERATE = /(assert|expect(ed)?:|received:|fail(ed|ure))/i;\n\nfunction topSignalLine(log) {\n  const lines = String(log).split(/\\r?\\n/).map((l) => l.trim()).filter(Boolean);\n  return (\n    lines.find((l) => SEVERE.test(l)) ||\n    lines.find((l) => MODERATE.test(l)) ||\n    lines.find((l) => SIGNAL.test(l)) ||\n    ''\n  );\n}\n\nconst runs = raw.map(normalize);\nconst failing = runs.filter((r) => r.status === 'failed');\nconst passing = runs.filter((r) => r.status === 'passed');\nconst unknown = runs.filter((r) => r.status === 'unknown');\n\nconst shown = failing.slice(0, MAX_FAILING_SHOWN);\nconst perRun = Math.max(MIN_PER_RUN, Math.floor(CHAR_BUDGET / Math.max(1, shown.length)));\n\nlet anyClipped = shown.length < failing.length;\nconst blocks = shown.map((run) => {\n  const region = failureRegion(run.log, perRun);\n  if (region.clipped) anyClipped = true;\n  const when = run.started_at ? ' at ' + run.started_at : '';\n  const dur = run.duration_ms ? ' after ' + run.duration_ms + 'ms' : '';\n  return 'RUN ' + run.run_id + ' (failed' + dur + when + ')\\n' + (region.text || '(no log captured for this run)');\n});\n\n// Count in code. The model is told these numbers, never asked for them.\nconst tally = {};\nfailing.forEach((run) => {\n  const sig = signature(topSignalLine(run.log));\n  if (!sig) return;\n  tally[sig] = (tally[sig] || 0) + 1;\n});\nconst signature_tally = Object.keys(tally)\n  .map((sig) => ({ signature: sig, occurrences: tally[sig] }))\n  .sort((a, b) => b.occurrences - a.occurrences);\n\n// The per-run budget covers log text only, so the run headers and separators\n// push the assembled block a little over. Trim the whole thing as a last step\n// - the ceiling has to hold for the assembled block, not just its parts.\nlet evidence_block = blocks.join('\\n\\n');\nif (evidence_block.length > CHAR_BUDGET) {\n  evidence_block = evidence_block.slice(0, CHAR_BUDGET - 40) + '\\n... [truncated to fit the token budget]';\n  anyClipped = true;\n}\nconst total = runs.length;\n\nreturn [{\n  json: {\n    test_name: testName,\n    source,\n    runs_analyzed: total,\n    failed_runs: failing.length,\n    passed_runs: passing.length,\n    unknown_runs: unknown.length,\n    flakiness_rate: total ? Math.round((failing.length / total) * 1000) / 10 : 0,\n    run_ids: runs.map((r) => r.run_id),\n    failing_run_ids: failing.map((r) => r.run_id),\n    signature_tally,\n    evidence_block,\n    evidence_chars: evidence_block.length,\n    truncated: anyClipped,\n    evidence_completeness: anyClipped ? 'Partial' : 'Complete',\n    // Guard rail 1 lives here as a fact, and is enforced again after the model.\n    insufficient_runs: failing.length < 2,\n    no_runs: total === 0,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        0
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a03",
+      "name": "Budget The Evidence"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=TEST: {{ $json.test_name }}\n\nCOUNTS - already computed, do not recompute or contradict:\n  Runs analysed: {{ $json.runs_analyzed }}\n  Failed: {{ $json.failed_runs }}\n  Passed: {{ $json.passed_runs }}\n  Flakiness rate: {{ $json.flakiness_rate }}%\n  Evidence completeness: {{ $json.evidence_completeness }}\n\nFAILURE SIGNATURES - the first signal line of each failing run, grouped:\n{{ JSON.stringify($json.signature_tally, null, 1) }}\n\nLOG EXCERPTS FROM THE FAILING RUNS:\n{{ $json.evidence_block }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a Staff SDET who has spent years killing flaky tests. You have learned that the cause is almost never in one failure - it is in what several failures have in common.\n\nYour job is to read excerpts from multiple runs of ONE test and name the pattern behind the intermittency, then propose a fix.\n\n## THE RULE THAT MATTERS MOST\n\nOne failing run is not a pattern. It is a stack trace.\n\nIf fewer than two runs failed, you must set dominant_pattern to \"Insufficient Runs\", set confidence to \"Low\", and use missing_information to say how many more runs are needed. Do not analyse the single failure as though it explained the flakiness. A single trace always looks like an explanation, and acting on it wastes an engineer's day.\n\n## THE SECOND RULE\n\nFailures that do not resemble each other are not one bug.\n\nIf the runs failed for genuinely different reasons, set dominant_pattern to \"No Dominant Pattern\" and describe the separate signatures in suspected_cause. Do not pick the most impressive-looking failure and present it as the cause. A test can be broken in three ways at once.\n\n## EVIDENCE RULES\n\n- Quote verbatim. Every entry in evidence must be a line copied exactly from the supplied logs, with the run_id it came from.\n- Never paraphrase, tidy, complete or translate a log line. If it is truncated in the input, it stays truncated.\n- Use only the supplied excerpts. You may not draw on knowledge of the product, the framework or the infrastructure beyond what the lines show.\n- If a line does not appear in the input, it does not exist. Quotations are checked.\n- Anything you cannot determine is \"Unable to Determine\". Never guess.\n\n## DO NOT COUNT\n\nThe run totals, the failure count and the flakiness rate have already been computed and are given to you. Do not recompute them and do not contradict them. The only number you supply is pattern_frequency: how many of the failing runs show the dominant pattern. It can never exceed the failure count you were given.\n\n## CATEGORY - pick exactly one\n\nTiming and Race Condition      fixed sleeps, unawaited async work, animation or transition races\nNetwork or Timeout             socket timeouts, connection resets, refused connections, slow upstream\nTest Data and State            leftover records, colliding fixtures, non-unique data\nEnvironment and Infrastructure runner load, container or service start-up, clock skew, disk\nSelector or Locator            stale element, changed DOM, index-based or brittle lookups\nTest Ordering and Shared State passes alone but fails in the suite, shared globals, leaked sessions\nResource Exhaustion            memory, file handles, connection or thread pools\nExternal Dependency            third-party sandbox, rate limiting, an upstream service\nAssertion Tolerance            exact comparison against something inherently variable\nUnable to Determine\n\n## FIX TYPE\n\nTest Fix            the test is wrong - waits, selectors, isolation, data setup\nProduct Fix         the application is genuinely defective and the test is right to fail\nInfrastructure Fix  the environment or runner is the problem, not the code\nUnable to Determine\n\nBe careful with this one. A flaky test is not automatically a bad test. If the logs show the product intermittently returning a wrong result, say Product Fix - quarantining a test that is correctly catching a real defect is the worst outcome of a triage like this.\n\n## RECOMMENDATION\n\nFix Now      the pattern is clear and the fix is known\nQuarantine   it is blocking others and the cause needs real investigation\nMonitor      not enough evidence yet, or the failure rate is very low\nNot Flaky    the failures are consistent and explained - this test is simply failing\n\n## CONFIDENCE\n\nHigh    the same signature appears across most failing runs and the cause follows directly from it\nMedium  a pattern is visible but the logs leave part of the chain unproven\nLow     little evidence, conflicting signatures, or fewer than two failures\n\n## FIX SUGGESTION\n\nOne concrete action an SDET can take, specific enough to start on. \"Add a wait\" is useless. \"Replace the fixed 2s sleep before the assertion with a wait on the network idle event, since three runs failed at exactly 30s after the request was still in flight\" is useful.\n\nIf you cannot suggest something specific from the evidence, say \"Not Provided\" rather than inventing generic advice."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        20,
+        0
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a04",
+      "name": "Flaky Pattern Detective"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "maxTokensToSample": 3000,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        220
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a05",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "uur0A2QqUBroX2ua",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"dominant_pattern\",\n    \"pattern_frequency\",\n    \"category\",\n    \"evidence\",\n    \"suspected_cause\",\n    \"fix_suggestion\",\n    \"fix_type\",\n    \"recommendation\",\n    \"confidence\",\n    \"missing_information\"\n  ],\n  \"properties\": {\n    \"dominant_pattern\": {\n      \"type\": \"string\",\n      \"description\": \"The pattern behind the intermittency, e.g. \\\"Network Timeout\\\". Use \\\"No Dominant Pattern\\\" when the failures do not resemble each other, or \\\"Insufficient Runs\\\" when fewer than two runs failed.\"\n    },\n    \"pattern_frequency\": {\n      \"type\": \"number\",\n      \"description\": \"How many of the failing runs show this pattern. Never more than the failure count supplied.\"\n    },\n    \"category\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Timing and Race Condition\",\n        \"Network or Timeout\",\n        \"Test Data and State\",\n        \"Environment and Infrastructure\",\n        \"Selector or Locator\",\n        \"Test Ordering and Shared State\",\n        \"Resource Exhaustion\",\n        \"External Dependency\",\n        \"Assertion Tolerance\",\n        \"Unable to Determine\"\n      ]\n    },\n    \"evidence\": {\n      \"type\": \"array\",\n      \"description\": \"Verbatim lines copied from the supplied logs. Quotations are checked against the input.\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"run_id\",\n          \"quoted_line\"\n        ],\n        \"properties\": {\n          \"run_id\": {\n            \"type\": \"string\"\n          },\n          \"quoted_line\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"suspected_cause\": {\n      \"type\": \"string\",\n      \"description\": \"Why this pattern produces intermittency rather than a constant failure.\"\n    },\n    \"fix_suggestion\": {\n      \"type\": \"string\",\n      \"description\": \"One concrete action, specific enough to start on. \\\"Not Provided\\\" if the evidence does not support one.\"\n    },\n    \"fix_type\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Test Fix\",\n        \"Product Fix\",\n        \"Infrastructure Fix\",\n        \"Unable to Determine\"\n      ]\n    },\n    \"recommendation\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Fix Now\",\n        \"Quarantine\",\n        \"Monitor\",\n        \"Not Flaky\"\n      ]\n    },\n    \"confidence\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"High\",\n        \"Medium\",\n        \"Low\"\n      ]\n    },\n    \"missing_information\": {\n      \"type\": \"string\",\n      \"description\": \"What to collect to raise confidence. \\\"None\\\" if nothing.\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        220
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a06",
+      "name": "RCA Schema"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Last line of defence before anything leaves the workflow.\n//\n// The structured output parser already shapes the model's answer, so this node\n// is not here to parse - it is here to disbelieve. Three things it checks that\n// a schema cannot:\n//   1. Every quoted line must actually occur in the evidence that was sent.\n//      A fabricated quotation is the one failure that would make this tool\n//      worse than useless, because an SDET would act on it.\n//   2. The counts come from the Budget node, not the model. Flakiness is a\n//      frequency claim and models miscount.\n//   3. One failing run is never a pattern, however confident the answer reads.\n\nconst ctx = $('Budget The Evidence').first().json;\nconst incoming = $input.first().json;\nconst model = (incoming && incoming.output) || incoming || {};\n\nconst CATEGORIES = [\n  'Timing and Race Condition',\n  'Network or Timeout',\n  'Test Data and State',\n  'Environment and Infrastructure',\n  'Selector or Locator',\n  'Test Ordering and Shared State',\n  'Resource Exhaustion',\n  'External Dependency',\n  'Assertion Tolerance',\n  'Unable to Determine',\n];\nconst FIX_TYPES = ['Test Fix', 'Product Fix', 'Infrastructure Fix', 'Unable to Determine'];\nconst RECOMMENDATIONS = ['Fix Now', 'Quarantine', 'Monitor', 'Not Flaky'];\nconst CONFIDENCES = ['High', 'Medium', 'Low'];\n\nconst str = (v, fallback) => {\n  if (v === undefined || v === null) return fallback;\n  const s = String(v).trim();\n  return s === '' ? fallback : s;\n};\nconst oneOf = (v, allowed, fallback) => {\n  const s = str(v, '');\n  const hit = allowed.find((a) => a.toLowerCase() === s.toLowerCase());\n  return hit || fallback;\n};\n\n// Normalise whitespace so a quote is not rejected over indentation alone.\nconst flat = (s) => String(s).replace(/\\s+/g, ' ').trim().toLowerCase();\nconst haystack = flat(ctx.evidence_block || '');\n\nconst notes = [];\n\n// --- evidence: keep only quotes that are really in the logs -----------------\nlet evidence = Array.isArray(model.evidence) ? model.evidence : [];\nconst before = evidence.length;\nevidence = evidence\n  .map((e) => ({\n    run_id: str(e && e.run_id, 'Not Provided'),\n    quoted_line: str(e && e.quoted_line, ''),\n  }))\n  .filter((e) => e.quoted_line && haystack.includes(flat(e.quoted_line)));\nconst dropped = before - evidence.length;\nif (dropped > 0) notes.push(dropped + ' quoted line(s) were not found in the supplied logs and were removed');\n\n// --- the counts are ours, not the model's ----------------------------------\nconst failed = Number(ctx.failed_runs) || 0;\nlet frequency = Number(model.pattern_frequency);\nif (!Number.isFinite(frequency) || frequency < 0) frequency = 0;\nif (frequency > failed) {\n  notes.push('pattern_frequency was reported as ' + frequency + ' but only ' + failed + ' runs failed; clamped');\n  frequency = failed;\n}\n\nlet pattern = str(model.dominant_pattern, 'Unable to Determine');\nlet confidence = oneOf(model.confidence, CONFIDENCES, 'Low');\nlet recommendation = oneOf(model.recommendation, RECOMMENDATIONS, 'Monitor');\n\n// --- guard rails ------------------------------------------------------------\nif (ctx.no_runs) {\n  pattern = 'No Runs Supplied';\n  confidence = 'Low';\n  recommendation = 'Monitor';\n  notes.push('No runs were supplied, so no analysis was possible');\n} else if (ctx.insufficient_runs) {\n  // One failure is a stack trace, not a pattern.\n  pattern = 'Insufficient Runs';\n  confidence = 'Low';\n  recommendation = 'Monitor';\n  notes.push('Fewer than two failing runs were supplied, so no pattern can be claimed');\n}\n\nif (!ctx.insufficient_runs && !ctx.no_runs && evidence.length === 0 && pattern !== 'No Dominant Pattern') {\n  confidence = 'Low';\n  notes.push('No verifiable quoted evidence survived checking, so confidence was lowered');\n}\n\nif (ctx.truncated && confidence === 'High') {\n  confidence = 'Medium';\n  notes.push('Evidence was truncated to fit the token budget, so confidence was capped at Medium');\n}\n\nconst analysis = {\n  test_name: str(ctx.test_name, 'Unnamed test'),\n  runs_analyzed: Number(ctx.runs_analyzed) || 0,\n  failed_runs: failed,\n  passed_runs: Number(ctx.passed_runs) || 0,\n  flakiness_rate: Number(ctx.flakiness_rate) || 0,\n  dominant_pattern: pattern,\n  pattern_frequency: frequency,\n  category: oneOf(model.category, CATEGORIES, 'Unable to Determine'),\n  evidence,\n  failure_signatures: Array.isArray(ctx.signature_tally) ? ctx.signature_tally : [],\n  suspected_cause: str(model.suspected_cause, 'Unable to Determine'),\n  fix_suggestion: str(model.fix_suggestion, 'Not Provided'),\n  fix_type: oneOf(model.fix_type, FIX_TYPES, 'Unable to Determine'),\n  recommendation,\n  confidence,\n  missing_information: str(model.missing_information, 'None'),\n  evidence_completeness: str(ctx.evidence_completeness, 'Unknown'),\n  validation_notes: notes.length ? notes : ['No corrections were needed'],\n};\n\n// --- message bodies ---------------------------------------------------------\nconst icon = { 'Fix Now': ':rotating_light:', Quarantine: ':warning:', Monitor: ':eyes:', 'Not Flaky': ':white_check_mark:' }[analysis.recommendation] || ':mag:';\n\nconst quoteLines = analysis.evidence\n  .slice(0, 4)\n  .map((e) => '> `' + e.run_id + '` ' + e.quoted_line)\n  .join('\\n');\n\nconst slack_text = [\n  icon + ' *Flaky test RCA — ' + analysis.test_name + '*',\n  '',\n  '*Pattern:* ' + analysis.dominant_pattern +\n    (analysis.pattern_frequency ? '  (' + analysis.pattern_frequency + ' of ' + analysis.failed_runs + ' failures)' : ''),\n  '*Category:* ' + analysis.category + '   *Confidence:* ' + analysis.confidence,\n  '*Flakiness:* ' + analysis.flakiness_rate + '%  (' + analysis.failed_runs + ' failed / ' + analysis.runs_analyzed + ' runs)',\n  '',\n  quoteLines ? '*Evidence*\\n' + quoteLines : '*Evidence*\\n> none that could be verified against the logs',\n  '',\n  '*Suspected cause:* ' + analysis.suspected_cause,\n  '*Suggested fix (' + analysis.fix_type + '):* ' + analysis.fix_suggestion,\n  '*Recommendation:* ' + analysis.recommendation,\n  '',\n  '_Missing information: ' + analysis.missing_information + '_',\n].join('\\n');\n\n// Telegram renders a different flavour of markdown, so send it plain.\nconst telegram_text = slack_text\n  .replace(/:[a-z_]+:/g, '')\n  .replace(/[*`>]/g, '')\n  .replace(/_/g, '')\n  .trim();\n\nreturn [{ json: { ...analysis, slack_text, telegram_text } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a07",
+      "name": "Validate Analysis"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#qa-flaky-tests"
+        },
+        "text": "={{ $json.slack_text }}",
+        "otherOptions": {
+          "mrkdwn": true
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        620,
+        -100
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a08",
+      "name": "Post to Slack",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.telegram_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        620,
+        140
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a09",
+      "name": "Send to Telegram",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        860,
+        -100
+      ],
+      "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a10",
+      "name": "Respond to Caller"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Flaky Test Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Run Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Run Logs": {
+      "main": [
+        [
+          {
+            "node": "Budget The Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Budget The Evidence": {
+      "main": [
+        [
+          {
+            "node": "Flaky Pattern Detective",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flaky Pattern Detective": {
+      "main": [
+        [
+          {
+            "node": "Validate Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Analysis": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to Slack": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Flaky Pattern Detective",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RCA Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Flaky Pattern Detective",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
