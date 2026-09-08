@@ -60,9 +60,9 @@ Webhook          POST /flaky-rca  {test_name, runs_url | runs[]}
 | Groq Chat Model | `lmChatGroq` | `openai/gpt-oss-120b` |
 | RCA Schema | `outputParserStructured` | Forces the output shape |
 | Validate Analysis | `code` | Checks the model's homework |
-| Post to Slack | `slack` | Primary output, fails soft |
-| Send to Telegram | `telegram` | Fallback, shipped disabled |
-| Respond to Caller | `respondToWebhook` | Usable from a script, not just Slack |
+| Post to Slack | `slack` | Shipped **disabled** — no Slack workspace yet |
+| Send to Telegram | `telegram` | The active output |
+| Respond to Caller | `respondToWebhook` | Usable from a script, not just a chat app |
 
 ### Budget The Evidence
 
@@ -153,15 +153,30 @@ Against a real CI, send `runs_url` instead and the HTTP node fetches the history
 
 ## Setting it up
 
-Import the JSON. The Groq node carries its credential by id, so it resolves on
-its own. Then:
+Import the JSON. Both the Groq and Telegram nodes carry their credentials by id,
+so nothing needs picking from a dropdown. Activate the workflow to get the
+production webhook URL, and it runs.
 
-1. **Slack** — add a Slack credential and set the channel (defaults to
-   `#qa-flaky-tests`). The node is set to fail soft, so a missing credential
-   does *not* lose the analysis: the webhook still responds with the full JSON.
-2. **Telegram** — shipped **disabled**. If you would rather not set Slack up,
-   enable this node and put your chat id in it.
-3. Activate the workflow to get the production webhook URL.
+### Switching to Slack later
+
+The two messengers sit **in a line**, not on parallel branches:
+
+```
+Validate Analysis -> Post to Slack (disabled) -> Send to Telegram -> Respond to Caller
+```
+
+A disabled node in n8n passes its input straight through to the next one, so
+switching messengers is two toggles and no rewiring: enable **Post to Slack**,
+disable **Send to Telegram**, and set the Slack channel (it defaults to
+`#qa-flaky-tests`).
+
+Both nodes are also set to fail soft, so a missing or broken credential on
+either one cannot swallow the analysis — the webhook still responds with the
+full JSON.
+
+That last point is why **Respond to Caller reads `$('Validate Analysis')`
+explicitly** rather than `$json`. Whatever sits in front of it outputs its own
+API response, so `$json` at that point is Telegram's reply, not the report.
 
 ## Worth remembering
 

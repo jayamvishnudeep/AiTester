@@ -142,30 +142,37 @@
       ],
       "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a08",
       "name": "Post to Slack",
+      "disabled": true,
       "onError": "continueRegularOutput",
       "alwaysOutputData": true
     },
     {
       "parameters": {
-        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "831685806",
         "text": "={{ $json.telegram_text }}",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        620,
-        140
+        840,
+        0
       ],
       "id": "c1a7e30b-51d4-4a92-9b18-7f0c2d3e4a09",
       "name": "Send to Telegram",
-      "disabled": true,
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
+        "responseBody": "={{ JSON.stringify($('Validate Analysis').first().json) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
@@ -231,7 +238,13 @@
             "node": "Post to Slack",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "Post to Slack": {
+      "main": [
+        [
           {
             "node": "Send to Telegram",
             "type": "main",
@@ -240,7 +253,7 @@
         ]
       ]
     },
-    "Post to Slack": {
+    "Send to Telegram": {
       "main": [
         [
           {

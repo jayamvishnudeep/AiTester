@@ -327,15 +327,28 @@ which skips the fetch entirely — that is the escape hatch that makes the
 workflow testable today with no CI attached, and it is how the live test below
 was run.
 
-**2. Output — Slack, with a Telegram fallback.** Slack is the primary node, as
-the brief specifies. A Telegram node is wired in parallel and shipped
-**disabled**, so it costs nothing until enabled; this repo already has a working
-Telegram credential while Slack needs one adding.
+**2. Output — Telegram now, Slack later.** The brief specifies Slack, and both
+nodes are built, but there is no Slack workspace on this account — so **Slack
+ships disabled and Telegram ships active**, carrying the chat id and credential
+already proven by the daily LinkedIn workflow.
 
-The Slack node is set to `onError: continueRegularOutput` for the same reason
-the screenshot agent lets its Jira attachment fail softly: a missing Slack
-credential should not swallow the analysis. The webhook still responds with the
-full JSON, and Telegram still fires if enabled.
+They are wired **in a line** rather than on parallel branches:
+
+```
+Validate Analysis -> Post to Slack (disabled) -> Send to Telegram -> Respond to Caller
+```
+
+A disabled node in n8n passes its input straight through, so switching to Slack
+later is two toggles and no rewiring. Both are `onError: continueRegularOutput`
+for the same reason the screenshot agent lets its Jira attachment fail softly: a
+messenger going down should not swallow the analysis.
+
+Wiring them in a line exposed a bug in the first build. `Respond to Caller` read
+`{{ JSON.stringify($json) }}`, and the node in front of it — Slack, then
+Telegram — outputs *its own API response*. The caller would have received the
+messenger's reply instead of the report. It now reads
+`$('Validate Analysis').first().json` explicitly, which is correct no matter
+which messenger is enabled or whether either is.
 
 ## Deliberately not in v1
 
