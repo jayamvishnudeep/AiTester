@@ -17,6 +17,13 @@ __pycache__/
 .pytest_cache/
 *.pyc
 
+# Python virtualenvs. A venv is tens of thousands of library files and is
+# rebuilt from requirements, never committed - the node_modules of Python.
+.venv/
+venv/
+env/
+ENV/
+
 .idea/
 *.iml
 .claude/
