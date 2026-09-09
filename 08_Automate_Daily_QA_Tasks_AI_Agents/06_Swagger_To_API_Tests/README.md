@@ -93,8 +93,8 @@ Webhook             POST /swagger-tests  { spec_url | spec, base_url }
                                 generate every deterministic test
   -> API Test Designer  (AI Agent + Groq + Structured Output Parser)
   -> Build Collection   (Code)  verify against the spec, assemble both artefacts
-  -> Collection To File -> Java Suite To File
-  -> Send Summary -> Send Collection File -> Respond to Caller
+  -> Make Files         (Code)  both artefacts as downloadable files
+  -> Send Collection File -> Send Summary -> Respond to Caller
 ```
 
 | Node | Type | Role |
@@ -106,13 +106,21 @@ Webhook             POST /swagger-tests  { spec_url | spec, base_url }
 | Groq Chat Model | `lmChatGroq` | `gpt-oss-120b` |
 | Scenario Schema | `outputParserStructured` | Forces `method` + `path` so they can be checked |
 | Build Collection | `code` | Guard rail, Postman v2.1, RestAssured |
-| Collection To File / Java Suite To File | `convertToFile` | Two downloadable files |
-| Send Summary / Send Collection File | `telegram` | Summary, then the collection as an attachment |
+| Make Files | `code` | Both files at once - see below |
+| Send Collection File / Send Summary | `telegram` | The collection as an attachment, then the summary |
 | Respond to Caller | `respondToWebhook` | Everything, as JSON |
 
 **The model never sees the spec.** The parser reads a 6 MB document in full and
 hands the agent a one-page summary of operations, so spec size cannot push the
 run out of a context window.
+
+**Why one Code node makes both files instead of two Convert to File nodes.**
+That node's `toText` operation returns `{ json: {}, binary: { ...one key } }` —
+it discards the item's json and any binary already on it, so a second one
+downstream finds nothing to convert. The first live run failed on exactly that.
+The same is true of the Telegram nodes, which return their own API response, so
+the document is sent immediately after the binaries are made rather than after
+the summary.
 
 ## Two things the input fights
 
@@ -146,7 +154,14 @@ curl -X POST "https://<your-n8n-host>/webhook-test/swagger-tests" \
 Or send `{"spec_url": "https://your-api/v3/api-docs"}` to pull a live one, and
 `base_url` to override the server the tests point at.
 
-Measured: **4,213 tokens, 5.7s**, 19 deterministic tests plus 6 scenarios.
+Measured against the live workflow: **HTTP 200 in 9.0 seconds**, 19 deterministic
+tests plus 5 scenarios, a 7-folder / 24-request collection and a 320-line Java
+class.
+
+Both were then checked as artefacts. The collection parses, hardcodes no host,
+leaves no `$ref` unresolved in any request body, and every scenario stub calls
+`pm.expect.fail` so it cannot pass silently. The Java compiles under `javac`
+with zero syntax errors - the only two errors are the missing JUnit jars.
 
 Run what comes back with:
 
@@ -176,3 +191,11 @@ staging and CI.
   than an honestly incomplete one.
 - **Assert the documented status codes, not a generic 4xx.** It costs nothing
   and turns every negative test into a spec-drift check.
+- **Assume every n8n node replaces `$json`, and read what you need by node
+  name.** This is the third node in this folder to do it — the HTML node in
+  `03_`, filesystem-mode binary in `05_`, and `convertToFile` here, which also
+  drops any binary already on the item. Two of them chained can never work.
+- **Verify the artefact, not the text that produced it.** The collection is
+  parsed and inspected; the Java is put through `javac`. "Ready to run" is a
+  claim worth checking, and it turned out to be checkable after I had written
+  in the plan that it was not.

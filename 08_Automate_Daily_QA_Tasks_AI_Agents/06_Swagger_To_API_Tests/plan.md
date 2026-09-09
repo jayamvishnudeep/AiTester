@@ -157,6 +157,39 @@ while passing on the sample. Only a reference *cycle* can recurse forever, so
 hops are the right thing to cap: the recursion guard still stops a
 self-referential schema at six hops.
 
+**Two Convert to File nodes cannot be chained, and finding that out cost a live
+500.** The first build ended with `Collection To File → Java Suite To File`.
+Reading `toText.operation.ts` afterwards explains it:
+
+```js
+const newItem = { json: {}, binary: { [binaryPropertyName]: binaryData } };
+```
+
+The node **discards the item's json entirely**, and any binary already on it.
+So the second one received `{}`, could not find `restassured_java`, and the run
+failed with `Error in workflow`.
+
+Checking that exposed the same shape one step further on: a Telegram node also
+returns its own API response, so the binary would have been gone before
+`Send Collection File` needed it.
+
+Both are fixed by a single **Make Files** Code node that emits both binaries at
+once and keeps the report alongside them, and by sending the document
+immediately after it is made. Eleven nodes instead of twelve.
+
+This is the third n8n node in this folder to silently replace `$json` — the HTML
+node in `03_`, filesystem-mode binary in `05_`, and `convertToFile` here. The
+rule that follows is worth stating once: **assume every node replaces the item,
+and read what you need by node name.**
+
+**The generated Java can be verified, which the plan said it could not.** The
+plan claimed "valid Java cannot be checked from a Code node" and used that to
+argue against the format. True of a Code node, but irrelevant: `javac` is
+available where the tests run. Compiling the generated class produces exactly
+two errors, both `package org.junit.jupiter.api does not exist` — missing jars,
+not syntax. **Zero syntax errors.** So the claim "ready to run" is now checked
+rather than asserted for both artefacts.
+
 **The deterministic pass is worth more than expected.** Five operations produce
 **19 tests** with no model involvement: 5 happy paths, 3 missing-required, 4
 wrong-type, 2 invalid-enum, 1 missing-body, 4 unauthenticated. That ratio holds
@@ -200,6 +233,44 @@ The guard rail was tested by attacking it: a scenario for
 `POST /orders/{orderId}/refund` is dropped and named in `scenarios_rejected`,
 and a `PATCH` on an operation that only supports `GET` and `DELETE` is dropped
 too.
+
+## Proven end to end
+
+Run against the live workflow on n8n Cloud — **HTTP 200 in 9.0 seconds**, a
+77 KB response:
+
+```
+operations   5        deterministic tests  19
+scenarios    5        rejected             none
+collection   7 folders, 24 requests, v2.1 schema
+java         19 @Test methods, 320 lines
+validation   ["No corrections were needed"]
+```
+
+Both artefacts were then checked as artefacts rather than as text.
+
+The collection: parses, declares the v2.1 schema, carries `baseUrl` and
+`authToken` variables, every request has a method, a URL and a test script, **no
+request hardcodes the host**, every request body is valid JSON with no `$ref`
+left unresolved, and every scenario stub calls `pm.expect.fail` so it cannot
+pass silently before someone writes it.
+
+The Java: compiled with `javac`. Two errors, both
+`package org.junit.jupiter.api does not exist` — the jars are not present here.
+**Zero syntax errors.**
+
+The scenarios from that run, none rejected:
+
+```
+[High]   POST /orders               Place order and verify retrieval
+[High]   DELETE /orders/{orderId}   Cancel order twice to verify idempotency
+[Medium] GET /orders                List orders with limit exceeding existing count
+[Medium] POST /orders               Place order with duplicate SKU entries
+```
+
+and two gaps worth sending to the API owner: no endpoint transitions an order
+between statuses, and no explicit 403 is documented for requesting another
+customer's orders.
 
 ## Deliverables
 
