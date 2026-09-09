@@ -1,0 +1,369 @@
+{
+  "name": "Persona-Based Testing Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "persona-flows",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        0
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4101",
+      "name": "Persona Webhook",
+      "webhookId": "b62e5f19-7a04-4c83-9d51-8e3f0a7b6c24"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalise the request into one item per persona, which is what the loop\n// iterates over.\n//\n// Personas arrive in whatever shape the caller had to hand - full objects, or\n// just names. Anything usable is accepted and filled in; what is not supplied\n// falls back to a default library, because a QA who has not written personas\n// yet is exactly the person this engine is for.\n\nconst MAX_PERSONAS = 6; // 8,000 tokens/minute is ~3 personas/minute; beyond six\n                        // the run takes long enough that a human should be\n                        // choosing which ones matter.\n\nconst hook = $('Persona Webhook').first().json;\nconst body = (hook && hook.body) || hook || {};\n\nconst feature = String(body.feature || body.feature_description || '').trim();\nconst featureName = String(body.feature_name || 'Untitled feature').trim();\n\n// Deliberately not a list of demographics. Each one carries traits that change\n// what a person DOES, because those are the only traits a test flow can act on.\nconst DEFAULT_LIBRARY = [\n  {\n    name: 'Power User',\n    summary: 'Uses the product daily and knows it better than most of the team.',\n    traits: ['expects keyboard shortcuts', 'works at speed and skips confirmations',\n      'has bulk and edge-case data', 'will find undocumented paths', 'low tolerance for extra clicks'],\n  },\n  {\n    name: 'First-Time User',\n    summary: 'Has never seen this product and arrived with a job to do.',\n    traits: ['does not know the vocabulary', 'reads labels literally',\n      'unsure which action is safe', 'will abandon if confused', 'expects to be able to undo'],\n  },\n  {\n    name: 'Senior Citizen',\n    summary: 'Comfortable with a phone and a browser, not with jargon or speed.',\n    traits: ['low vision, uses larger text', 'less precise tapping and clicking',\n      'needs longer than a default session timeout', 'cautious about anything involving money',\n      'wants confirmation that something worked'],\n  },\n  {\n    name: 'Screen-Reader User',\n    summary: 'Navigates entirely by keyboard with a screen reader.',\n    traits: ['never uses a mouse', 'relies on labels, headings and focus order',\n      'cannot see colour-only status', 'needs errors announced, not just shown in red',\n      'trapped focus makes the feature unusable'],\n  },\n  {\n    name: 'Mobile-Only on a slow connection',\n    summary: 'Has no laptop and is on intermittent 3G.',\n    traits: ['small screen, one thumb', 'requests time out and are retried',\n      'may lose connection mid-task', 'data costs matter', 'interruptions from calls and notifications'],\n  },\n];\n\nfunction normalise(p, i) {\n  if (typeof p === 'string') {\n    return { name: p.trim() || 'Persona ' + (i + 1), summary: '', traits: [], supplied: true };\n  }\n  const o = p || {};\n  const traits = Array.isArray(o.traits) ? o.traits\n    : (typeof o.traits === 'string' ? o.traits.split(/[;\\n]/) : []);\n  return {\n    name: String(o.name || o.persona || 'Persona ' + (i + 1)).trim(),\n    summary: String(o.summary || o.description || '').trim(),\n    traits: traits.map((t) => String(t).trim()).filter(Boolean),\n    context: String(o.context || '').trim(),\n    goals: String(o.goals || o.goal || '').trim(),\n    supplied: true,\n  };\n}\n\nconst supplied = Array.isArray(body.personas) ? body.personas.filter(Boolean) : [];\nlet personas = supplied.map(normalise).filter((p) => p.name);\nlet usedLibrary = false;\n\nif (!personas.length) {\n  usedLibrary = true;\n  personas = DEFAULT_LIBRARY.map((p) => Object.assign({}, p, { supplied: false }));\n}\n\nconst dropped = Math.max(0, personas.length - MAX_PERSONAS);\npersonas = personas.slice(0, MAX_PERSONAS);\n\n// A run id ties every row of a run together in the sheet, so two runs against\n// the same feature do not read as one.\nconst runId = 'run-' + Date.now().toString(36);\nconst generatedAt = new Date().toISOString();\n\nif (!feature) {\n  throw new Error('No feature description supplied. Send { \"feature\": \"what the feature does\" }.');\n}\n\nreturn personas.map((p) => ({\n  json: {\n    run_id: runId,\n    generated_at: generatedAt,\n    feature_name: featureName,\n    feature,\n    persona_name: p.name,\n    persona_summary: p.summary,\n    persona_traits: p.traits,\n    persona_context: p.context || '',\n    persona_goals: p.goals || '',\n    persona_supplied: p.supplied,\n    used_default_library: usedLibrary,\n    personas_total: personas.length,\n    personas_dropped: dropped,\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        0
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4102",
+      "name": "Prepare Personas"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -440,
+        0
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4103",
+      "name": "Loop Over Personas"
+    },
+    {
+      "parameters": {
+        "amount": 35
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -220,
+        200
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4104",
+      "name": "Pace The Loop",
+      "webhookId": "c73f6a2b-8e15-4d94-9a62-1f4b0c8d7e35"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=FEATURE: {{ $json.feature_name }}\n\n{{ $json.feature }}\n\n--- THE PERSONA YOU ARE WRITING FOR ---\nName: {{ $json.persona_name }}\nSummary: {{ $json.persona_summary }}\nGoals: {{ $json.persona_goals }}\nTraits:\n{{ ($json.persona_traits || []).map(t => \"  - \" + t).join(\"\\n\") }}\n\nWrite the test flow this person - and only this person - would produce against this feature.\nEvery step must name the trait that causes it. Anything this person needs that the feature\ndescription above does not mention is a gap, not a step.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a product QA who tests for the people who actually use software, not for the happy path.\n\nYou are given ONE persona and ONE feature description. Write the test flow that THIS person would produce when they meet THIS feature. Not a generic flow with their name on it - the flow that is different because of who they are.\n\n## THE RULE THAT MATTERS MOST\n\nIf your flow would read the same for a different persona, you have not done the job.\n\nThe value of this work is entirely in the difference between personas. A Power User and a Senior Citizen do not take the same path through the same screen: one skips the confirmation and pastes fifty rows, the other reads every label and needs to be told it worked. If your steps would survive a find-and-replace of the persona name, delete them and start from what this person is actually like.\n\n## EVERY STEP MUST NAME ITS CAUSE\n\nEach step carries a driven_by field: the specific persona trait that makes this step worth testing.\n\n  action:     \"Zoom the browser to 200% and complete the whole flow\"\n  driven_by:  \"low vision, uses larger text\"\n\ndriven_by must be a trait this persona has, quoted or closely paraphrased from what you were given. It may not be a restatement of the action, and it may not be something generically true of all users. If you cannot name the trait that causes a step, that step belongs to no persona and should not be there.\n\n## YOU MAY NOT INVENT THE PRODUCT\n\nThe feature description is the only source of what exists. Do not add screens, buttons, fields, settings or flows it does not mention, however obvious they seem.\n\nWhen this persona needs something the description does not cover - a confirmation screen, a way back, a larger tap target, an announced error - that is a **gap**, not a step. Put it in gaps as a question for the product owner. A gap is a genuinely useful finding; an invented button is a test that cannot be run.\n\n## WHAT TO WRITE\n\npersona_summary\n  One line, in your own words, of who this person is. It should be clear you\n  read the persona rather than the name.\n\nprimary_goal\n  What this person is actually trying to achieve with the feature. Not \"test\n  the feature\" - what they came to do.\n\nsteps\n  Five to nine. Each with:\n    action     what they do, concretely, in the product as described\n    expected   what should happen, from this person's point of view\n    driven_by  the persona trait causing this step to exist\n    risk       what breaks or frustrates if it goes wrong for this person\n\n  Order them the way this person would actually move, including the detours.\n  A first-time user reads before clicking; a power user is three steps ahead.\n\nfriction_points\n  Where this persona is likely to struggle, and why. Be specific about the\n  moment, not the feature in general.\n\naccessibility_notes\n  Only when the persona implies them. A screen-reader user has many; a power\n  user may have none, and \"None\" is the correct answer then rather than\n  something invented to fill the field.\n\ngaps\n  What the feature description does not say that this persona needs answered.\n  Phrase each as a question a product owner could act on.\n\npriority\n  High, Medium or Low - how important it is to test this persona against this\n  particular feature. Be willing to say Low. Not every persona is equally\n  affected by every feature, and saying so is more useful than pretending.\n\n## TONE\n\nWrite like a tester filing work for a colleague. Concrete actions, no filler, no restating the persona back at length. Never use \"simply\", \"just\" or \"easily\" - those words are usually hiding the exact difficulty this persona has."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        200
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4105",
+      "name": "Persona Simulator"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "maxTokensToSample": 5000,
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        420
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4106",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "uur0A2QqUBroX2ua",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"persona_summary\",\n    \"primary_goal\",\n    \"steps\",\n    \"friction_points\",\n    \"accessibility_notes\",\n    \"gaps\",\n    \"priority\"\n  ],\n  \"properties\": {\n    \"persona_summary\": {\n      \"type\": \"string\",\n      \"description\": \"One line, in your own words, of who this person is.\"\n    },\n    \"primary_goal\": {\n      \"type\": \"string\",\n      \"description\": \"What this person came to achieve, not \\\"test the feature\\\".\"\n    },\n    \"steps\": {\n      \"type\": \"array\",\n      \"description\": \"Five to nine steps, ordered the way this person would actually move.\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"step_no\",\n          \"action\",\n          \"expected\",\n          \"driven_by\",\n          \"risk\"\n        ],\n        \"properties\": {\n          \"step_no\": {\n            \"type\": \"number\"\n          },\n          \"action\": {\n            \"type\": \"string\",\n            \"description\": \"What they do, concretely, in the product as described.\"\n          },\n          \"expected\": {\n            \"type\": \"string\",\n            \"description\": \"What should happen, from this person's point of view.\"\n          },\n          \"driven_by\": {\n            \"type\": \"string\",\n            \"description\": \"The specific persona trait causing this step to exist. Not a restatement of the action.\"\n          },\n          \"risk\": {\n            \"type\": \"string\",\n            \"description\": \"What breaks or frustrates for this person if it goes wrong.\"\n          }\n        }\n      }\n    },\n    \"friction_points\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Specific moments where this persona struggles.\"\n    },\n    \"accessibility_notes\": {\n      \"type\": \"string\",\n      \"description\": \"Only when the persona implies them; \\\"None\\\" is a valid answer.\"\n    },\n    \"gaps\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Questions for the product owner about what the description does not cover.\"\n    },\n    \"priority\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"High\",\n        \"Medium\",\n        \"Low\"\n      ]\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        140,
+        420
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4107",
+      "name": "Flow Schema"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Per-persona guard rails, applied before the flow is allowed to count.\n//\n// The schema already guarantees the shape. What it cannot guarantee is that the\n// content is about THIS persona, which is the only thing that makes the output\n// worth having. Two checks do that here, and a third across personas happens\n// after the loop.\n\nconst ctx = $('Loop Over Personas').first().json;\nconst incoming = $input.first().json;\nconst model = (incoming && incoming.output) || incoming || {};\n\nconst notes = [];\nconst str = (v, fallback) => {\n  if (v === undefined || v === null) return fallback;\n  const s = String(v).trim();\n  return s === '' ? fallback : s;\n};\nconst arr = (v) => (Array.isArray(v) ? v : []);\nconst norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\\s+/g, ' ').trim();\n\nconst traits = arr(ctx.persona_traits).map(String);\nconst traitText = norm(traits.join(' ') + ' ' + (ctx.persona_summary || ''));\nconst featureText = norm(ctx.feature || '');\n\n// --- guard rail 2: no step without a trait ---------------------------------\n// A step whose driven_by is missing, or merely restates the action, belongs to\n// no persona. It is a generic step wearing a costume.\nlet dropped = 0;\nconst steps = arr(model.steps)\n  .map((s, i) => ({\n    step_no: Number(s && s.step_no) || i + 1,\n    action: str(s && s.action, ''),\n    expected: str(s && s.expected, 'Not Provided'),\n    driven_by: str(s && s.driven_by, ''),\n    risk: str(s && s.risk, 'Not Provided'),\n  }))\n  .filter((s) => {\n    if (!s.action) { dropped++; return false; }\n    if (!s.driven_by) { dropped++; return false; }\n    // A driven_by that just echoes the action explains nothing. Compared on\n    // word stems rather than exact text, because \"entering the card number\"\n    // against \"Enter the card number\" is the same non-answer and a literal\n    // comparison waves it through.\n    const a = norm(s.action);\n    const dWords = norm(s.driven_by).split(' ').filter((w) => w.length > 3);\n    if (dWords.length) {\n      const echoed = dWords.filter((w) => a.includes(w.slice(0, 5))).length;\n      if (echoed / dWords.length >= 0.8) { dropped++; return false; }\n    }\n    return true;\n  })\n  .map((s, i) => Object.assign({}, s, { step_no: i + 1 }));\n\nif (dropped) notes.push(dropped + ' step(s) dropped for naming no persona trait');\n\n// How much of this flow is anchored in a trait the persona actually has?\n// Loose matching on purpose - the model paraphrases, and it should be allowed to.\nlet anchored = 0;\nsteps.forEach((s) => {\n  const words = norm(s.driven_by).split(' ').filter((w) => w.length > 3);\n  if (words.some((w) => traitText.includes(w))) anchored++;\n});\nconst anchoredPct = steps.length ? Math.round((anchored / steps.length) * 100) : 0;\nif (steps.length && anchoredPct < 50) {\n  notes.push('only ' + anchoredPct + '% of steps cite a trait this persona was given');\n}\n\n// --- guard rail 3: no inventing the product --------------------------------\n// Quoted UI names are the checkable case: if the model puts a control in quotes,\n// the feature description should mention it.\nconst invented = [];\nsteps.forEach((s) => {\n  const text = s.action + ' ' + s.expected;\n  for (const m of text.matchAll(/[\"'“‘]([A-Za-z][A-Za-z0-9 ]{1,28})[\"'”’]/g)) {\n    const name = norm(m[1]);\n    if (name.length < 3) continue;\n    if (!featureText.includes(name) && !invented.includes(m[1])) invented.push(m[1]);\n  }\n});\nif (invented.length) {\n  notes.push('names not found in the feature description: ' + invented.slice(0, 6).join(', '));\n}\n\nconst PRIORITIES = ['High', 'Medium', 'Low'];\nconst priority = PRIORITIES.find((p) => p.toLowerCase() === str(model.priority, '').toLowerCase()) || 'Medium';\n\nconst flow = {\n  run_id: ctx.run_id,\n  generated_at: ctx.generated_at,\n  feature_name: ctx.feature_name,\n  feature: ctx.feature,\n  persona_name: ctx.persona_name,\n  persona_supplied: ctx.persona_supplied,\n  used_default_library: ctx.used_default_library,\n  personas_total: ctx.personas_total,\n\n  persona_summary: str(model.persona_summary, ctx.persona_summary || 'Not Provided'),\n  primary_goal: str(model.primary_goal, 'Not Provided'),\n  steps,\n  step_count: steps.length,\n  steps_dropped: dropped,\n  trait_anchored_pct: anchoredPct,\n  friction_points: arr(model.friction_points).map((f) => String(f).trim()).filter(Boolean).slice(0, 6),\n  accessibility_notes: str(model.accessibility_notes, 'None'),\n  gaps: arr(model.gaps).map((g) => String(g).trim()).filter(Boolean).slice(0, 6),\n  priority,\n  invented_names: invented.slice(0, 6),\n  validation_notes: notes.length ? notes : ['No corrections were needed'],\n};\n\nreturn [{ json: flow }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        200
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4108",
+      "name": "Validate Flow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The check that only exists once every persona has been generated.\n//\n// Guard rail 1: two personas that produce the same flow mean the personas were\n// ignored. Nothing about such a run is malformed - the schema passes, each flow\n// reads fine on its own - and it is worthless. The only way to catch it is to\n// compare the flows against each other, which cannot happen inside the loop\n// because each iteration only sees itself.\n//\n// This node also flattens the flows into one row per step, which is the shape a\n// QA can actually work from: filter by persona, assign, tick off.\n\nconst CONVERGENCE_LIMIT = 0.6; // above this two flows are substantially the same\n\nconst flows = $input.all().map((i) => i.json).filter((f) => f && f.persona_name);\n\nconst STOP = new Set(['the', 'a', 'an', 'and', 'or', 'to', 'of', 'in', 'on', 'for', 'with',\n  'is', 'are', 'be', 'that', 'this', 'it', 'as', 'at', 'by', 'from', 'then', 'their', 'they',\n  'user', 'users', 'page', 'screen', 'app', 'click', 'clicks', 'tap', 'taps', 'open', 'opens']);\n\n// Compare on the meaningful words of the actions. Common verbs like \"click\" are\n// stripped, because every flow clicks - what differs is what they click and why.\nfunction fingerprint(flow) {\n  const words = (flow.steps || [])\n    .map((s) => String(s.action || ''))\n    .join(' ')\n    .toLowerCase()\n    .replace(/[^a-z0-9 ]/g, ' ')\n    .split(/\\s+/)\n    .filter((w) => w.length > 3 && !STOP.has(w));\n  return new Set(words);\n}\n\nfunction jaccard(a, b) {\n  if (!a.size || !b.size) return 0;\n  let shared = 0;\n  a.forEach((w) => { if (b.has(w)) shared++; });\n  return shared / (a.size + b.size - shared);\n}\n\nconst prints = flows.map(fingerprint);\nconst pairs = [];\nfor (let i = 0; i < flows.length; i++) {\n  for (let j = i + 1; j < flows.length; j++) {\n    pairs.push({\n      a: flows[i].persona_name,\n      b: flows[j].persona_name,\n      overlap: Math.round(jaccard(prints[i], prints[j]) * 100),\n    });\n  }\n}\npairs.sort((x, y) => y.overlap - x.overlap);\n\nconst converged = pairs.filter((p) => p.overlap >= CONVERGENCE_LIMIT * 100);\nconst worst = pairs[0] || null;\nconst flagged = converged.length > 0;\n\nconst runNotes = [];\nif (flagged) {\n  runNotes.push('flows converged: ' + converged.map((p) => p.a + ' / ' + p.b + ' ' + p.overlap + '%').join('; ') +\n    ' - the personas may have been ignored');\n}\nconst thin = flows.filter((f) => f.trait_anchored_pct < 50).map((f) => f.persona_name);\nif (thin.length) runNotes.push('weakly anchored to persona traits: ' + thin.join(', '));\nconst withInvented = flows.filter((f) => (f.invented_names || []).length).map((f) => f.persona_name);\nif (withInvented.length) runNotes.push('named things the feature description does not mention: ' + withInvented.join(', '));\n\nconst first = flows[0] || {};\nconst totalSteps = flows.reduce((n, f) => n + (f.steps || []).length, 0);\nconst allGaps = [];\nflows.forEach((f) => (f.gaps || []).forEach((g) => { if (!allGaps.includes(g)) allGaps.push(g); }));\n\n// --- the Telegram summary ---------------------------------------------------\nconst telegram_text = [\n  'Persona test flows - ' + (first.feature_name || 'feature'),\n  '',\n  flows.length + ' personas, ' + totalSteps + ' test steps generated.',\n  first.used_default_library ? 'Personas: default library (none were supplied).' : 'Personas: supplied with the request.',\n  '',\n  'Coverage:',\n  flows.map((f) => '  ' + f.persona_name + ' - ' + (f.steps || []).length + ' steps, priority ' + f.priority).join('\\n'),\n  '',\n  worst ? 'Most similar pair: ' + worst.a + ' / ' + worst.b + ' at ' + worst.overlap + '% overlap' +\n    (flagged ? '  <-- too similar, check the personas were used' : '  (flows are distinct)') : '',\n  '',\n  allGaps.length ? 'Gaps raised for the product owner:\\n' + allGaps.slice(0, 6).map((g, i) => (i + 1) + '. ' + g).join('\\n') : 'No gaps raised.',\n  '',\n  runNotes.length ? 'Notes: ' + runNotes.join(' | ') : 'No validation problems.',\n].join('\\n');\n\n// --- one row per step -------------------------------------------------------\nconst rows = [];\nflows.forEach((f) => {\n  (f.steps || []).forEach((s) => {\n    rows.push({\n      run_id: f.run_id,\n      generated_at: f.generated_at,\n      feature: f.feature_name,\n      persona: f.persona_name,\n      priority: f.priority,\n      step_no: s.step_no,\n      action: s.action,\n      expected: s.expected,\n      driven_by: s.driven_by,\n      risk: s.risk,\n      primary_goal: f.primary_goal,\n      accessibility_notes: f.accessibility_notes,\n      persona_source: f.used_default_library ? 'default library' : 'supplied',\n    });\n  });\n});\n\nif (!rows.length) {\n  // Never write an empty run silently - an empty sheet reads as \"no issues\".\n  rows.push({\n    run_id: first.run_id || 'unknown',\n    generated_at: first.generated_at || new Date().toISOString(),\n    feature: first.feature_name || 'Unknown',\n    persona: 'NONE',\n    priority: 'High',\n    step_no: 1,\n    action: 'No test steps were generated',\n    expected: 'Investigate: every generated step failed validation, or no personas ran',\n    driven_by: 'n/a',\n    risk: 'A run that produces nothing must not be mistaken for a feature with no risks',\n    primary_goal: 'n/a',\n    accessibility_notes: 'n/a',\n    persona_source: 'n/a',\n  });\n  runNotes.push('no steps survived validation');\n}\n\n// Run-level fields ride on the first row; the Sheets node maps columns\n// explicitly, so the extra keys are ignored there.\nrows[0].telegram_text = telegram_text;\nrows[0].personas_analyzed = flows.length;\nrows[0].total_steps = totalSteps;\nrows[0].max_overlap_pct = worst ? worst.overlap : 0;\nrows[0].flows_converged = flagged;\nrows[0].pair_overlaps = pairs;\nrows[0].gaps = allGaps;\nrows[0].run_notes = runNotes.length ? runNotes : ['No validation problems'];\n\nreturn rows.map((json) => ({ json }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        -160
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4109",
+      "name": "Compare Flows"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "163AUrBaP90RYm0dRJI_lVaFkkneT4TyMMMeeHSwfJ0I"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Persona Test Flows"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_id": "={{ $json.run_id }}",
+            "generated_at": "={{ $json.generated_at }}",
+            "feature": "={{ $json.feature }}",
+            "persona": "={{ $json.persona }}",
+            "persona_source": "={{ $json.persona_source }}",
+            "priority": "={{ $json.priority }}",
+            "step_no": "={{ $json.step_no }}",
+            "action": "={{ $json.action }}",
+            "expected": "={{ $json.expected }}",
+            "driven_by": "={{ $json.driven_by }}",
+            "risk": "={{ $json.risk }}",
+            "primary_goal": "={{ $json.primary_goal }}",
+            "accessibility_notes": "={{ $json.accessibility_notes }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        -160
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4110",
+      "name": "Append Test Flows",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "twVgnKCEc23nurbt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "831685806",
+        "text": "={{ $('Compare Flows').first().json.telegram_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        -160
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4111",
+      "name": "Send to Telegram",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ run_id: $('Compare Flows').first().json.run_id, feature: $('Compare Flows').first().json.feature, personas_analyzed: $('Compare Flows').first().json.personas_analyzed, total_steps: $('Compare Flows').first().json.total_steps, max_overlap_pct: $('Compare Flows').first().json.max_overlap_pct, flows_converged: $('Compare Flows').first().json.flows_converged, pair_overlaps: $('Compare Flows').first().json.pair_overlaps, gaps: $('Compare Flows').first().json.gaps, run_notes: $('Compare Flows').first().json.run_notes, rows: $('Compare Flows').all().map(i => i.json) }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -160
+      ],
+      "id": "f4c1a802-9b3e-4d57-8a16-2c7e9d0b4112",
+      "name": "Respond to Caller"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Persona Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Personas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Personas": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Personas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Personas": {
+      "main": [
+        [
+          {
+            "node": "Compare Flows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pace The Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pace The Loop": {
+      "main": [
+        [
+          {
+            "node": "Persona Simulator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persona Simulator": {
+      "main": [
+        [
+          {
+            "node": "Validate Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Flow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Personas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare Flows": {
+      "main": [
+        [
+          {
+            "node": "Append Test Flows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Test Flows": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Persona Simulator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flow Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Persona Simulator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
