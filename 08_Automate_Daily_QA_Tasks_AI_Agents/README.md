@@ -9,6 +9,8 @@ it works.
 |---|---|---|
 | 01 | [Screenshot to Bug Reporter](01_Screenshot_To_Bug_Reporter_AI_Agent) | Writing up a bug from a screenshot by hand |
 | 02 | [Flaky Test RCA Analyzer](02_Flaky_Test_RCA_Analyzer) | Reading a dozen CI logs by eye to find what the failures share |
+| 03 | [Performance Test Analyzer](03_Performance_Test_Analyzer) | Turning a load test CSV into something a stakeholder can act on |
+| 04 | [Persona-Based Testing Engine](04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -43,6 +45,38 @@ Its guard rail is the direct analogue of 01's refusal to invent repro steps:
 **one failing run is a stack trace, not a pattern.**
 
 See its [README](02_Flaky_Test_RCA_Analyzer).
+
+## 03 — Performance Test Analyzer
+
+A JMeter or k6 CSV goes in; a one-page executive summary comes out — Pass or
+Fail, what broke, at what load, and what it means for people who will never read
+a percentile table.
+
+Its rule is that **code decides Pass or Fail and the model only explains it**. A
+verdict is arithmetic against a threshold, and this output goes to stakeholders
+who cannot check it. The model's job is translation: *"One in fifty checkout
+attempts took more than 4 seconds."*
+
+Scale forced the other decisions. A one-hour run at 200 rps is ~720,000 rows,
+past n8n's payload limit and any token budget, so percentiles come from a
+single-pass histogram and the model never sees a row.
+
+See its [README](03_Performance_Test_Analyzer).
+
+## 04 — Persona-Based Testing Engine
+
+A feature description and a set of personas go in; a separate test flow for each
+persona comes out, one row per step in Google Sheets.
+
+Its failure mode is quieter than the others: a persona generator will happily
+produce the same flow five times with different names on top, and nothing about
+that output is malformed. So the engine measures the **overlap between every
+pair of flows** and flags the run when they converge — a computable check on the
+one property that matters. Every step also names the persona trait that caused
+it, which turns "trust me, this is persona-specific" into something a reviewer
+can verify.
+
+See its [README](04_Persona_Based_Testing_Engine).
 
 ## What this section adds over 07
 
