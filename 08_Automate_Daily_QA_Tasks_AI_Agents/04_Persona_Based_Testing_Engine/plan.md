@@ -4,8 +4,9 @@ A product QA describes a feature and names the people who will use it. The
 engine returns a separate test flow for each of them — what a Senior Citizen
 would actually do with this screen, and where a Power User would break it.
 
-Status: **built and tested against the live Groq API.** Thirty-seven assertions
-pass, including two real persona generations. Not yet imported into n8n Cloud.
+Status: **built, tested against the live Groq API, and proven end to end on n8n
+Cloud.** Thirty-seven assertions pass, including two real persona generations,
+and a live four-persona run completed in 3m 5.5s. See *Proven end to end* below.
 
 ## The brief
 
@@ -209,6 +210,51 @@ flagged while `"Pay"` is not; and a run where every step fails validation writes
 a visible `NONE` row rather than an empty sheet, because an empty sheet reads as
 a feature with no risks.
 
+## Proven end to end
+
+Run against the live workflow on n8n Cloud with `sample_request.json` — four
+supplied personas against the school fee payment portal:
+
+```
+duration     3m 5.5s        tokens        17,500
+personas     4              test steps    35
+overlap      31%  (Parent on a lunch break / Parent using a screen reader)
+converged    false          steps dropped none reported
+```
+
+Every node ran green. `Prepare Personas` emitted 4 items, the loop carried 4
+through `Pace The Loop` (35.001s each), `Persona Simulator` and `Validate Flow`,
+and `Compare Flows` flattened them into 35 rows. Telegram delivered the summary.
+
+**The webhook response cannot survive the run, and that is structural.** The
+`curl` returned **HTTP 524 at 126 seconds** — Cloudflare's timeout in front of
+n8n Cloud, returning its own error page — while the execution carried on to
+3m 5.5s and finished normally. Four personas spend 140 seconds in the Wait node
+alone and `MAX_PERSONAS` is 6, so no amount of tuning fits a full run inside the
+proxy window.
+
+The fix is to acknowledge on receipt: a Respond to Webhook node straight after
+`Prepare Personas` returning the `run_id`, with results arriving by Sheets and
+Telegram. Cutting the wait is the wrong trade — 35s comes from measured token
+cost, so it buys a 429 in place of a 524.
+
+This is the general lesson from the run: **the waits that make a paced workflow
+correct are the same waits that push it past a proxy timeout.** A workflow
+measured in minutes should not be holding an HTTP connection open at all.
+
+**A finding on the reporting, not the flows.** The run note reads
+`named things the feature description does not mention: Parent on a lunch break,
+Grandparent paying for a grandchild, Parent using a screen reader` — those are
+persona names. `Compare Flows` maps the offending flows to `persona_name` but
+never carries through each flow's `invented_names`, so the note says who tripped
+guard rail 3 without saying what they named. It is unactionable as written and
+is a one-line fix, left in place here so the README screenshot matches the
+current export.
+
+The four flows themselves came back at 9, 8, 9 and 9 steps, all priority High,
+raising six gaps between them — every one traceable to a supplied trait rather
+than to the feature description.
+
 ## Deliverables
 
 ```
@@ -216,6 +262,8 @@ a feature with no risks.
 ├── plan.md
 ├── Persona_Based_Testing_Engine_n8n_workflow.json
 ├── sample_request.json
+├── 04_Persona_Based_Testing_Engine.png
+├── Reporting_To_Telegram.jpg
 └── README.md
 ```
 
