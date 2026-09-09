@@ -53,6 +53,7 @@ guard rails below.
 
 ```
 Webhook              POST /visual-diff  { before, after, context, issue_key }
+  -> Extract Before / After Image  (Extract From File)  binary -> base64
   -> Inspect Images     (Code)  facts, and the vision request
   -> Are They Identical? (IF)   identical bytes skip the model entirely
         |                    \
@@ -65,6 +66,7 @@ Webhook              POST /visual-diff  { before, after, context, issue_key }
 | Node | Type | Role |
 |---|---|---|
 | Visual Diff Webhook | `webhook` | `POST /visual-diff` |
+| Extract Before / After Image | `extractFromFile` | Binary to base64 - reading it directly does not work |
 | Inspect Images | `code` | Measures the files, builds the vision request |
 | Are They Identical? | `if` | The short-circuit |
 | Compare Screenshots | `httpRequest` | Groq `qwen3.8-27b`, both images in one call |
@@ -177,3 +179,11 @@ asks for 800. Ask for more and it is rejected before the model runs.
   purpose. Assert on the conclusion, not on vocabulary that appears either way.
 - **Document the detection floor.** A tool that says what it cannot do is more
   useful than one that appears to do everything.
+- **A mock that is more convenient than reality tests the mock.** Every harness
+  case fed binary as inline base64, because that is easy. n8n can hold binary on
+  the filesystem instead, where `item.binary[key].data` is empty — so the first
+  live run read two empty buffers, found them equal, and reported two different
+  screenshots as *"byte-identical. Nothing changed."* with High confidence.
+  Thirty-four assertions had passed over it. Binary now goes through **Extract
+  From File** nodes, and an image under 100 bytes is an error rather than a
+  verdict.

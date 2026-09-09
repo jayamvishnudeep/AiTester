@@ -183,6 +183,34 @@ assertion that matches words appearing in a sentence asserting the opposite is
 worse than no assertion, because it reports confidence. It now tests that the
 description does **not** claim the pair is identical.
 
+**The first live run produced a false "nothing changed", and the tests could not
+have caught it.** Posting the two sample files as a multipart upload came back:
+
+```
+verdict: No Difference   confidence: High
+summary: The two screenshots are byte-identical. Nothing changed.
+canvas:  unknown -> unknown
+```
+
+The files differ — 19,362 against 19,320 bytes. Two things went wrong together.
+n8n can hold binary data on the filesystem rather than in memory, and then
+`item.binary[key].data` is empty and only an id is present, so reading it
+directly in a Code node yielded nothing. And **two empty buffers compare equal**,
+so `before.buf.equals(after.buf)` returned true — producing the single answer
+this agent must never give wrongly, with High confidence, from a failed read.
+
+The fix is both halves. Binary is now read through **Extract From File** nodes,
+which is how n8n expects it and what `01_Screenshot_To_Bug_Reporter` already
+does; and an image under 100 bytes is an **error**, not a verdict, because an
+empty upload is a broken request rather than a pair of identical screenshots.
+
+The lesson is about the tests rather than the code: every harness case fed
+binary as inline base64, because that is what is easy to mock. That is not what
+n8n does, so the mock was wrong in exactly the way that mattered and thirty-four
+assertions passed over a broken read. **A mock that is more convenient than
+reality tests the mock.** There are now two regression checks for it, but only
+the live run could have found it.
+
 ## The detection floor
 
 Worth knowing before trusting this on fine work. On the sample pair, three
