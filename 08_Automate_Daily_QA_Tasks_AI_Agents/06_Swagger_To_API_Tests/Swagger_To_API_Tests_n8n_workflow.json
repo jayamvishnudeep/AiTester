@@ -1,0 +1,355 @@
+{
+  "name": "Swagger to API Tests",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "swagger-tests",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6301",
+      "name": "Swagger Webhook",
+      "webhookId": "e48a1c73-92b5-4f06-8d21-7a3e5b9c0f42"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.spec_url || 'https://example.invalid/no-spec-url' }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -680,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6302",
+      "name": "Fetch Spec",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Read the OpenAPI document and generate every test the document determines.\n//\n// The rule this node exists to enforce: everything the spec determines is\n// generated here, in code. A test derived from the document is correct by\n// construction - if the spec says orderId is a required integer path parameter,\n// a test that omits it and expects a 4xx is right without anyone checking. A\n// model-invented endpoint is a test that 404s on the first run and takes the\n// suite's credibility with it.\n//\n// It also means coverage does not depend on the token budget. These tests are\n// generated for EVERY operation however large the spec is, because generating\n// them costs nothing. Only the edge-case pass afterwards is budgeted.\n\nconst MAX_REF_DEPTH = 6;      // a self-referential schema must not hang the node\nconst MAX_OPS_FOR_MODEL = 12; // how many operations the model is shown\n\nconst hook = $('Swagger Webhook').first().json;\nconst body = (hook && hook.body) || hook || {};\n\n// --- getting the document ---------------------------------------------------\nlet raw = body.spec;\nif (!raw) {\n  try {\n    const fetched = $input.first().json;\n    raw = fetched && (fetched.openapi || fetched.swagger || fetched.paths) ? fetched : (fetched && fetched.data);\n  } catch (e) { raw = null; }\n}\n\nlet spec = null;\nif (raw && typeof raw === 'object') spec = raw;\nelse if (typeof raw === 'string') {\n  const text = raw.trim();\n  if (text.startsWith('{')) {\n    try { spec = JSON.parse(text); } catch (e) {\n      throw new Error('The spec looked like JSON but did not parse: ' + e.message);\n    }\n  } else if (/^(openapi|swagger)\\s*:/m.test(text)) {\n    // A Code node has no YAML parser, and hand-rolling one for OpenAPI - with\n    // anchors, multi-line scalars and the rest - would be a worse bet than\n    // saying so. Almost every framework can serve JSON directly.\n    throw new Error('This looks like a YAML spec, and only JSON is supported. ' +\n      'Fetch the JSON form instead (/v3/api-docs on Spring Boot, /openapi.json on FastAPI), ' +\n      'or convert it once with: swagger-cli bundle spec.yaml -o spec.json');\n  } else {\n    throw new Error('Could not read the spec. Send it as JSON in \"spec\", or a URL in \"spec_url\".');\n  }\n}\n\nif (!spec || !spec.paths) {\n  throw new Error('No OpenAPI document found. Expected an object with a \"paths\" property.');\n}\n\nconst specVersion = String(spec.openapi || spec.swagger || 'unknown');\nconst title = String((spec.info && spec.info.title) || 'API');\nconst baseUrl = String(body.base_url || (spec.servers && spec.servers[0] && spec.servers[0].url) ||\n  (spec.host ? 'https://' + spec.host + (spec.basePath || '') : 'https://api.example.com')).replace(/\\/$/, '');\n\n// --- $ref resolution --------------------------------------------------------\n// The real Swagger Petstore uses $ref 43 times. Without resolving them a\n// request body is just {\"$ref\": \"...\"} and no example can be built from it.\n// The cap counts $ref HOPS, not object nesting. Counting nesting looks like it\n// works on a shallow spec and then silently stops resolving on a real one: a\n// $ref sitting a few levels down - say inside an array's items - is left as\n// {\"$ref\": ...} and the example built from it comes out as the string \"string\".\n// Hops are also the right thing to cap, because only a reference cycle can\n// recurse forever.\nfunction resolve(node, refDepth) {\n  if (!node || typeof node !== 'object') return node;\n  if (typeof node.$ref === 'string') {\n    if (refDepth >= MAX_REF_DEPTH) return {}; // a self-referential schema stops here\n    const path = node.$ref.replace(/^#\\//, '').split('/');\n    let target = spec;\n    for (const part of path) {\n      target = target && target[part.replace(/~1/g, '/').replace(/~0/g, '~')];\n    }\n    if (!target) return {};\n    return resolve(target, refDepth + 1);\n  }\n  if (Array.isArray(node)) return node.map((n) => resolve(n, refDepth));\n  const out = {};\n  Object.keys(node).forEach((k) => { out[k] = resolve(node[k], refDepth); });\n  return out;\n}\n\n// --- example values ---------------------------------------------------------\n// Preference order matters: what the spec states beats anything invented.\nfunction exampleFor(schema, name) {\n  const s = schema || {};\n  if (s.example !== undefined) return s.example;\n  if (s.default !== undefined) return s.default;\n  if (Array.isArray(s.enum) && s.enum.length) return s.enum[0];\n  switch (s.type) {\n    case 'integer': return s.minimum !== undefined ? s.minimum : 1;\n    case 'number': return s.minimum !== undefined ? s.minimum : 1.5;\n    case 'boolean': return true;\n    case 'array': return [exampleFor(s.items || {}, name)];\n    case 'object': return exampleObject(s);\n    default:\n      if (/id$/i.test(name || '')) return 'abc123';\n      if (/email/i.test(name || '')) return 'qa@example.com';\n      if (/date/i.test(name || '')) return '2026-01-01';\n      return 'string';\n  }\n}\nfunction exampleObject(schema) {\n  const props = (schema && schema.properties) || {};\n  const out = {};\n  Object.keys(props).forEach((k) => { out[k] = exampleFor(props[k], k); });\n  return out;\n}\n\n// --- walk the operations ----------------------------------------------------\nconst METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];\nconst rootSecurity = Array.isArray(spec.security) ? spec.security : [];\nconst schemes = (spec.components && spec.components.securitySchemes) || spec.securityDefinitions || {};\nconst authSchemeName = Object.keys(schemes)[0] || '';\n\nconst operations = [];\nObject.keys(spec.paths).forEach((p) => {\n  const pathItem = spec.paths[p] || {};\n  const sharedParams = resolve(pathItem.parameters || [], 0);\n  METHODS.forEach((method) => {\n    const op = pathItem[method];\n    if (!op) return;\n    const resolved = resolve(op, 0);\n    const params = [].concat(sharedParams, resolved.parameters || []).map((prm) => ({\n      name: String(prm.name || ''),\n      in: String(prm.in || 'query'),\n      required: !!prm.required || prm.in === 'path',\n      type: String((prm.schema && prm.schema.type) || prm.type || 'string'),\n      enum: (prm.schema && prm.schema.enum) || prm.enum || null,\n      example: exampleFor(prm.schema || prm, prm.name),\n    })).filter((prm) => prm.name);\n\n    const rb = resolved.requestBody;\n    const rbSchema = rb && rb.content && (rb.content['application/json'] || Object.values(rb.content)[0]);\n    const security = resolved.security !== undefined ? resolved.security : rootSecurity;\n\n    operations.push({\n      id: String(resolved.operationId || (method + ' ' + p)),\n      method: method.toUpperCase(),\n      path: p,\n      summary: String(resolved.summary || resolved.description || '').slice(0, 160),\n      params,\n      body_required: !!(rb && rb.required),\n      body_example: rbSchema && rbSchema.schema ? exampleFor(rbSchema.schema, 'body') : null,\n      requires_auth: Array.isArray(security) && security.length > 0,\n      responses: Object.keys(resolved.responses || {}),\n    });\n  });\n});\n\nif (!operations.length) throw new Error('The spec parsed, but it declares no operations.');\n\n// --- the tests the spec determines ------------------------------------------\nconst tests = [];\nlet n = 0;\nconst add = (op, kind, name, over) => {\n  n++;\n  tests.push(Object.assign({\n    id: 't' + n,\n    kind,\n    name,\n    operation_id: op.id,\n    method: op.method,\n    path: op.path,\n    params: {},\n    body: null,\n    send_auth: op.requires_auth,\n    expect_status: [],\n    derived_from: '',\n  }, over));\n};\n\nconst happyStatus = (op) => {\n  const ok = op.responses.filter((c) => /^2/.test(c)).map(Number);\n  return ok.length ? ok : [200, 201, 204];\n};\nconst errorStatus = (op, preferred) => {\n  const declared = op.responses.filter((c) => preferred.includes(Number(c))).map(Number);\n  return declared.length ? declared : preferred;\n};\nconst fullParams = (op) => {\n  const out = {};\n  op.params.forEach((prm) => { out[prm.name] = prm.example; });\n  return out;\n};\n\noperations.forEach((op) => {\n  add(op, 'happy_path', op.method + ' ' + op.path + ' returns a documented success', {\n    params: fullParams(op),\n    body: op.body_example,\n    expect_status: happyStatus(op),\n    derived_from: 'the documented 2xx responses',\n  });\n\n  op.params.filter((prm) => prm.required).forEach((prm) => {\n    const params = fullParams(op);\n    delete params[prm.name];\n    add(op, 'missing_required', op.method + ' ' + op.path + ' rejects a missing \"' + prm.name + '\"', {\n      params,\n      body: op.body_example,\n      expect_status: errorStatus(op, [400, 404, 422]),\n      derived_from: 'required: true on ' + prm.in + ' parameter \"' + prm.name + '\"',\n    });\n  });\n\n  op.params.filter((prm) => ['integer', 'number', 'boolean'].includes(prm.type)).forEach((prm) => {\n    const params = fullParams(op);\n    params[prm.name] = 'not-a-' + prm.type;\n    add(op, 'wrong_type', op.method + ' ' + op.path + ' rejects a non-' + prm.type + ' \"' + prm.name + '\"', {\n      params,\n      body: op.body_example,\n      expect_status: errorStatus(op, [400, 404, 422]),\n      derived_from: 'type: ' + prm.type + ' on parameter \"' + prm.name + '\"',\n    });\n  });\n\n  op.params.filter((prm) => Array.isArray(prm.enum) && prm.enum.length).forEach((prm) => {\n    const params = fullParams(op);\n    params[prm.name] = 'definitely-not-a-valid-value';\n    add(op, 'invalid_enum', op.method + ' ' + op.path + ' rejects an out-of-enum \"' + prm.name + '\"', {\n      params,\n      body: op.body_example,\n      expect_status: errorStatus(op, [400, 422]),\n      derived_from: 'enum [' + prm.enum.join(', ') + '] on \"' + prm.name + '\"',\n    });\n  });\n\n  if (op.body_required) {\n    add(op, 'missing_body', op.method + ' ' + op.path + ' rejects a missing request body', {\n      params: fullParams(op),\n      body: null,\n      expect_status: errorStatus(op, [400, 422]),\n      derived_from: 'requestBody.required = true',\n    });\n  }\n\n  if (op.requires_auth) {\n    add(op, 'no_auth', op.method + ' ' + op.path + ' rejects a call with no credentials', {\n      params: fullParams(op),\n      body: op.body_example,\n      send_auth: false,\n      expect_status: errorStatus(op, [401, 403]),\n      derived_from: 'security requirement \"' + (authSchemeName || 'declared') + '\"',\n    });\n  }\n});\n\nconst byKind = {};\ntests.forEach((t) => { byKind[t.kind] = (byKind[t.kind] || 0) + 1; });\n\n// --- the compact briefing the model gets ------------------------------------\n// It never sees the spec. A 6MB document is read here in full and summarised to\n// a page, so spec size cannot push the run out of the context window.\nconst shown = operations.slice(0, MAX_OPS_FOR_MODEL);\nconst operations_summary = shown.map((op) =>\n  op.method + ' ' + op.path +\n  (op.summary ? ' - ' + op.summary : '') +\n  '\\n    params: ' + (op.params.map((p) => p.name + ':' + p.type + (p.required ? ' (required)' : '') +\n    (p.enum ? ' [' + p.enum.join('|') + ']' : '')).join(', ') || 'none') +\n  (op.body_required ? '\\n    body required: ' + JSON.stringify(op.body_example).slice(0, 200) : '') +\n  '\\n    auth: ' + (op.requires_auth ? 'required' : 'none') +\n  '\\n    documented responses: ' + op.responses.join(', ')\n).join('\\n\\n');\n\nreturn [{\n  json: {\n    api_title: title,\n    spec_version: specVersion,\n    base_url: baseUrl,\n    auth_scheme: authSchemeName,\n    auth_type: (schemes[authSchemeName] && (schemes[authSchemeName].scheme || schemes[authSchemeName].type)) || '',\n    operation_count: operations.length,\n    operations,\n    operations_summary,\n    operations_shown: shown.length,\n    operations_omitted: Math.max(0, operations.length - shown.length),\n    deterministic_tests: tests,\n    deterministic_count: tests.length,\n    tests_by_kind: byKind,\n    valid_paths: operations.map((op) => op.method + ' ' + op.path),\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6303",
+      "name": "Parse Spec"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=API: {{ $json.api_title }}  (OpenAPI {{ $json.spec_version }})\nBase URL: {{ $json.base_url }}\nAuth: {{ $json.auth_scheme ? $json.auth_scheme + \" (\" + $json.auth_type + \")\" : \"none declared\" }}\n\nTHE BASELINE IS ALREADY WRITTEN: {{ $json.deterministic_count }} tests across\n{{ $json.operation_count }} operations, covering happy paths, missing required parameters,\nwrong types, invalid enum values, missing bodies and unauthenticated calls.\nDo not repeat any of those.\n\nTHE OPERATIONS THAT EXIST. Nothing outside this list exists:\n\n{{ $json.operations_summary }}\n\n{{ $json.operations_omitted ? \"(\" + $json.operations_omitted + \" further operations were not shown; do not write tests for them.)\" : \"\" }}\n\nWrite the scenarios a schema cannot imply: sequences, state, ownership,\nidempotency, and values that are type-valid but wrong for this domain.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an API test engineer reviewing a specification that has already been turned into a baseline test suite.\n\nThe structural tests are done. Every operation already has a happy path, a test for each missing required parameter, a wrong-type test for every typed parameter, an out-of-enum test, a missing-body test, and an unauthenticated test. Those were generated from the document and they are correct.\n\nYour job is the part a schema cannot state.\n\n## WHAT ONLY YOU CAN ADD\n\nA specification describes shapes. It does not describe behaviour over time, or what the data means.\n\n  A schema implies:      \"name must be a string\"\n  You should add:        \"create an order, cancel it, then cancel it again\"\n\n  A schema implies:      \"limit is an integer with maximum 100\"\n  You should add:        \"list orders with limit=100 while the customer has one\n                          order, and confirm the response is not padded\"\n\n  A schema implies:      \"customerId is required\"\n  You should add:        \"list orders for a customer id that is valid but\n                          belongs to somebody else\"\n\nSequences, state, ownership, idempotency, ordering, and values that are type-valid but wrong for the domain. That is your territory.\n\n## THE RULE THAT MATTERS MOST\n\n**You may not invent the API.**\n\nEvery test you write must name a method and path that appear in the operations you were given, and may only use parameters declared on that operation. Nothing else exists. There is no `/orders/{id}/refund` unless you were shown one, and no `X-Tenant-Id` header unless it is in the list.\n\nTests are checked against the specification and anything naming a path or parameter that is not there is discarded. An invented endpoint produces a test that fails on its first run, and a suite where the first few tests fail on their first run gets deleted.\n\nIf the coverage you would like needs an operation that does not exist, put that in `gaps` as a note for the API owner. That is a genuinely useful finding.\n\n## DO NOT REPEAT THE BASELINE\n\nDo not write \"returns 200\", \"rejects a missing required parameter\", \"rejects a bad type\", \"rejects an invalid enum value\" or \"rejects an unauthenticated call\". Those exist already. Anything you produce that merely restates one of them is noise in a suite someone has to maintain.\n\n## WHAT TO WRITE\n\nscenarios\n  Four to eight. Each with:\n    name           what a QA would call this test in a report\n    method, path   exactly as given to you\n    why            the risk it covers, in one sentence - what goes wrong in\n                   production if this is not tested\n    steps          the calls in order, if it needs more than one. Reference the\n                   operations by method and path.\n    test_data      realistic values for this domain, not just type-valid ones\n    expect         what should happen, in words\n    priority       High, Medium or Low\n\nsequence_notes\n  Where one operation has to run before another for any of this to work, and\n  what has to be carried between them - an id, a token, a version.\n\ndata_notes\n  What the suite needs to exist before it can run: a customer, a product in\n  stock, an order in a particular state. A generated suite that assumes an empty\n  database fails for the wrong reason.\n\ngaps\n  Coverage the specification makes impossible. Missing operations, undocumented\n  error responses, fields whose meaning is unclear. Phrase each as something an\n  API owner could act on.\n\n## TONE\n\nWrite like an engineer filing work for a colleague. Concrete, specific to this API, no filler. Never use \"simply\", \"just\" or \"comprehensive\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -220,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6304",
+      "name": "API Test Designer"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "maxTokensToSample": 4000,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        220
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6305",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "uur0A2QqUBroX2ua",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"scenarios\",\n    \"sequence_notes\",\n    \"data_notes\",\n    \"gaps\"\n  ],\n  \"properties\": {\n    \"scenarios\": {\n      \"type\": \"array\",\n      \"description\": \"Four to eight tests a schema cannot imply. Each must name a method and path from the operations given.\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"name\",\n          \"method\",\n          \"path\",\n          \"why\",\n          \"steps\",\n          \"test_data\",\n          \"expect\",\n          \"priority\"\n        ],\n        \"properties\": {\n          \"name\": {\n            \"type\": \"string\",\n            \"description\": \"What a QA would call this test in a report.\"\n          },\n          \"method\": {\n            \"type\": \"string\",\n            \"description\": \"Exactly as given: GET, POST, PUT, PATCH or DELETE.\"\n          },\n          \"path\": {\n            \"type\": \"string\",\n            \"description\": \"Exactly as given, including {placeholders}.\"\n          },\n          \"why\": {\n            \"type\": \"string\",\n            \"description\": \"The risk it covers - what goes wrong in production without it.\"\n          },\n          \"steps\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\": \"The calls in order when more than one is needed.\"\n          },\n          \"test_data\": {\n            \"type\": \"string\",\n            \"description\": \"Realistic values for this domain, using only declared parameters.\"\n          },\n          \"expect\": {\n            \"type\": \"string\"\n          },\n          \"priority\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"High\",\n              \"Medium\",\n              \"Low\"\n            ]\n          }\n        }\n      }\n    },\n    \"sequence_notes\": {\n      \"type\": \"string\",\n      \"description\": \"What must run before what, and what is carried between calls.\"\n    },\n    \"data_notes\": {\n      \"type\": \"string\",\n      \"description\": \"What must exist before the suite can run.\"\n    },\n    \"gaps\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Coverage the specification makes impossible.\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        220
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6306",
+      "name": "Scenario Schema"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check the model's scenarios against the specification, then assemble both\n// artefacts: a Postman v2.1 collection and a RestAssured JUnit class.\n//\n// The check is the point. A scenario naming a path or a parameter that is not\n// in the document produces a test that fails on its first run, and a suite\n// whose first few tests fail on their first run gets deleted along with any\n// trust in the tool. So the spec, not the model, decides what exists.\n\nconst spec = $('Parse Spec').first().json;\n\nlet model = {};\ntry {\n  const incoming = $input.first().json;\n  model = (incoming && incoming.output) || incoming || {};\n} catch (e) { model = {}; }\nif (typeof model !== 'object' || Array.isArray(model)) model = {};\n\nconst notes = [];\nconst str = (v, f) => { const s = String(v === undefined || v === null ? '' : v).trim(); return s || f; };\nconst arr = (v) => (Array.isArray(v) ? v : []);\n\nconst opIndex = {};\nspec.operations.forEach((op) => { opIndex[op.method + ' ' + op.path] = op; });\n\n// --- the guard rail ---------------------------------------------------------\nlet droppedUnknownPath = 0;\nlet droppedUnknownParam = 0;\nconst rejected = [];\n\nconst scenarios = arr(model.scenarios).map((s) => ({\n  name: str(s && s.name, ''),\n  method: str(s && s.method, '').toUpperCase(),\n  path: str(s && s.path, ''),\n  why: str(s && s.why, 'Not Provided'),\n  steps: arr(s && s.steps).map((x) => String(x).trim()).filter(Boolean),\n  test_data: str(s && s.test_data, ''),\n  expect: str(s && s.expect, 'Not Provided'),\n  priority: ['High', 'Medium', 'Low'].find((p) => p.toLowerCase() === str(s && s.priority, '').toLowerCase()) || 'Medium',\n})).filter((s) => {\n  if (!s.name || !s.method || !s.path) { droppedUnknownPath++; return false; }\n  const op = opIndex[s.method + ' ' + s.path];\n  if (!op) {\n    droppedUnknownPath++;\n    rejected.push(s.method + ' ' + s.path + ' (no such operation)');\n    return false;\n  }\n  // Any parameter the scenario names in its data must be declared on that\n  // operation. Checked loosely - the model writes prose, not a param list.\n  const declared = op.params.map((p) => p.name.toLowerCase());\n  const invented = (s.test_data.match(/\\b([a-zA-Z_][a-zA-Z0-9_]{2,})\\s*[=:]/g) || [])\n    .map((m) => m.replace(/\\s*[=:]$/, '').toLowerCase())\n    .filter((k) => !declared.includes(k) && !['id', 'body', 'status', 'response', 'value', 'data', 'token', 'items', 'sku', 'quantity', 'note', 'priority', 'customerid'].includes(k));\n  if (invented.length > 2) {\n    droppedUnknownParam++;\n    rejected.push(s.name + ' (names undeclared fields: ' + invented.slice(0, 3).join(', ') + ')');\n    return false;\n  }\n  return true;\n});\n\nif (droppedUnknownPath) notes.push(droppedUnknownPath + ' scenario(s) dropped for naming an operation the spec does not declare');\nif (droppedUnknownParam) notes.push(droppedUnknownParam + ' scenario(s) dropped for naming undeclared fields');\n\n// --- Postman v2.1 -----------------------------------------------------------\nconst tests = spec.deterministic_tests;\n\nfunction urlFor(t) {\n  let path = t.path;\n  const query = [];\n  const op = opIndex[t.method + ' ' + t.path] || { params: [] };\n  Object.keys(t.params || {}).forEach((k) => {\n    const p = op.params.find((x) => x.name === k);\n    const v = t.params[k];\n    if (p && p.in === 'path') path = path.replace('{' + k + '}', encodeURIComponent(String(v)));\n    else if (p && p.in === 'header') { /* handled below */ }\n    else query.push({ key: k, value: String(v) });\n  });\n  // A path parameter that was deliberately omitted leaves its placeholder; a\n  // request to a literal \"{orderId}\" is exactly the 4xx the test is checking.\n  const raw = '{{baseUrl}}' + path + (query.length ? '?' + query.map((q) => q.key + '=' + encodeURIComponent(q.value)).join('&') : '');\n  return {\n    raw,\n    host: ['{{baseUrl}}'],\n    path: path.replace(/^\\//, '').split('/'),\n    query,\n  };\n}\n\nfunction headersFor(t) {\n  const h = [];\n  if (t.send_auth) h.push({ key: 'Authorization', value: 'Bearer {{authToken}}' });\n  if (t.body) h.push({ key: 'Content-Type', value: 'application/json' });\n  const op = opIndex[t.method + ' ' + t.path] || { params: [] };\n  op.params.filter((p) => p.in === 'header').forEach((p) => {\n    if (t.params && t.params[p.name] !== undefined) h.push({ key: p.name, value: String(t.params[p.name]) });\n  });\n  return h;\n}\n\nfunction scriptFor(t) {\n  const list = JSON.stringify(t.expect_status);\n  return [\n    '// ' + t.derived_from,\n    'pm.test(\"status is one of ' + t.expect_status.join(', ') + '\", function () {',\n    '    pm.expect(' + list + ').to.include(pm.response.code);',\n    '});',\n    'pm.test(\"responds within 3s\", function () {',\n    '    pm.expect(pm.response.responseTime).to.be.below(3000);',\n    '});',\n  ];\n}\n\nconst folders = {};\ntests.forEach((t) => {\n  const key = t.kind;\n  folders[key] = folders[key] || [];\n  folders[key].push({\n    name: t.name,\n    request: {\n      method: t.method,\n      header: headersFor(t),\n      url: urlFor(t),\n      body: t.body ? { mode: 'raw', raw: JSON.stringify(t.body, null, 2), options: { raw: { language: 'json' } } } : undefined,\n      description: t.derived_from,\n    },\n    event: [{ listen: 'test', script: { type: 'text/javascript', exec: scriptFor(t) } }],\n  });\n});\n\nconst FOLDER_TITLES = {\n  happy_path: '1. Happy paths',\n  missing_required: '2. Missing required parameters',\n  wrong_type: '3. Wrong parameter types',\n  invalid_enum: '4. Invalid enum values',\n  missing_body: '5. Missing request bodies',\n  no_auth: '6. Unauthenticated calls',\n};\n\nconst collection = {\n  info: {\n    _postman_id: 'gen-' + Date.now().toString(36),\n    name: spec.api_title + ' - generated baseline suite',\n    description: [\n      'Generated from the OpenAPI ' + spec.spec_version + ' document for ' + spec.api_title + '.',\n      '',\n      spec.deterministic_count + ' tests derived directly from the specification across ' +\n        spec.operation_count + ' operations, plus ' + scenarios.length + ' scenario notes that a schema cannot imply.',\n      '',\n      'Set the baseUrl and authToken collection variables before running.',\n      'Run with: newman run collection.json',\n    ].join('\\n'),\n    schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',\n  },\n  variable: [\n    { key: 'baseUrl', value: spec.base_url, type: 'string' },\n    { key: 'authToken', value: '', type: 'string' },\n  ],\n  item: Object.keys(folders).map((kind) => ({\n    name: FOLDER_TITLES[kind] || kind,\n    item: folders[kind],\n  })),\n};\n\n// The scenarios go in as a folder of documented stubs rather than as executable\n// requests: they are multi-step and need data set up first, so pretending they\n// are runnable would be the same lie as an invented endpoint.\nif (scenarios.length) {\n  collection.item.push({\n    name: '7. Scenarios to write by hand',\n    description: 'These need state or sequencing that a generated request cannot express. Each names a real operation from the spec.',\n    item: scenarios.map((s) => ({\n      name: '[' + s.priority + '] ' + s.name,\n      request: {\n        method: s.method,\n        header: [{ key: 'Authorization', value: 'Bearer {{authToken}}' }],\n        url: urlFor({ method: s.method, path: s.path, params: {} }),\n        description: [\n          'WHY: ' + s.why,\n          '',\n          'STEPS:',\n          s.steps.length ? s.steps.map((x, i) => '  ' + (i + 1) + '. ' + x).join('\\n') : '  (single call)',\n          '',\n          'DATA: ' + (s.test_data || 'Not Provided'),\n          'EXPECT: ' + s.expect,\n        ].join('\\n'),\n      },\n      event: [{ listen: 'test', script: { type: 'text/javascript', exec: [\n        '// This scenario needs set-up and assertions a generator cannot write.',\n        '// ' + s.expect.replace(/\\n/g, ' '),\n        'pm.test(\"TODO: implement - ' + s.name.replace(/\"/g, \"'\") + '\", function () {',\n        '    pm.expect.fail(\"Not implemented yet\");',\n        '});',\n      ] } }],\n    })),\n  });\n}\n\n// --- RestAssured ------------------------------------------------------------\nconst javaName = (s) => s.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').replace(/^(\\d)/, 't$1').slice(0, 80);\nconst javaClass = (spec.api_title.replace(/[^a-zA-Z0-9]/g, '') || 'Api') + 'BaselineTest';\n\nconst javaTests = tests.map((t) => {\n  const op = opIndex[t.method + ' ' + t.path] || { params: [] };\n  const lines = ['    @Test'];\n  lines.push('    @DisplayName(\"' + t.name.replace(/\"/g, \"'\") + '\")');\n  lines.push('    void ' + javaName(t.kind + '_' + t.operation_id + '_' + t.id) + '() {');\n  lines.push('        given()');\n  lines.push('            .baseUri(BASE_URL)');\n  if (t.send_auth) lines.push('            .header(\"Authorization\", \"Bearer \" + AUTH_TOKEN)');\n  Object.keys(t.params || {}).forEach((k) => {\n    const p = op.params.find((x) => x.name === k);\n    const v = JSON.stringify(String(t.params[k]));\n    if (p && p.in === 'path') lines.push('            .pathParam(\"' + k + '\", ' + v + ')');\n    else if (p && p.in === 'header') lines.push('            .header(\"' + k + '\", ' + v + ')');\n    else lines.push('            .queryParam(\"' + k + '\", ' + v + ')');\n  });\n  if (t.body) {\n    lines.push('            .contentType(\"application/json\")');\n    lines.push('            .body(' + JSON.stringify(JSON.stringify(t.body)) + ')');\n  }\n  lines.push('        .when()');\n  lines.push('            .' + t.method.toLowerCase() + '(\"' + t.path + '\")');\n  lines.push('        .then()');\n  lines.push('            .time(lessThan(3000L))');\n  lines.push('            .statusCode(anyOf(' + t.expect_status.map((c) => 'is(' + c + ')').join(', ') + '));');\n  lines.push('        // ' + t.derived_from);\n  lines.push('    }');\n  return lines.join('\\n');\n});\n\nconst restAssured = [\n  'package com.aitester.api;',\n  '',\n  'import org.junit.jupiter.api.DisplayName;',\n  'import org.junit.jupiter.api.Test;',\n  '',\n  'import static io.restassured.RestAssured.given;',\n  'import static org.hamcrest.Matchers.anyOf;',\n  'import static org.hamcrest.Matchers.is;',\n  'import static org.hamcrest.Matchers.lessThan;',\n  '',\n  '/**',\n  ' * Baseline API suite generated from the OpenAPI ' + spec.spec_version + ' document',\n  ' * for ' + spec.api_title + '.',\n  ' *',\n  ' * ' + spec.deterministic_count + ' tests across ' + spec.operation_count + ' operations, every one derived from the',\n  ' * specification: happy paths, missing required parameters, wrong types,',\n  ' * invalid enum values, missing bodies and unauthenticated calls.',\n  ' *',\n  ' * Set BASE_URL and AUTH_TOKEN, or pass them as -D system properties.',\n  ' */',\n  'class ' + javaClass + ' {',\n  '',\n  '    private static final String BASE_URL = System.getProperty(\"api.baseUrl\", \"' + spec.base_url + '\");',\n  '    private static final String AUTH_TOKEN = System.getProperty(\"api.authToken\", \"\");',\n  '',\n  javaTests.join('\\n\\n'),\n  '}',\n  '',\n].join('\\n');\n\n// --- summary ----------------------------------------------------------------\nconst kindLine = Object.keys(spec.tests_by_kind || {})\n  .map((k) => (FOLDER_TITLES[k] || k).replace(/^\\d+\\.\\s*/, '') + ': ' + spec.tests_by_kind[k]).join('\\n  ');\n\nconst telegram_text = [\n  'API tests generated - ' + spec.api_title + ' (OpenAPI ' + spec.spec_version + ')',\n  '',\n  spec.operation_count + ' operations, ' + spec.deterministic_count + ' tests derived from the spec:',\n  '  ' + kindLine,\n  '',\n  scenarios.length + ' scenarios the schema could not imply' +\n    (droppedUnknownPath + droppedUnknownParam ? ' (' + (droppedUnknownPath + droppedUnknownParam) + ' rejected for naming things the spec does not declare)' : ''),\n  scenarios.slice(0, 4).map((s) => '  [' + s.priority + '] ' + s.name).join('\\n'),\n  '',\n  arr(model.gaps).length ? 'Gaps for the API owner:\\n' + arr(model.gaps).slice(0, 4).map((g, i) => '  ' + (i + 1) + '. ' + g).join('\\n') : 'No gaps raised.',\n  '',\n  'Base URL: ' + spec.base_url,\n  'Run with: newman run collection.json --env-var authToken=...',\n].join('\\n');\n\nreturn [{\n  json: {\n    api_title: spec.api_title,\n    spec_version: spec.spec_version,\n    base_url: spec.base_url,\n    operation_count: spec.operation_count,\n    deterministic_count: spec.deterministic_count,\n    tests_by_kind: spec.tests_by_kind,\n    scenario_count: scenarios.length,\n    scenarios,\n    scenarios_rejected: rejected,\n    sequence_notes: str(model.sequence_notes, 'Not Provided'),\n    data_notes: str(model.data_notes, 'Not Provided'),\n    gaps: arr(model.gaps).map((g) => String(g).trim()).filter(Boolean).slice(0, 6),\n    validation_notes: notes.length ? notes : ['No corrections were needed'],\n    postman_collection: collection,\n    postman_json: JSON.stringify(collection, null, 2),\n    restassured_java: restAssured,\n    collection_filename: javaName(spec.api_title) + '_postman_collection.json',\n    java_filename: javaClass + '.java',\n    telegram_text,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6307",
+      "name": "Build Collection"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "postman_json",
+        "binaryPropertyName": "collection",
+        "options": {
+          "fileName": "={{ $json.collection_filename }}",
+          "encoding": "utf8"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6308",
+      "name": "Collection To File"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "restassured_java",
+        "binaryPropertyName": "javaSuite",
+        "options": {
+          "fileName": "={{ $json.java_filename }}",
+          "encoding": "utf8"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        460,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6309",
+      "name": "Java Suite To File"
+    },
+    {
+      "parameters": {
+        "chatId": "831685806",
+        "text": "={{ $('Build Collection').first().json.telegram_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6310",
+      "name": "Send Summary",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "831685806",
+        "binaryData": true,
+        "binaryPropertyName": "collection",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        900,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6311",
+      "name": "Send Collection File",
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "uYLEgPT9xzK0CBz1",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($('Build Collection').first().json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6312",
+      "name": "Respond to Caller"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Swagger Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Spec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Spec": {
+      "main": [
+        [
+          {
+            "node": "Parse Spec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Spec": {
+      "main": [
+        [
+          {
+            "node": "API Test Designer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Test Designer": {
+      "main": [
+        [
+          {
+            "node": "Build Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Collection": {
+      "main": [
+        [
+          {
+            "node": "Collection To File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collection To File": {
+      "main": [
+        [
+          {
+            "node": "Java Suite To File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Java Suite To File": {
+      "main": [
+        [
+          {
+            "node": "Send Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Collection File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Collection File": {
+      "main": [
+        [
+          {
+            "node": "Respond to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "API Test Designer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "API Test Designer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
