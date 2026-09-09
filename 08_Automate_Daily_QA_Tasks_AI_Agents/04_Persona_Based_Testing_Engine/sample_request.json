@@ -1,0 +1,59 @@
+{
+  "_comment": "A sample request for the Persona-Based Testing Engine. POST this whole object to the webhook. The four personas are deliberately different from each other and from the built-in library, so the run exercises the supplied-personas path and the convergence check has something real to measure. The feature description is detailed on purpose: it is the only source the engine may use for what exists, so anything a persona needs that is not written here should come back as a gap rather than an invented step.",
+
+  "feature_name": "School fee payment portal - pay in instalments",
+  "feature": "Parents and guardians sign in to the school portal with an email address and a six-digit code sent by email. The Fees page lists each child, the total owed for the term, and a due date. Selecting a child opens a payment page showing the amount outstanding and a choice between paying in full or splitting the balance into three monthly instalments. Choosing instalments shows the three dates and amounts before confirming. Card details are entered on the same page: card number, expiry, security code, and the name on the card. A Pay button submits the payment. On success the page shows a reference number and the payment appears in a Payment history list at the bottom of the Fees page. If the card is declined an error message appears above the Pay button and the details stay on screen. Parents with more than one child at the school see all of them on the Fees page and must pay for each child separately.",
+
+  "personas": [
+    {
+      "name": "Parent on a lunch break",
+      "summary": "Works shifts, has twenty minutes and a phone, and is paying between other things.",
+      "traits": [
+        "always on a phone, one thumb, standing up",
+        "interrupted mid-task and comes back later",
+        "will not read anything longer than a sentence",
+        "needs proof the payment worked before leaving the page",
+        "signs in rarely and forgets which email address was used"
+      ],
+      "goals": "Pay this term's fees for two children without having to start again."
+    },
+    {
+      "name": "Grandparent paying for a grandchild",
+      "summary": "In their seventies, paying on behalf of a grandchild, using a tablet at home.",
+      "traits": [
+        "low vision, runs the browser zoomed in",
+        "less precise tapping, hits the wrong control and needs to undo",
+        "very cautious about entering card details online",
+        "takes longer than a short session timeout allows",
+        "wants written confirmation they can keep",
+        "does not know school terminology such as instalment schedules"
+      ],
+      "goals": "Pay one grandchild's fees correctly and be certain it went through."
+    },
+    {
+      "name": "School finance officer",
+      "summary": "Uses the portal every day and reconciles payments against the finance system.",
+      "traits": [
+        "expects keyboard navigation and shortcuts",
+        "handles many children and many payments in one sitting",
+        "checks reference numbers against another system",
+        "will deliberately try edge cases such as part payments and declined cards",
+        "impatient with confirmation screens"
+      ],
+      "goals": "Reconcile today's payments and chase what is still outstanding."
+    },
+    {
+      "name": "Parent using a screen reader",
+      "summary": "Blind, navigates entirely by keyboard with a screen reader, pays fees each term.",
+      "traits": [
+        "never uses a mouse",
+        "relies on labels, headings and a sensible focus order",
+        "cannot perceive status shown only by colour",
+        "needs errors announced, not only displayed",
+        "card entry fields must be individually labelled",
+        "a focus trap makes the feature impossible to complete"
+      ],
+      "goals": "Pay the term's fees independently, without needing sighted help."
+    }
+  ]
+}
