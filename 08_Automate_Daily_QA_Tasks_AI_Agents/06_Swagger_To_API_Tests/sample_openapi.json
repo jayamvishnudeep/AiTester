@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Northwind Orders API",
+    "version": "1.4.0",
+    "description": "A small orders API used to exercise the Swagger to API Tests agent. It deliberately contains the shapes a generator has to handle: required and optional parameters, a typed path parameter, an enum, a request body behind a $ref, an operation with no auth beside operations that require it, and documented error responses."
+  },
+  "servers": [{ "url": "https://api.northwind.example.com/v1" }],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Service health",
+        "security": [],
+        "responses": {
+          "200": { "description": "Service is up" }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "operationId": "listOrders",
+        "summary": "List orders",
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "example": 4471 },
+            "description": "Only orders for this customer"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["placed", "packed", "shipped", "cancelled"] }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20, "maximum": 100 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "A page of orders" },
+          "400": { "description": "Invalid query parameters" },
+          "401": { "description": "Missing or invalid credentials" }
+        }
+      },
+      "post": {
+        "operationId": "createOrder",
+        "summary": "Place an order",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewOrder" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Order created" },
+          "400": { "description": "Invalid order" },
+          "401": { "description": "Missing or invalid credentials" },
+          "422": { "description": "Item out of stock" }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "operationId": "getOrder",
+        "summary": "Fetch one order",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "example": 90210 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "The order" },
+          "404": { "description": "No such order" }
+        }
+      },
+      "delete": {
+        "operationId": "cancelOrder",
+        "summary": "Cancel an order",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["customer_request", "out_of_stock", "fraud"] }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Cancelled" },
+          "404": { "description": "No such order" },
+          "409": { "description": "Order already shipped and cannot be cancelled" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "NewOrder": {
+        "type": "object",
+        "required": ["customerId", "items"],
+        "properties": {
+          "customerId": { "type": "integer", "example": 4471 },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OrderItem" }
+          },
+          "note": { "type": "string", "example": "Leave with the neighbour" },
+          "priority": { "type": "string", "enum": ["standard", "express"], "default": "standard" }
+        }
+      },
+      "OrderItem": {
+        "type": "object",
+        "required": ["sku", "quantity"],
+        "properties": {
+          "sku": { "type": "string", "example": "SKU-4471" },
+          "quantity": { "type": "integer", "example": 2 }
+        }
+      }
+    }
+  }
+}
