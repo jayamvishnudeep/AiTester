@@ -78,6 +78,18 @@ Webhook              POST /visual-diff  { before, after, context, issue_key }
 | Send to Telegram | `telegram` | Always fires |
 | Respond to Caller | `respondToWebhook` | Full report as JSON |
 
+![The workflow on the n8n canvas after a successful run: every node green, and the true branch out of Are They Identical? faded because the files differed so the model path was taken instead](05_Visual_Diff_Explainer_n8n_workflow.png)
+
+A completed run — 30 seconds, 2,030 tokens. The branch is visible: the line out
+of `Are They Identical?` that goes straight across to `Validate Findings` is
+**faded**, because the files differed, so the run went down through
+`Compare Screenshots` and `Explain The Diff` instead. Had they been identical
+that grey line would have carried the whole run and no model would have been
+called.
+
+Node timings from that run: the vision call 941ms, the explanation 2.07s, the
+Jira comment 276ms.
+
 **Why seeing and explaining are separate nodes.** The brief splits them, and
 there is a hard reason to: Groq rejects JSON mode when an image is attached, so
 the vision call cannot return structured output. It returns prose; a second,
@@ -187,3 +199,13 @@ asks for 800. Ask for more and it is rejected before the model runs.
   Thirty-four assertions had passed over it. Binary now goes through **Extract
   From File** nodes, and an image under 100 bytes is an error rather than a
   verdict.
+
+  This is what that bug looked like arriving on a phone, which is the whole
+  reason it mattered — a QA reading this would have closed the ticket:
+
+  ![The Telegram message from the broken run: "Visual diff: No Difference. The two screenshots are byte-identical. Nothing changed. Canvas: unknown -> unknown. Confidence: High"](Reporting_%20To_Telegram.jpg)
+
+  `Canvas: unknown -> unknown` is the tell. The dimensions could not be read
+  because the bytes were never there, and the same empty read made the two files
+  compare equal. After the fix the same request returns `Difference Found`,
+  `760x520 -> 760x520`, and the changed button label quoted.
