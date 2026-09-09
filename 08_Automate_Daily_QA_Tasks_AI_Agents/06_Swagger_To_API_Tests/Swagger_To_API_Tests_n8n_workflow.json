@@ -123,41 +123,16 @@
     },
     {
       "parameters": {
-        "operation": "toText",
-        "sourceProperty": "postman_json",
-        "binaryPropertyName": "collection",
-        "options": {
-          "fileName": "={{ $json.collection_filename }}",
-          "encoding": "utf8"
-        }
+        "jsCode": "const r = $('Build Collection').first().json;\n\nconst file = (text, fileName, mimeType) => ({\n  data: Buffer.from(String(text), 'utf8').toString('base64'),\n  fileName,\n  mimeType,\n  fileExtension: fileName.split('.').pop(),\n});\n\nreturn [{\n  json: r,\n  binary: {\n    collection: file(r.postman_json, r.collection_filename, 'application/json'),\n    javaSuite: file(r.restassured_java, r.java_filename, 'text/x-java-source'),\n  },\n}];"
       },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         240,
         0
       ],
       "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6308",
-      "name": "Collection To File"
-    },
-    {
-      "parameters": {
-        "operation": "toText",
-        "sourceProperty": "restassured_java",
-        "binaryPropertyName": "javaSuite",
-        "options": {
-          "fileName": "={{ $json.java_filename }}",
-          "encoding": "utf8"
-        }
-      },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [
-        460,
-        0
-      ],
-      "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6309",
-      "name": "Java Suite To File"
+      "name": "Make Files"
     },
     {
       "parameters": {
@@ -193,8 +168,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        900,
-        0
+        680,
+        160
       ],
       "id": "b7e2c481-3a95-4d60-8f17-2e9c0d4a6311",
       "name": "Send Collection File",
@@ -273,36 +248,14 @@
       "main": [
         [
           {
-            "node": "Collection To File",
+            "node": "Make Files",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Collection To File": {
-      "main": [
-        [
-          {
-            "node": "Java Suite To File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Java Suite To File": {
-      "main": [
-        [
-          {
-            "node": "Send Summary",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send Summary": {
+    "Make Files": {
       "main": [
         [
           {
@@ -314,6 +267,17 @@
       ]
     },
     "Send Collection File": {
+      "main": [
+        [
+          {
+            "node": "Send Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Summary": {
       "main": [
         [
           {
