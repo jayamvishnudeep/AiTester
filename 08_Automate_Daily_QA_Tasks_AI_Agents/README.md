@@ -12,6 +12,7 @@ it works.
 | 03 | [Performance Test Analyzer](03_Performance_Test_Analyzer) | Turning a load test CSV into something a stakeholder can act on |
 | 04 | [Persona-Based Testing Engine](04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
 | 05 | [Visual Diff Explainer](05_Visual_Diff_Explainer) | Squinting at two screenshots trying to name what moved |
+| 06 | [Swagger to API Tests](06_Swagger_To_API_Tests) | Writing a baseline API suite by hand from the documentation |
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -97,6 +98,25 @@ and documented rather than assumed - it catches text changes and misses small
 colour shifts.
 
 See its [README](05_Visual_Diff_Explainer).
+
+## 06 — Swagger to API Tests
+
+An OpenAPI spec goes in; a Postman collection and a RestAssured JUnit class
+come out, covering every operation.
+
+Its line between code and model is the sharpest in the folder: **everything
+the spec determines is generated in code, and the model only adds what a
+schema cannot imply**. A test derived from the document is correct by
+construction; an invented endpoint is a test that 404s on its first run. That
+split also makes coverage independent of the token budget, because the
+deterministic tests cost nothing to generate however large the spec is - five
+operations in the sample produce 19 tests before the model is called at all.
+
+What the model adds is the part a schema cannot state: cancel an order twice,
+fetch one belonging to another customer, check a limit does not pad. Those
+ship as documented stubs rather than as requests pretending to be runnable.
+
+See its [README](06_Swagger_To_API_Tests).
 
 ## What this section adds over 07
 
