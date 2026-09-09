@@ -11,6 +11,7 @@ it works.
 | 02 | [Flaky Test RCA Analyzer](02_Flaky_Test_RCA_Analyzer) | Reading a dozen CI logs by eye to find what the failures share |
 | 03 | [Performance Test Analyzer](03_Performance_Test_Analyzer) | Turning a load test CSV into something a stakeholder can act on |
 | 04 | [Persona-Based Testing Engine](04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
+| 05 | [Visual Diff Explainer](05_Visual_Diff_Explainer) | Squinting at two screenshots trying to name what moved |
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -77,6 +78,25 @@ it, which turns "trust me, this is persona-specific" into something a reviewer
 can verify.
 
 See its [README](04_Persona_Based_Testing_Engine).
+
+## 05 — Visual Diff Explainer
+
+Two screenshots go in, a plain-English explanation of what changed comes out,
+and lands as a comment on the Jira ticket.
+
+Its failure mode is the most seductive in the folder: a vision model asked
+"what changed?" will always find something, so two identical screenshots
+produce a confident paragraph about spacing and shade. Whether two files are
+identical is not a judgement call, so the workflow settles it in code and
+skips the model entirely.
+
+It also carries the folder's most useful negative result. The model that was
+right for agent 01 called two genuinely different screenshots identical here;
+a side-by-side probe picked a better one. And its detection floor is measured
+and documented rather than assumed - it catches text changes and misses small
+colour shifts.
+
+See its [README](05_Visual_Diff_Explainer).
 
 ## What this section adds over 07
 
