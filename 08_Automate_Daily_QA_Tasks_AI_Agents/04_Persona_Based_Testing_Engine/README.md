@@ -28,8 +28,9 @@ between the flows — so the difference is what gets measured.
 > **Two personas that produce the same flow mean the personas were ignored.**
 
 After every persona has been generated, the engine compares each pair of flows
-and flags the run when they converge. On the live test the grandparent and the
-finance officer shared **20% of their vocabulary**, well under the 60% limit.
+and flags the run when they converge. On the live cloud run the closest pair —
+the parent on a lunch break and the parent using a screen reader — shared **31%
+of their vocabulary**, comfortably under the 60% limit.
 
 ## Every step names the trait that caused it
 
@@ -77,6 +78,15 @@ Webhook                POST /persona-flows  {feature, personas[]}
 | Send to Telegram | `telegram` | Run summary |
 | Respond to Caller | `respondToWebhook` | Full result as JSON |
 
+![The workflow on the n8n canvas after a complete four-persona run: every node green, the loop carrying 4 items through Pace The Loop, Persona Simulator and Validate Flow, and Compare Flows emitting 35](04_Persona_Based_Testing_Engine.png)
+
+A complete run — **3 minutes 5.5 seconds, 17,500 tokens**, four personas. The
+item counts along the connectors are the design made visible: `Prepare Personas`
+emits **4**, the loop carries those 4 through the simulator and the validator,
+and `Compare Flows` turns them into **35** — one row per test step. The open
+panel is `Pace The Loop`, reading *"Success in 35.001s"*, which is the rate
+limit being paid rather than gambled on.
+
 **One agent call per persona, not one call for all of them.** A single call
 producing five flows would be a large completion and risks truncation — and
 asking for them separately stops the model averaging the personas together,
@@ -93,9 +103,9 @@ whole feature description is sent with every persona, and ~2,200 of completion.
 Against Groq's free-tier ceiling of 8,000 per minute that is **two personas a
 minute**, so the Wait node is **35 seconds**.
 
-A four-persona run therefore takes about two and a half minutes. Without the
-wait it fails halfway, writing two rows and missing two — which looks like it
-worked, and is the worst outcome available.
+A four-persona run therefore takes about three minutes. Without the wait it
+fails halfway, writing two rows and missing two — which looks like it worked,
+and is the worst outcome available.
 
 ## The guard rails
 
@@ -141,17 +151,80 @@ curl -X POST "https://<your-n8n-host>/webhook-test/persona-flows" \
   --data @sample_request.json
 ```
 
-Allow about two and a half minutes for four personas — the run is paced on
-purpose.
+### The curl will time out. The run will not.
 
-Measured output for two of them:
+The live four-persona run took **3m 5.5s**. n8n Cloud sits behind Cloudflare,
+which closes a connection that has produced nothing after about two minutes, so
+that command returned **HTTP 524 at 126 seconds** — a Cloudflare error page, not
+this workflow's JSON — while n8n carried on server-side and finished normally.
+The Telegram summary arrived as usual.
+
+That is not bad luck at the margin. Four personas spend **140 seconds in the
+Wait node alone**, and `MAX_PERSONAS` is 6, so the ceiling only moves the wrong
+way: **this webhook cannot return its JSON for a full-sized run.**
+
+The fix is to acknowledge early — a Respond to Webhook node placed straight
+after `Prepare Personas`, returning the `run_id` — and let the results arrive by
+Sheets and Telegram. Trimming the wait is the tempting alternative and the wrong
+one: 35 seconds is derived from measured token cost, so cutting it trades a 524
+for a 429 and still will not fit six personas.
+
+**Treat the HTTP response as a bonus and the delivery channels as the product.**
+
+### What arrives
+
+![The Telegram summary: four personas at 8 to 9 steps each all priority High, the most similar pair at 31% overlap marked "flows are distinct", and six gaps raised for the product owner](Reporting_To_Telegram.jpg)
 
 ```
-Grandparent paying for a grandchild   9 steps, 100% trait-anchored, 6 gaps
-School finance officer                9 steps, 100% trait-anchored, 5 gaps
-cross-persona overlap: 20%   converged: false
-tokens: 4,183 and 3,814
+4 personas, 35 test steps generated.   Personas: supplied with the request.
+
+  Parent on a lunch break              9 steps, priority High
+  Grandparent paying for a grandchild  8 steps, priority High
+  School finance officer               9 steps, priority High
+  Parent using a screen reader         9 steps, priority High
+
+Most similar pair: Parent on a lunch break / Parent using a screen reader
+at 31% overlap  (flows are distinct)
 ```
+
+**The overlap line is the one worth reading.** Four personas pointed at the same
+payment screen, and the closest pair still shares under a third of its
+vocabulary. The engine is reporting that it did the job — as a number a reviewer
+can check, rather than a claim they have to take on trust.
+
+The six gaps are the other half of the value, and not one of them is a test
+step. Each traces back to a trait some persona was given:
+
+| Gap raised for the product owner | Comes from |
+|---|---|
+| Can a parent retrieve the email address they previously signed in with? | *"forgets which email address was used"* |
+| How long does a session stay active if the user is interrupted and returns? | *"interrupted mid-task and comes back later"* |
+| Are tap targets on the child list sized for thumb use on small screens? | *"one thumb, standing up"* · *"less precise tapping"* |
+| Is the reference number on a single readable line without scrolling? | *"low vision, runs the browser zoomed in"* |
+| Does Payment history refresh after a payment, or must the page be reloaded? | *"needs proof the payment worked before leaving the page"* |
+| Can a session timeout be extended, or warned about? | *"takes longer than a short session timeout allows"* |
+
+That is a design review of the feature, produced as a side effect of writing
+tests for it — and it is exactly what guard rail 3 exists for. A persona needing
+something the description does not mention becomes a question for the product
+owner, never an invented button in a step.
+
+### One rough edge, visible in that screenshot
+
+The final line of the summary reads:
+
+> *Notes: named things the feature description does not mention: Parent on a
+> lunch break, Grandparent paying for a grandchild, Parent using a screen reader*
+
+Those are **persona names**, not invented controls. `Compare Flows` lists which
+*flows* tripped guard rail 3, but never says **what** they named — each flow's
+`invented_names` array is computed in `Validate Flow` and then dropped before the
+run note is written. The warning names the accused without the accusation, so a
+reader cannot act on it.
+
+The screenshot is kept as it is, because it is what the current export actually
+produces. Carrying those names through into the note is a one-line change to
+`Compare Flows`, and the obvious next fix.
 
 ## Setting it up
 
@@ -162,7 +235,18 @@ node works out of the box.
 Rows are appended to the existing **n8n** spreadsheet
 (`163AUrBaP90RYm0dRJI...`) on a new tab, **Persona Test Flows**, alongside the
 sheets `02_BugTriage` and the RCA agent already write to. Create that tab with
-the 13 column headers before the first run, or point the node at your own sheet.
+these 13 column headers before the first run, or point the node at your own
+sheet:
+
+```
+run_id · generated_at · feature · persona · persona_source · priority
+step_no · action · expected · driven_by · risk · primary_goal
+accessibility_notes
+```
+
+`Append Test Flows` is set to `continueRegularOutput`, so a missing tab turns
+the node amber and the run still reaches Telegram and the webhook response
+rather than dying at the last step.
 
 ## Worth remembering
 
@@ -174,5 +258,15 @@ the 13 column headers before the first run, or point the node at your own sheet.
   five to nine returns clean and reads more like real testing work.
 - **Pace loops around a rate limit deliberately.** A partial run that looks
   complete is worse than a failure that announces itself.
+- **A deliberately paced workflow outgrows its own HTTP response.** The waits
+  that make a run correct are the same waits that push it past the proxy's
+  timeout. Once a workflow is measured in minutes, acknowledge on receipt and
+  deliver out of band — holding the connection open is the part that cannot
+  scale.
+- **A 5xx from the host is not a failure of the workflow.** The 524 came from
+  Cloudflare; n8n ran to completion and delivered. Check the execution before
+  believing the status code.
+- **A warning must name the thing, not the accused.** "These three flows named
+  something undocumented" is unactionable without saying what they named.
 - **An empty result needs a row.** Silence in a QA artefact gets read as "no
   issues found".
