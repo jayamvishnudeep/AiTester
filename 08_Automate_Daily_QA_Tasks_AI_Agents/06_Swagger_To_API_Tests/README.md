@@ -110,6 +110,13 @@ Webhook             POST /swagger-tests  { spec_url | spec, base_url }
 | Send Collection File / Send Summary | `telegram` | The collection as an attachment, then the summary |
 | Respond to Caller | `respondToWebhook` | Everything, as JSON |
 
+![The workflow on the n8n canvas after a successful run: every node green, with the API Test Designer output panel showing the first generated scenario](06_Swagger_To_API_Tests_n8n_workflow.png)
+
+A completed run at **4,310 tokens**. The output panel is showing the designer's
+first scenario — `POST /orders`, *"Place order and verify retrieval"*, with its
+`steps` listing `POST /orders` then `GET /orders/{orderId}`. That is the shape
+the guard rail checks: both calls name operations the spec declares.
+
 **The model never sees the spec.** The parser reads a 6 MB document in full and
 hands the agent a one-page summary of operations, so spec size cannot push the
 run out of a context window.
@@ -161,7 +168,26 @@ class.
 Both were then checked as artefacts. The collection parses, hardcodes no host,
 leaves no `$ref` unresolved in any request body, and every scenario stub calls
 `pm.expect.fail` so it cannot pass silently. The Java compiles under `javac`
-with zero syntax errors - the only two errors are the missing JUnit jars.
+with zero syntax errors — the only two errors are the missing JUnit jars.
+
+### What arrives
+
+![The Telegram message: the collection attached as a 36.2 KB JSON file, followed by the summary listing 19 tests by kind, five scenarios, four gaps for the API owner, and the newman command](Reporting_To_Telegram.jpg)
+
+The collection arrives as a **36.2 KB attachment** with the summary underneath —
+both delivery paths in one screenshot, which is what the node reorder was for.
+
+The four gaps in that message are the part worth reading twice. None of them are
+test results; they are things the specification does not say, found by trying to
+write tests against it:
+
+1. No endpoint transitions an order between statuses
+2. No explicit 403 documented for requesting another customer's orders
+3. No pagination metadata defined for list orders
+4. Behaviour for duplicate SKU entries is undocumented
+
+That is a code review of the API contract, produced as a side effect of
+generating its tests.
 
 Run what comes back with:
 
