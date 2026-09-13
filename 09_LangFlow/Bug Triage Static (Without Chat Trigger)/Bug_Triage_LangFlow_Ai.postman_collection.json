@@ -1,0 +1,112 @@
+{
+  "info": {
+    "_postman_id": "04c5bbc2-f4fe-4754-bf23-5d3b951d3a1a",
+    "name": "LangFlow Ai",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "16874281",
+    "_collection_link": "https://interstellar-desert-877524.postman.co/workspace/Demo~a372edf1-3b87-408a-9cee-94283ece0a27/collection/16874281-04c5bbc2-f4fe-4754-bf23-5d3b951d3a1a?action=share&creator=16874281&source=collection_link",
+    "description": "Runs the Langflow 'Bug Triage' flow over its REST API: one Jira issue in, a severity/priority triage out.\n\nSet the collection variable `apiKey` to a Langflow API key (Langflow > Settings > API Keys) before sending. It is blank on purpose so no credential is stored in the repo.\n\nThe `tweaks` block in the body overrides fields on individual flow nodes for this one request, so the ticket, the reply length and the token ceiling are all controlled from Postman without editing the saved flow."
+  },
+  "item": [
+    {
+      "name": "Run Bug Triage flow",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"output_type\": \"chat\",\r\n  \"input_type\": \"text\",\r\n  \"input_value\": \"triage this ticket\",\r\n  \"tweaks\": {\r\n    \"APIRequest-jira-src\": {\r\n      \"url_input\": \"https://bugzzzzzzz.atlassian.net/rest/api/3/issue/KAN-9?fields=summary,description,status,issuetype,priority,created,reporter,labels\"\r\n    },\r\n    \"Prompt Template-HlzxB\": {\r\n      \"template\": \"You are a senior QA engineer who helps the user to do bug triaging. You analyze a bug report, and based on the bug report, help them to give the structured output with the severity , priority and the comments from your end. Keep the whole reply under 320 words. No preamble and do not restate the ticket back.{variable_name}\"\r\n    },\r\n    \"ext:groq:GroqModel@official-KES2M\": {\r\n      \"max_tokens\": 900\r\n    }\r\n  }\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:7860/api/v1/run/48710155-de56-4919-892e-3979eb35c245?stream=false",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "7860",
+          "path": [
+            "api",
+            "v1",
+            "run",
+            "48710155-de56-4919-892e-3979eb35c245"
+          ],
+          "query": [
+            {
+              "key": "stream",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"triage text came back\", function () {",
+              "    const out = pm.response.json().outputs[0].outputs[0];",
+              "    const text = out.results.message.text;",
+              "    pm.expect(text, \"empty reply\").to.have.length.above(50);",
+              "",
+              "    // A reasoning model spends the whole completion budget inside <think> and",
+              "    // gets cut off before the answer. qwen3.6-27b did exactly that here.",
+              "    pm.expect(text, \"model emitted chain-of-thought\").to.not.include(\"<think>\");",
+              "    pm.expect(text).to.include(\"Severity\");",
+              "    pm.expect(text).to.include(\"Priority\");",
+              "",
+              "    const p = out.results.message.data.properties;",
+              "    console.log(\"model  :\", p.source.source);",
+              "    console.log(\"tokens : in \" + p.usage.input_tokens +",
+              "                \"  out \" + p.usage.output_tokens +",
+              "                \"  total \" + p.usage.total_tokens);",
+              "    console.log(\"state  :\", p.state);",
+              "    console.log(\"words  :\", text.split(/\\s+/).length);",
+              "    console.log(\"\\n--- TRIAGE ---\\n\" + text);",
+              "});",
+              "",
+              "pm.test(\"finished, not truncated\", function () {",
+              "    const d = pm.response.json().outputs[0].outputs[0].results.message.data;",
+              "    pm.expect(d.properties.state, \"state should be complete\").to.eql(\"complete\");",
+              "    pm.expect(d.error, \"flow reported an error\").to.eql(false);",
+              "",
+              "    // Groq free tier: 1000 output tokens per minute, enforced on the ceiling",
+              "    // requested rather than the tokens used. That is why max_tokens is 900.",
+              "    pm.expect(d.properties.usage.output_tokens).to.be.below(1000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
