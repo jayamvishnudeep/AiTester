@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bug Triage AI Agent</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<!-- React + htm (JSX-free templates, ~700 bytes) + marked for the reply markdown.
+     No build step and no Babel runtime transform, so the page opens instantly. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.1.1/htm.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+
+<style>
+  :root {
+    /* ground + ink */
+    --bg:        #f3f5fb;
+    --surface:   #ffffff;
+    --line:      #e2e7f3;
+    --line-soft: #edf1f9;
+    --ink:       #101a33;
+    --ink-2:     #3d4a67;
+    --muted:     #7683a0;
+
+    /* brand */
+    --brand:      #0aa2b8;   /* cyan  */
+    --brand-deep: #06798a;
+    --brand-tint: #e3f7fa;
+    --violet:     #5b3df5;
+    --violet-tint:#ece8ff;
+
+    /* severity spectrum - these carry meaning, not decoration */
+    --crit:      #e11d48;  --crit-tint:  #ffe9ee;  --crit-edge:  #ffc7d3;
+    --major:     #d97706;  --major-tint: #fff3e0;  --major-edge: #ffdfae;
+    --minor:     #0f9d58;  --minor-tint: #e6f7ee;  --minor-edge: #b9e8cf;
+    --unknown:   #64748b;  --unk-tint:   #f1f4f9;  --unk-edge:   #dfe5ef;
+
+    --shadow-sm: 0 1px 2px rgba(16,26,51,.05), 0 2px 8px rgba(16,26,51,.04);
+    --shadow-md: 0 2px 6px rgba(16,26,51,.06), 0 12px 28px rgba(16,26,51,.07);
+
+    --display: "Outfit", "Segoe UI", system-ui, sans-serif;
+    --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* soft colour blooms so the page is not a flat grey sheet */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(680px 340px at 12% -8%,  rgba(10,162,184,.16), transparent 65%),
+      radial-gradient(560px 320px at 92% -4%,  rgba(91,61,245,.13),  transparent 62%),
+      radial-gradient(720px 420px at 78% 108%, rgba(225,29,72,.07),  transparent 60%);
+  }
+
+  #root { position: relative; z-index: 1; }
+
+  .app {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px 20px 52px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+
+  /* ---------------- header ---------------- */
+  .head { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+
+  .mark {
+    width: 46px; height: 46px; flex: none;
+    border-radius: 14px;
+    background: linear-gradient(145deg, var(--brand) 0%, var(--violet) 100%);
+    display: grid; place-items: center;
+    box-shadow: 0 6px 18px rgba(10,162,184,.34);
+  }
+  .mark svg { width: 24px; height: 24px; }
+
+  .titles h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 27px; font-weight: 700;
+    letter-spacing: -0.022em;
+    line-height: 1.12;
+  }
+  .titles h1 .hl {
+    background: linear-gradient(180deg, transparent 62%, rgba(10,162,184,.30) 62%);
+    padding: 0 2px;
+  }
+  .titles p { margin: 3px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  .head .spacer { flex: 1; }
+
+  .stats { display: flex; gap: 9px; flex-wrap: wrap; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 7px 13px;
+    box-shadow: var(--shadow-sm);
+    min-width: 74px;
+  }
+  .stat b {
+    display: block;
+    font-family: var(--display);
+    font-size: 19px; font-weight: 700; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .stat span {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); font-weight: 600;
+  }
+  .stat.crit b  { color: var(--crit); }
+  .stat.brand b { color: var(--brand-deep); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 14px;
+    box-shadow: var(--shadow-sm); white-space: nowrap;
+  }
+  .pill.up   { color: #0b7a53; border-color: #b9e8cf; background: var(--minor-tint); }
+  .pill.down { color: var(--crit); border-color: var(--crit-edge); background: var(--crit-tint); }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+  .pill.up .dot   { background: #12b981; box-shadow: 0 0 0 3px rgba(18,185,129,.20); }
+  .pill.down .dot { background: var(--crit); box-shadow: 0 0 0 3px rgba(225,29,72,.18); }
+
+  /* ---------------- cards ---------------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  details.card > summary {
+    cursor: pointer; padding: 13px 17px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    list-style: none; display: flex; align-items: center; gap: 9px;
+  }
+  details.card > summary::-webkit-details-marker { display: none; }
+  details.card > summary::before {
+    content: ""; width: 6px; height: 6px; flex: none;
+    border-right: 2px solid var(--brand); border-bottom: 2px solid var(--brand);
+    transform: rotate(-45deg); transition: transform .18s ease;
+  }
+  details.card[open] > summary::before { transform: rotate(45deg); }
+  summary .count {
+    margin-left: auto; font-family: var(--mono); font-size: 11px;
+    color: var(--brand-deep); background: var(--brand-tint);
+    padding: 3px 9px; border-radius: 999px; font-weight: 600;
+  }
+
+  .settings .grid {
+    border-top: 1px solid var(--line-soft); padding: 17px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;
+  }
+
+  label.field { display: flex; flex-direction: column; gap: 6px; }
+  label.field > span {
+    font-size: 10.5px; color: var(--muted); font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+
+  input[type=text], input[type=password] {
+    font: inherit; font-family: var(--mono); font-size: 12.5px;
+    padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px;
+    background: #fbfcff; color: var(--ink); width: 100%;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus {
+    outline: none; border-color: var(--brand);
+    box-shadow: 0 0 0 4px rgba(10,162,184,.15);
+  }
+  .hint { font-size: 11.5px; color: var(--muted); }
+
+  /* ---------------- composer ---------------- */
+  .composer { padding: 19px; display: flex; flex-direction: column; gap: 13px; }
+  .row { display: flex; gap: 12px; }
+
+  .row input.ticket {
+    flex: 1;
+    font-family: var(--mono); font-size: 17px; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 14px 17px; border-radius: 12px;
+  }
+  .row input.ticket::placeholder { color: #b6c0d4; font-weight: 500; }
+
+  button.run {
+    font: inherit; font-family: var(--display);
+    font-weight: 700; font-size: 15px; letter-spacing: .015em;
+    padding: 0 34px; border-radius: 12px; border: 0; color: #fff;
+    background: linear-gradient(140deg, var(--brand) 0%, var(--violet) 115%);
+    cursor: pointer; white-space: nowrap;
+    box-shadow: 0 5px 16px rgba(10,162,184,.35);
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  }
+  button.run:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(10,162,184,.42);
+    filter: saturate(1.1);
+  }
+  button.run:active:not(:disabled) { transform: translateY(0); }
+  button.run:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .chips em {
+    font-style: normal; font-size: 10.5px; color: var(--muted);
+    font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-right: 3px;
+  }
+  .chip {
+    font: inherit; font-family: var(--mono); font-size: 12px; font-weight: 600;
+    padding: 5px 12px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: #fbfcff; color: var(--ink-2);
+    cursor: pointer; transition: all .14s ease;
+  }
+  .chip:hover:not(:disabled) {
+    border-color: var(--brand); color: var(--brand-deep);
+    background: var(--brand-tint); transform: translateY(-1px);
+  }
+  .chip:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* ---------------- history ---------------- */
+  .history .list { border-top: 1px solid var(--line-soft); }
+  .hrow {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 17px; border: 0; border-bottom: 1px solid var(--line-soft);
+    cursor: pointer; background: none; width: 100%; text-align: left; font: inherit;
+    transition: background .14s ease;
+  }
+  .hrow:last-child { border-bottom: 0; }
+  .hrow:hover { background: #f8fbff; }
+  .hrow .key {
+    font-family: var(--mono); font-size: 13px; font-weight: 600;
+    color: var(--ink); min-width: 78px;
+  }
+  .hrow .when, .hrow .tok {
+    font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap;
+  }
+  .hrow .when { margin-left: auto; }
+
+  .history .foot {
+    display: flex; justify-content: flex-end;
+    padding: 11px 17px; border-top: 1px solid var(--line-soft);
+  }
+  button.link {
+    font: inherit; font-size: 12px; font-weight: 600; color: var(--muted);
+    background: none; border: 0; cursor: pointer; padding: 3px 6px; border-radius: 6px;
+  }
+  button.link:hover { color: var(--crit); background: var(--crit-tint); }
+
+  /* ---------------- badges ---------------- */
+  .badge {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 8px; border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .badge.crit    { background: var(--crit-tint);  color: var(--crit);    border-color: var(--crit-edge); }
+  .badge.major   { background: var(--major-tint); color: var(--major);   border-color: var(--major-edge); }
+  .badge.minor   { background: var(--minor-tint); color: var(--minor);   border-color: var(--minor-edge); }
+  .badge.unknown { background: var(--unk-tint);   color: var(--unknown); border-color: var(--unk-edge); }
+  .badge.prio    { background: var(--violet-tint); color: var(--violet); border-color: #d9d1ff; }
+  .badge.tiny    { font-size: 10.5px; padding: 3px 8px; }
+
+  /* ---------------- thread ---------------- */
+  .thread { display: flex; flex-direction: column; gap: 20px; }
+  .run-block { display: flex; flex-direction: column; gap: 12px; }
+
+  .msg.user { display: flex; justify-content: flex-end; }
+  .msg.user .bubble {
+    background: linear-gradient(140deg, var(--brand) 0%, var(--violet) 125%);
+    color: #fff; font-family: var(--mono); font-size: 13.5px; font-weight: 600;
+    letter-spacing: .06em; padding: 9px 19px; border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(91,61,245,.26);
+  }
+
+  .reply {
+    overflow: hidden; scroll-margin-top: 16px;
+    box-shadow: var(--shadow-md);
+    animation: rise .34s cubic-bezier(.2,.7,.3,1) both;
+  }
+  @keyframes rise { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+  .reply.flash { box-shadow: 0 0 0 3px rgba(10,162,184,.42), var(--shadow-md); }
+
+  /* the header band is tinted by severity - colour carrying information */
+  .reply .bar {
+    display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    padding: 13px 17px; border-bottom: 1px solid var(--line-soft);
+  }
+  .reply.t-crit    .bar { background: linear-gradient(90deg, var(--crit-tint),  #fff 78%); }
+  .reply.t-major   .bar { background: linear-gradient(90deg, var(--major-tint), #fff 78%); }
+  .reply.t-minor   .bar { background: linear-gradient(90deg, var(--minor-tint), #fff 78%); }
+  .reply.t-unknown .bar { background: linear-gradient(90deg, var(--unk-tint),   #fff 78%); }
+
+  .ticket-tag {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: #fff; background: var(--ink); padding: 4px 11px; border-radius: 8px;
+  }
+  .bar .meta {
+    margin-left: auto; font-family: var(--mono); font-size: 11px;
+    color: var(--muted); display: flex; gap: 13px; flex-wrap: wrap;
+  }
+  .bar .meta b { color: var(--ink-2); font-weight: 600; }
+
+  .body { padding: 8px 19px 20px; }
+  .body h1, .body h2, .body h3 {
+    font-family: var(--display); font-size: 15px; font-weight: 600; margin: 18px 0 7px;
+  }
+  .body p { margin: 10px 0; }
+  .body ul, .body ol { margin: 10px 0; padding-left: 21px; }
+  .body li { margin: 7px 0; }
+  .body li::marker { color: var(--brand); }
+  .body ol li::marker { color: var(--violet); font-weight: 600; }
+  .body strong { font-weight: 600; color: var(--ink); }
+  .body code {
+    font-family: var(--mono); font-size: 12.5px;
+    background: var(--violet-tint); color: var(--violet);
+    padding: 1px 6px; border-radius: 6px;
+  }
+  .body table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; }
+  .body th, .body td { border: 1px solid var(--line); padding: 8px 11px; text-align: left; vertical-align: top; }
+  .body th { background: var(--brand-tint); color: var(--brand-deep); font-weight: 600; }
+  .body hr { border: 0; border-top: 1px solid var(--line-soft); margin: 16px 0; }
+  .body blockquote {
+    margin: 12px 0; padding: 2px 0 2px 14px;
+    border-left: 3px solid var(--brand); color: var(--ink-2);
+  }
+
+  .scroll-x { overflow-x: auto; }
+  .warn-wrap { padding: 14px 17px 0; }
+
+  /* ---------------- states ---------------- */
+  .note { padding: 13px 16px; border-radius: 12px; font-size: 13px; border: 1px solid transparent; }
+  .note.warn  { background: var(--major-tint); color: #9a5b06; border-color: var(--major-edge); }
+  .note.error { background: var(--crit-tint);  color: var(--crit); border-color: var(--crit-edge); }
+  .note strong { font-weight: 600; }
+  .note code { font-family: var(--mono); font-size: 12px; }
+
+  .empty { text-align: center; padding: 54px 24px; }
+  .empty .ring {
+    width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 18px;
+    background: linear-gradient(145deg, var(--brand-tint), var(--violet-tint));
+    display: grid; place-items: center;
+  }
+  .empty .ring svg { width: 26px; height: 26px; }
+  .empty .big {
+    font-family: var(--display); font-size: 18px; font-weight: 600;
+    color: var(--ink); margin-bottom: 5px;
+  }
+  .empty p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+  .working {
+    display: flex; align-items: center; gap: 13px; padding: 19px;
+    color: var(--ink-2); font-size: 13.5px; font-weight: 500;
+  }
+  .spin {
+    width: 18px; height: 18px; flex: none; border-radius: 50%;
+    border: 2.5px solid var(--brand-tint); border-top-color: var(--brand);
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .spin { animation-duration: 2.4s; }
+    .reply { animation: none; }
+  }
+
+  footer {
+    color: var(--muted); font-size: 11.5px; text-align: center;
+    padding-top: 6px; font-family: var(--mono);
+  }
+
+  @media (max-width: 620px) {
+    .titles h1 { font-size: 23px; }
+    .row { flex-direction: column; }
+    button.run { padding: 14px; }
+    .stats { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+const html = htm.bind(React.createElement);
+
+const DEFAULTS = {
+  baseUrl: "http://127.0.0.1:7860",
+  flowId:  "1d4f1d82-9619-4dab-9825-eada514790f2",
+  apiKey:  "",
+};
+const SUGGESTED = ["KAN-11", "KAN-9", "KAN-13", "KAN-8", "KAN-12"];
+
+// Node id from the flow. tweaks let one saved flow serve every caller, so the
+// token ceiling is set per request rather than edited into the flow.
+const GROQ_NODE = "ext:groq:GroqModel@official-KES2M";
+const MAX_TOKENS = 900;   // Groq's free tier refuses a request asking for >1000
+const HISTORY_CAP = 60;   // keeps localStorage well inside its ~5 MB budget
+
+/* ---------------------------------------------------------------- storage */
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem("bugtriage." + key);
+    return v === null ? fallback : v;
+  } catch (e) { return fallback; }
+}
+function save(key, value) {
+  try { localStorage.setItem("bugtriage." + key, value); } catch (e) { /* private mode */ }
+}
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem("bugtriage.history");
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) { return []; }
+}
+function saveHistory(runs) {
+  try {
+    localStorage.setItem("bugtriage.history", JSON.stringify(runs.slice(-HISTORY_CAP)));
+  } catch (e) { /* quota or private mode - the session still works */ }
+}
+
+/* ---------------------------------------------------------------- helpers */
+// The reply opens with "**Severity:** S3 - Minor" / "**Priority:** P2 - ...".
+// Lifting those out gives every run a verdict you can scan without reading it.
+function verdict(text) {
+  const grab = (label) => {
+    const m = text.match(new RegExp("\\*\\*" + label + ":?\\*\\*:?\\s*([^\\n*]+)", "i"));
+    return m ? m[1].trim().replace(/[.,;]$/, "") : null;
+  };
+  return { severity: grab("Severity"), priority: grab("Priority") };
+}
+
+function tone(severity) {
+  if (!severity) return "unknown";
+  const v = severity.toLowerCase();
+  if (/\bs0\b|\bs1\b|blocker|critical|\bhigh\b/.test(v)) return "crit";
+  if (/\bs2\b|major|medium/.test(v)) return "major";
+  if (/\bs3\b|\bs4\b|minor|\blow\b|trivial|n\/a/.test(v)) return "minor";
+  return "unknown";
+}
+
+function when(ts) {
+  const secs = Math.round((Date.now() - ts) / 1000);
+  if (secs < 60) return "just now";
+  if (secs < 3600) return Math.floor(secs / 60) + "m ago";
+  if (secs < 86400) return Math.floor(secs / 3600) + "h ago";
+  return new Date(ts).toLocaleDateString();
+}
+
+const BugIcon = () => html`
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="8" y="6" width="8" height="14" rx="4"/>
+    <path d="M12 6V4M9 4.5 8 3M15 4.5 16 3M8 11H4M8 16H4.5M16 11h4M16 16h3.5"/>
+  </svg>`;
+
+const SearchIcon = () => html`
+  <svg viewBox="0 0 24 24" fill="none" stroke="#0aa2b8" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+  </svg>`;
+
+/* ---------------------------------------------------------------- pieces */
+function Reply({ item, flash }) {
+  const v = verdict(item.text);
+  const t = tone(v.severity);
+  const markup = { __html: marked.parse(item.text) };
+  return html`
+    <div class=${"card reply t-" + t + (flash ? " flash" : "")} id=${"run-" + item.id}>
+      <div class="bar">
+        <span class="ticket-tag">${item.ticket}</span>
+        ${v.severity && html`<span class=${"badge " + t}>${v.severity}</span>`}
+        ${v.priority && html`<span class="badge prio">${v.priority}</span>`}
+        <span class="meta">
+          ${item.model && html`<span>${item.model}</span>`}
+          ${item.tokensIn != null && html`<span>in ${item.tokensIn} · out <b>${item.tokensOut}</b></span>`}
+          <span><b>${item.seconds}s</b></span>
+        </span>
+      </div>
+      ${item.suspect && html`
+        <div class="warn-wrap">
+          <div class="note warn">
+            <strong>This looks like Jira's error, not a ticket.</strong> The reply mentions an
+            HTTP failure, which happens when the ticket number never reaches the flow.
+            Check the number exists in your project.
+          </div>
+        </div>`}
+      <div class="body scroll-x" dangerouslySetInnerHTML=${markup}></div>
+    </div>`;
+}
+
+function History({ runs, onPick, onClear }) {
+  if (runs.length === 0) return null;
+  const newest = runs.slice().reverse();
+  return html`
+    <details class="card history">
+      <summary>
+        History
+        <span class="count">${runs.length} run${runs.length === 1 ? "" : "s"}</span>
+      </summary>
+      <div class="list">
+        ${newest.map((r) => {
+          const v = verdict(r.text);
+          const t = tone(v.severity);
+          return html`
+            <button class="hrow" key=${r.id} onClick=${() => onPick(r)}>
+              <span class="key">${r.ticket}</span>
+              <span class=${"badge tiny " + t}>${v.severity || "—"}</span>
+              ${v.priority && html`<span class="badge tiny prio">${v.priority}</span>`}
+              ${r.tokensOut != null && html`<span class="tok">${r.tokensOut} tok</span>`}
+              <span class="when">${when(r.at)}</span>
+            </button>`;
+        })}
+      </div>
+      <div class="foot"><button class="link" onClick=${onClear}>Clear history</button></div>
+    </details>`;
+}
+
+/* ---------------------------------------------------------------- app */
+function App() {
+  const [baseUrl, setBaseUrl] = useState(() => load("baseUrl", DEFAULTS.baseUrl));
+  const [flowId,  setFlowId]  = useState(() => load("flowId",  DEFAULTS.flowId));
+  const [apiKey,  setApiKey]  = useState(() => load("apiKey",  DEFAULTS.apiKey));
+  const [ticket,  setTicket]  = useState("KAN-11");
+  const [runs,    setRuns]    = useState(loadHistory);
+  const [busy,    setBusy]    = useState(false);
+  const [error,   setError]   = useState(null);
+  const [health,  setHealth]  = useState("unknown");
+  const [flashId, setFlashId] = useState(null);
+  const bottom = useRef(null);
+
+  useEffect(() => save("baseUrl", baseUrl), [baseUrl]);
+  useEffect(() => save("flowId",  flowId),  [flowId]);
+  useEffect(() => save("apiKey",  apiKey),  [apiKey]);
+  useEffect(() => saveHistory(runs), [runs]);
+
+  // Say whether Langflow is reachable before Run is pressed, not after.
+  useEffect(() => {
+    let cancelled = false;
+    setHealth("unknown");
+    fetch(baseUrl.replace(/\/$/, "") + "/health_check")
+      .then((r) => { if (!cancelled) setHealth(r.ok ? "up" : "down"); })
+      .catch(() => { if (!cancelled) setHealth("down"); });
+    return () => { cancelled = true; };
+  }, [baseUrl]);
+
+  useEffect(() => {
+    if (bottom.current) bottom.current.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [runs.length, busy]);
+
+  const blockers = useMemo(
+    () => runs.filter((r) => tone(verdict(r.text).severity) === "crit").length, [runs]);
+
+  const run = useCallback(async () => {
+    const key = ticket.trim().toUpperCase();
+    if (!key || busy) return;
+
+    if (!apiKey.trim()) {
+      setError("Add a Langflow API key under Connection first (Langflow → Settings → API Keys).");
+      return;
+    }
+
+    setError(null);
+    setBusy(true);
+    const started = performance.now();
+
+    try {
+      const res = await fetch(
+        baseUrl.replace(/\/$/, "") + "/api/v1/run/" + flowId.trim() + "?stream=false",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-api-key": apiKey.trim() },
+          body: JSON.stringify({
+            output_type: "chat",
+            // Must be "chat": the flow's entry point is a Chat Input node, and
+            // "text" silently drops the value, leaving the Jira URL incomplete.
+            input_type: "chat",
+            input_value: key,
+            tweaks: { [GROQ_NODE]: { max_tokens: MAX_TOKENS } },
+          }),
+        }
+      );
+
+      const raw = await res.text();
+      let data = null;
+      try { data = JSON.parse(raw); } catch (e) { /* keep raw for the message */ }
+
+      if (!res.ok) {
+        const detail = data && data.detail
+          ? (typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail))
+          : raw.slice(0, 300);
+        throw new Error("HTTP " + res.status + " — " + detail);
+      }
+
+      const out = data && data.outputs && data.outputs[0] && data.outputs[0].outputs
+        ? data.outputs[0].outputs[0] : null;
+      const msg = out && out.results && out.results.message;
+      const text = msg && (msg.text || (msg.data && msg.data.text));
+      if (!text) throw new Error("The flow returned no text. Check the flow id is correct.");
+
+      const props = (msg.data && msg.data.properties) || {};
+      const usage = props.usage || {};
+
+      setRuns((prev) => prev.concat({
+        id: String(Date.now()) + "-" + Math.random().toString(36).slice(2, 7),
+        ticket: key,
+        text,
+        model: props.source && props.source.source,
+        tokensIn: usage.input_tokens,
+        tokensOut: usage.output_tokens,
+        seconds: ((performance.now() - started) / 1000).toFixed(1),
+        at: Date.now(),
+        suspect: /\b405\b/.test(text) || /method not allowed/i.test(text),
+      }).slice(-HISTORY_CAP));
+    } catch (e) {
+      const offline = e instanceof TypeError;
+      setError(offline
+        ? "Could not reach Langflow at " + baseUrl + ". Is it running?"
+        : e.message);
+    } finally {
+      setBusy(false);
+    }
+  }, [ticket, busy, apiKey, baseUrl, flowId]);
+
+  const onKey = (e) => { if (e.key === "Enter") run(); };
+
+  // Clicking a history row puts that number back in the box and jumps to its reply.
+  const pick = useCallback((r) => {
+    setTicket(r.ticket);
+    setFlashId(r.id);
+    const el = document.getElementById("run-" + r.id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => setFlashId(null), 1400);
+  }, []);
+
+  const clear = useCallback(() => {
+    setRuns([]);
+    try { localStorage.removeItem("bugtriage.history"); } catch (e) { /* ignore */ }
+  }, []);
+
+  return html`
+    <div class="app">
+      <div class="head">
+        <div class="mark"><${BugIcon} /></div>
+        <div class="titles">
+          <h1>Bug Triage <span class="hl">AI Agent</span></h1>
+          <p>A Jira ticket in, a severity and priority call out.</p>
+        </div>
+        <div class="spacer"></div>
+        <div class="stats">
+          <div class="stat brand"><b>${runs.length}</b><span>Triaged</span></div>
+          <div class="stat crit"><b>${blockers}</b><span>Blockers</span></div>
+        </div>
+        <span class=${"pill " + (health === "up" ? "up" : health === "down" ? "down" : "")}>
+          <span class="dot"></span>
+          ${health === "up" ? "Langflow connected" : health === "down" ? "Langflow unreachable" : "checking…"}
+        </span>
+      </div>
+
+      <details class="card settings" open=${!apiKey}>
+        <summary>Connection${apiKey ? "" : " — add your API key to begin"}</summary>
+        <div class="grid">
+          <label class="field">
+            <span>Langflow API key</span>
+            <input type="password" value=${apiKey} placeholder="sk-…"
+                   onInput=${(e) => setApiKey(e.target.value)} />
+            <span class="hint">Langflow → Settings → API Keys. Kept in this browser only.</span>
+          </label>
+          <label class="field">
+            <span>Base URL</span>
+            <input type="text" value=${baseUrl} onInput=${(e) => setBaseUrl(e.target.value)} />
+          </label>
+          <label class="field">
+            <span>Flow ID</span>
+            <input type="text" value=${flowId} onInput=${(e) => setFlowId(e.target.value)} />
+            <span class="hint">The id in the Langflow URL when the flow is open.</span>
+          </label>
+        </div>
+      </details>
+
+      <div class="card composer">
+        <div class="row">
+          <input class="ticket" type="text" value=${ticket} placeholder="KAN-11"
+                 onInput=${(e) => setTicket(e.target.value)} onKeyDown=${onKey}
+                 disabled=${busy} aria-label="Jira ticket number" />
+          <button class="run" onClick=${run} disabled=${busy || !ticket.trim()}>
+            ${busy ? "Running…" : "Run"}
+          </button>
+        </div>
+        <div class="chips">
+          <em>Try</em>
+          ${SUGGESTED.map((t) => html`
+            <button class="chip" key=${t} onClick=${() => setTicket(t)} disabled=${busy}>${t}</button>`)}
+        </div>
+      </div>
+
+      <${History} runs=${runs} onPick=${pick} onClear=${clear} />
+
+      ${error && html`<div class="note error"><strong>Failed.</strong> ${" "}${error}</div>`}
+
+      <div class="thread">
+        ${runs.length === 0 && !busy && html`
+          <div class="card empty">
+            <div class="ring"><${SearchIcon} /></div>
+            <div class="big">Nothing triaged yet</div>
+            <p>Enter a Jira ticket number above and press Run.</p>
+          </div>`}
+
+        ${runs.map((item) => html`
+          <div class="run-block" key=${item.id}>
+            <div class="msg user"><span class="bubble">${item.ticket}</span></div>
+            <${Reply} item=${item} flash=${flashId === item.id} />
+          </div>`)}
+
+        ${busy && html`
+          <div class="card working">
+            <span class="spin"></span> Fetching the ticket and triaging…
+          </div>`}
+        <div ref=${bottom}></div>
+      </div>
+
+      <footer>Langflow /api/v1/run · Groq · max_tokens ${MAX_TOKENS} · history kept in this browser</footer>
+    </div>`;
+}
+
+marked.setOptions({ breaks: true, gfm: true });
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>
