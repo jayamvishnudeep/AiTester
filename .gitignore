@@ -24,6 +24,11 @@ venv/
 env/
 ENV/
 
+# Runtime logs. Langflow rewrites 09_LangFlow/langflow.log on every run and it
+# reached 13 MB in two days, which is noise in a diff and nothing a reader needs
+# a year from now. The workflow and flow exports are the artefacts worth keeping.
+*.log
+
 .idea/
 *.iml
 .claude/
