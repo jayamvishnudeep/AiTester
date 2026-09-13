@@ -1,0 +1,115 @@
+{
+  "info": {
+    "_postman_id": "04c5bbc2-f4fe-4754-bf23-5d3b951d3a1a",
+    "name": "LangFlow Ai - Bug Triage (dynamic)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "16874281",
+    "_collection_link": "https://interstellar-desert-877524.postman.co/workspace/Demo~a372edf1-3b87-408a-9cee-94283ece0a27/collection/16874281-04c5bbc2-f4fe-4754-bf23-5d3b951d3a1a?action=share&creator=16874281&source=collection_link",
+    "description": "Triages a Jira ticket with Langflow + Groq. The ticket key is the request input: set the `ticket` collection variable to KAN-9, KAN-13, or any key in your project.\n\nSet `apiKey` to a Langflow API key before sending (Langflow > Settings > API Keys). It is blank here so no credential is stored in the repo.\n\ninput_type MUST be \"chat\" - the flow's entry point is a Chat Input node, and \"text\" silently drops the value."
+  },
+  "item": [
+    {
+      "name": "Triage a Jira ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"output_type\": \"chat\",\n  \"input_type\": \"chat\",\n  \"input_value\": \"{{ticket}}\",\n  \"tweaks\": {\n    \"Prompt Template-HlzxB\": {\n      \"template\": \"You are a senior QA engineer who helps the user to do bug triaging. You analyze a bug report, and based on the bug report, help them to give the structured output with the severity , priority and the comments from your end. Keep the whole reply under 320 words. No preamble and do not restate the ticket back.{variable_name}\"\n    },\n    \"ext:groq:GroqModel@official-KES2M\": {\n      \"max_tokens\": 900\n    }\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:7860/api/v1/run/1d4f1d82-9619-4dab-9825-eada514790f2?stream=false",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "7860",
+          "path": [
+            "api",
+            "v1",
+            "run",
+            "1d4f1d82-9619-4dab-9825-eada514790f2"
+          ],
+          "query": [
+            {
+              "key": "stream",
+              "value": "false"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"it triaged the ticket, not an HTTP error\", function () {",
+              "    const out = pm.response.json().outputs[0].outputs[0];",
+              "    const text = out.results.message.text;",
+              "",
+              "    // The flow builds its Jira URL from the chat input. If the ticket key does",
+              "    // not arrive, the URL becomes /rest/api/3/issue/ - Jira's create endpoint -",
+              "    // which rejects GET with 405. The model will then dutifully triage that",
+              "    // error and still return 200, so assert on the content, not the status.",
+              "    pm.expect(text, \"no ticket key reached the flow\").to.not.include(\"405\");",
+              "    pm.expect(text.toLowerCase(), \"triaged an HTTP failure\")",
+              "      .to.not.include(\"method not allowed\");",
+              "",
+              "    pm.expect(text).to.include(\"Severity\");",
+              "    pm.expect(text).to.include(\"Priority\");",
+              "",
+              "    const p = out.results.message.data.properties;",
+              "    console.log(\"model  :\", p.source.source);",
+              "    console.log(\"tokens : out \" + p.usage.output_tokens + \" of \" + 900);",
+              "    console.log(\"state  :\", p.state);",
+              "    console.log(\"\\n--- TRIAGE ---\\n\" + text);",
+              "});",
+              "",
+              "pm.test(\"finished, not truncated\", function () {",
+              "    const d = pm.response.json().outputs[0].outputs[0].results.message.data;",
+              "    pm.expect(d.properties.state).to.eql(\"complete\");",
+              "    pm.expect(d.error).to.eql(false);",
+              "    pm.expect(d.properties.usage.output_tokens).to.be.below(1000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticket",
+      "value": "KAN-9",
+      "type": "string"
+    }
+  ]
+}
