@@ -1,0 +1,1654 @@
+{
+  "name": "Flaky Test Finder",
+  "description": "Compares two Playwright JSON reports from the same suite and reports which tests are flaky, keeping them separate from the tests that are simply broken.",
+  "data": {
+    "nodes": [
+      {
+        "id": "ChatInput-Fl1Ky",
+        "type": "genericNode",
+        "position": {
+          "x": 60.0,
+          "y": 300.0
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get chat inputs from the Playground.",
+            "display_name": "Chat Input",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "files"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "45974e6b1909",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.chat.ChatInput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Chat Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from lfx.base.data.utils import IMG_FILE_TYPES, TEXT_FILE_TYPES\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.inputs.inputs import BoolInput\nfrom lfx.io import (\n    DropdownInput,\n    FileInput,\n    MessageTextInput,\n    MultilineInput,\n    Output,\n)\nfrom lfx.schema.image import get_file_paths\nfrom lfx.schema.message import Message\nfrom lfx.services.deps import get_settings_service\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_USER,\n    MESSAGE_SENDER_USER,\n)\nfrom lfx.utils.file_path_security import (\n    component_file_access_scopes,\n    enforce_local_file_access,\n    is_local_file_access_restricted,\n)\n\n\nclass ChatInput(ChatComponent):\n    display_name = \"Chat Input\"\n    description = \"Get chat inputs from the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatInput\"\n    minimized = True\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Input Text\",\n            value=\"\",\n            info=\"Message to be passed as input.\",\n            input_types=[],\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_USER,\n            info=\"Type of sender.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_USER,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        FileInput(\n            name=\"files\",\n            display_name=\"Files\",\n            file_types=TEXT_FILE_TYPES + IMG_FILE_TYPES,\n            info=\"Files to be sent with the message.\",\n            advanced=True,\n            is_list=True,\n            temp_file=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Chat Message\", name=\"message\", method=\"message_response\"),\n    ]\n\n    async def message_response(self) -> Message:\n        # Ensure files is a list and filter out empty/None values\n        files = self.files if self.files else []\n        if files and not isinstance(files, list):\n            files = [files]\n        # Filter out None/empty values\n        files = [f for f in files if f is not None and f != \"\"]\n\n        # Build endpoints inject caller-controlled file references directly into\n        # ChatInput. Resolve and validate local references before the Message can\n        # later read them while constructing model attachment content.\n        if files:\n            settings_service = get_settings_service()\n            storage_type = getattr(getattr(settings_service, \"settings\", None), \"storage_type\", \"local\")\n            # The storage factory falls back to local storage for unsupported\n            # values, so only the explicitly configured S3 backend may bypass\n            # filesystem containment.\n            if str(storage_type).lower() != \"s3\" and is_local_file_access_restricted():\n                scope_ids = list(component_file_access_scopes(self))\n                # Public executions replace graph.flow_id with a per-visitor\n                # virtual ID. Only the server-populated source provenance may\n                # restore the already-validated public attachment namespace.\n                source_flow_id = getattr(self.graph, \"source_flow_id\", None)\n                if source_flow_id:\n                    scope_ids.append(source_flow_id)\n                for file_path in get_file_paths(files):\n                    enforce_local_file_access(file_path, scope_ids=scope_ids)\n\n        session_id = self.session_id or self.graph.session_id or \"\"\n        message = await Message.create(\n            text=self.input_value,\n            sender=self.sender,\n            sender_name=self.sender_name,\n            session_id=session_id,\n            context_id=self.context_id,\n            files=files,\n        )\n        if session_id and isinstance(message, Message) and self.should_store_message:\n            stored_message = await self.send_message(\n                message,\n            )\n            self.message.value = stored_message\n            message = stored_message\n\n        self.status = message\n        return message\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "files": {
+                "_input_type": "FileInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Files",
+                "dynamic": false,
+                "fileTypes": [
+                  "csv",
+                  "json",
+                  "pdf",
+                  "txt",
+                  "md",
+                  "mdx",
+                  "yaml",
+                  "yml",
+                  "xml",
+                  "html",
+                  "htm",
+                  "docx",
+                  "py",
+                  "sh",
+                  "sql",
+                  "js",
+                  "ts",
+                  "tsx",
+                  "jpg",
+                  "jpeg",
+                  "png",
+                  "bmp",
+                  "image"
+                ],
+                "file_path": "",
+                "info": "Files to be sent with the message.",
+                "list": true,
+                "list_add_label": "Add More",
+                "name": "files",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "temp_file": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "file",
+                "value": ""
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Input Text",
+                "dynamic": false,
+                "info": "Leave blank to use the default results folder, or paste the path to a folder holding result1.json and result2.json.",
+                "input_types": [],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "User"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "User"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatInput",
+          "id": "ChatInput-Fl1Ky"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 192,
+          "height": 52
+        }
+      },
+      {
+        "id": "FlakyTestComparator-Fk9Qa",
+        "type": "genericNode",
+        "position": {
+          "x": 520.0,
+          "y": 240.0
+        },
+        "data": {
+          "id": "FlakyTestComparator-Fk9Qa",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Flaky Test Comparator - a Langflow custom component.\n\nReads two Playwright JSON reports from the same suite and works out which tests\ndid not agree with themselves. A test is flaky when its outcome is not the same\nin both runs, or when Playwright already had to retry it inside a single run.\n\nA test that fails in both runs is not flaky. It is broken, and the report keeps\nthe two apart so nobody wastes a morning re-running a genuine defect.\n\nThe comparison is plain Python, so the counts are exact and repeatable. The\nlanguage model downstream only writes the summary - it never does the counting.\n\"\"\"\n\nimport json\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# Playwright's per-test status -> the word this component uses for it.\n_OUTCOME = {\n    \"expected\": \"passed\",\n    \"unexpected\": \"failed\",\n    \"flaky\": \"passed on retry\",\n    \"skipped\": \"skipped\",\n}\n\n\nclass FlakyTestComparator(Component):\n    display_name = \"Flaky Test Comparator\"\n    description = \"Compares two Playwright JSON reports and names the flaky tests.\"\n    documentation = \"https://playwright.dev/docs/test-reporters#json-reporter\"\n    icon = \"activity\"\n    name = \"FlakyTestComparator\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"results_dir\",\n            display_name=\"Results folder\",\n            info=(\n                \"Folder holding the two Playwright JSON reports. Anything that is not a real \"\n                \"folder is ignored, so the Playground can send a greeting without breaking the run.\"\n            ),\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"fallback_dir\",\n            display_name=\"Default results folder\",\n            info=\"Used whenever the folder above is empty or does not exist.\",\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"run1_file\",\n            display_name=\"Run 1 file name\",\n            value=\"result1.json\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"run2_file\",\n            display_name=\"Run 2 file name\",\n            value=\"result2.json\",\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"run1_json\",\n            display_name=\"Run 1 JSON\",\n            info=\"Paste a report here to use it instead of reading run 1 from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"run2_json\",\n            display_name=\"Run 2 JSON\",\n            info=\"Paste a report here to use it instead of reading run 2 from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_listed\",\n            display_name=\"Max tests listed\",\n            info=\"Caps how many tests are named under each heading.\",\n            value=15,\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Comparison\", name=\"report\", method=\"build_report\"),\n        Output(display_name=\"Findings\", name=\"findings\", method=\"build_findings\"),\n    ]\n\n    # ------------------------------------------------------------- reading\n\n    def _folder(self) -> str:\n        \"\"\"The first of the two folder fields that actually exists on disk.\n\n        The Playground sends whatever the user typed into this component, so a\n        greeting must not be mistaken for a path. Anything that is not a real\n        folder falls through to the default.\n        \"\"\"\n        for candidate in (self.results_dir, self.fallback_dir):\n            cleaned = (candidate or \"\").strip().strip('\"').strip(\"'\")\n            if cleaned and Path(cleaned).is_dir():\n                return cleaned\n        return \"\"\n\n    def _load(self, pasted: str, file_name: str, label: str) -> dict:\n        \"\"\"Take the pasted report if there is one, otherwise read it from disk.\"\"\"\n        pasted = (pasted or \"\").strip()\n        if pasted:\n            try:\n                return json.loads(pasted)\n            except json.JSONDecodeError as exc:\n                msg = f\"{label}: the pasted JSON could not be parsed - {exc}\"\n                raise ValueError(msg) from exc\n\n        folder = self._folder()\n        if not folder:\n            msg = (\n                f\"{label}: no readable results folder. Set 'Default results folder' on the \"\n                \"Flaky Test Comparator to the folder holding result1.json and result2.json.\"\n            )\n            raise ValueError(msg)\n\n        path = Path(folder) / (file_name or \"\").strip()\n        if not path.is_file():\n            msg = f\"{label}: no file at {path}\"\n            raise ValueError(msg)\n\n        try:\n            return json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{label}: {path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n\n    # ------------------------------------------------------------- parsing\n\n    @staticmethod\n    def _first_error(test: dict) -> str:\n        \"\"\"The first line of the first error, which is enough to tell flake apart.\"\"\"\n        for result in test.get(\"results\") or []:\n            for err in result.get(\"errors\") or []:\n                message = (err.get(\"message\") or \"\").strip()\n                if message:\n                    # strip the ANSI colour codes Playwright writes into the message\n                    cleaned, skipping = [], False\n                    for ch in message:\n                        if ch == \"\\x1b\":\n                            skipping = True\n                        elif skipping:\n                            if ch.isalpha():\n                                skipping = False\n                        else:\n                            cleaned.append(ch)\n                    return \"\".join(cleaned).splitlines()[0].strip()\n        return \"\"\n\n    def _walk(self, suite: dict, trail: list, found: dict) -> None:\n        \"\"\"Collect every test in a suite tree. Describe blocks nest, so recurse.\"\"\"\n        title = (suite.get(\"title\") or \"\").strip()\n        file_name = suite.get(\"file\") or \"\"\n        # the top suite repeats the file name as its title; do not say it twice\n        crumbs = trail if not title or title == file_name else [*trail, title]\n\n        for spec in suite.get(\"specs\") or []:\n            spec_file = spec.get(\"file\") or file_name\n            spec_title = spec.get(\"title\") or \"\"\n            for test in spec.get(\"tests\") or []:\n                project = test.get(\"projectName\") or test.get(\"projectId\") or \"\"\n                spec_id = spec.get(\"id\") or \"\"\n                key = f\"{spec_id}|{project}\" if spec_id else f\"{spec_file}|{'>'.join([*crumbs, spec_title])}|{project}\"\n                attempts = [r.get(\"status\") or \"\" for r in test.get(\"results\") or []]\n                found[key] = {\n                    \"file\": spec_file,\n                    \"name\": \" > \".join([*crumbs, spec_title]) if crumbs else spec_title,\n                    \"title\": spec_title,\n                    \"project\": project,\n                    \"outcome\": _OUTCOME.get(test.get(\"status\") or \"\", test.get(\"status\") or \"unknown\"),\n                    \"attempts\": attempts,\n                    \"retries\": max(len(attempts) - 1, 0),\n                    \"error\": self._first_error(test),\n                    \"line\": spec.get(\"line\"),\n                }\n\n        for child in suite.get(\"suites\") or []:\n            self._walk(child, crumbs, found)\n\n    def _collect(self, report: dict) -> dict:\n        found: dict = {}\n        for suite in report.get(\"suites\") or []:\n            self._walk(suite, [], found)\n        return found\n\n    # ----------------------------------------------------------- comparing\n\n    def _compare(self) -> dict:\n        run1 = self._load(self.run1_json, self.run1_file, \"Run 1\")\n        run2 = self._load(self.run2_json, self.run2_file, \"Run 2\")\n\n        tests1 = self._collect(run1)\n        tests2 = self._collect(run2)\n        if not tests1 or not tests2:\n            msg = \"One of the reports contained no tests. Check that both files are Playwright JSON reports.\"\n            raise ValueError(msg)\n\n        flaky, broken, stable, skipped, only1, only2 = [], [], [], [], [], []\n\n        for key in sorted(set(tests1) | set(tests2)):\n            a, b = tests1.get(key), tests2.get(key)\n\n            if a and not b:\n                only1.append({**a, \"reason\": \"ran in run 1 only\"})\n                continue\n            if b and not a:\n                only2.append({**b, \"reason\": \"ran in run 2 only\"})\n                continue\n\n            o1, o2 = a[\"outcome\"], b[\"outcome\"]\n            entry = {\n                \"file\": a[\"file\"],\n                \"name\": a[\"name\"],\n                \"project\": a[\"project\"],\n                \"run1\": o1,\n                \"run2\": o2,\n                \"run1_attempts\": a[\"attempts\"],\n                \"run2_attempts\": b[\"attempts\"],\n                \"error\": a[\"error\"] or b[\"error\"],\n            }\n\n            if \"skipped\" in (o1, o2):\n                skipped.append({**entry, \"reason\": f\"{o1} in run 1, {o2} in run 2\"})\n            elif o1 == \"passed on retry\" or o2 == \"passed on retry\":\n                run = \"run 1\" if o1 == \"passed on retry\" else \"run 2\"\n                entry[\"reason\"] = f\"needed a retry in {run} - Playwright marked it flaky\"\n                entry[\"evidence\"] = \"retry inside a single run\"\n                flaky.append(entry)\n            elif o1 != o2:\n                entry[\"reason\"] = f\"{o1} in run 1, {o2} in run 2\"\n                entry[\"evidence\"] = \"outcome changed between runs\"\n                flaky.append(entry)\n            elif o1 == \"failed\":\n                entry[\"reason\"] = \"failed in both runs\"\n                broken.append(entry)\n            else:\n                stable.append(entry)\n\n        total = len(set(tests1) | set(tests2))\n        return {\n            \"flaky\": flaky,\n            \"broken\": broken,\n            \"stable\": stable,\n            \"skipped\": skipped,\n            \"only_run1\": only1,\n            \"only_run2\": only2,\n            \"totals\": {\n                \"compared\": total,\n                \"run1_tests\": len(tests1),\n                \"run2_tests\": len(tests2),\n                \"flaky\": len(flaky),\n                \"consistently_failing\": len(broken),\n                \"stable\": len(stable),\n                \"flake_rate_percent\": round(100.0 * len(flaky) / total, 2) if total else 0.0,\n            },\n            \"run1_stats\": run1.get(\"stats\") or {},\n            \"run2_stats\": run2.get(\"stats\") or {},\n        }\n\n    # ------------------------------------------------------------ outputs\n\n    @staticmethod\n    def _stat_line(label: str, stats: dict, counted: int) -> str:\n        if not stats:\n            return f\"{label}: {counted} tests\"\n        bits = [\n            f\"{stats.get('expected', 0)} passed\",\n            f\"{stats.get('unexpected', 0)} failed\",\n            f\"{stats.get('flaky', 0)} flaky\",\n        ]\n        if stats.get(\"skipped\"):\n            bits.append(f\"{stats['skipped']} skipped\")\n        return f\"{label}: {counted} tests - \" + \", \".join(bits)\n\n    def build_report(self) -> Message:\n        result = self._compare()\n        cap = max(int(self.max_listed or 15), 1)\n        totals = result[\"totals\"]\n        lines = [\n            \"# Flaky test comparison\",\n            \"\",\n            self._stat_line(\"Run 1\", result[\"run1_stats\"], totals[\"run1_tests\"]),\n            self._stat_line(\"Run 2\", result[\"run2_stats\"], totals[\"run2_tests\"]),\n            f\"Tests compared: {totals['compared']}\",\n            \"\",\n            f\"FLAKY: {totals['flaky']}\",\n            f\"CONSISTENTLY FAILING: {totals['consistently_failing']}\",\n            f\"STABLE: {totals['stable']}\",\n            f\"Flake rate: {totals['flake_rate_percent']}%\",\n        ]\n\n        def block(heading: str, rows: list, note: str = \"\") -> None:\n            if not rows:\n                return\n            lines.extend([\"\", f\"## {heading} ({len(rows)})\"])\n            if note:\n                lines.append(note)\n            for i, row in enumerate(rows[:cap], 1):\n                lines.append(f\"{i}. {row['file']} > {row.get('name', '')}\")\n                lines.append(f\"   - {row.get('reason', '')}\")\n                a1 = \", \".join(row.get(\"run1_attempts\") or []) or \"-\"\n                a2 = \", \".join(row.get(\"run2_attempts\") or []) or \"-\"\n                lines.append(f\"   - attempts: run 1 [{a1}] / run 2 [{a2}]\")\n                if row.get(\"error\"):\n                    lines.append(f\"   - error: {row['error']}\")\n            if len(rows) > cap:\n                lines.append(f\"   ... and {len(rows) - cap} more\")\n\n        block(\"Flaky tests\", result[\"flaky\"],\n              \"These did not agree with themselves. Quarantine before trusting them.\")\n        block(\"Consistently failing\", result[\"broken\"],\n              \"Failed in both runs, so these are defects rather than flake.\")\n        block(\"Only in one run\", result[\"only_run1\"] + result[\"only_run2\"])\n        block(\"Skipped\", result[\"skipped\"])\n\n        self.status = f\"{totals['flaky']} flaky of {totals['compared']} compared\"\n        return Message(text=\"\\n\".join(lines))\n\n    def build_findings(self) -> Data:\n        result = self._compare()\n        self.status = f\"{result['totals']['flaky']} flaky of {result['totals']['compared']} compared\"\n        return Data(data=result)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "fallback_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "fallback_dir",
+                "value": "e:/Visual Studio Code/AiTester/09_LangFlow/03_Flaky_Test_case_Finder/results",
+                "display_name": "Default results folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the folder above is empty or does not exist.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "max_listed": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_listed",
+                "value": 15,
+                "display_name": "Max tests listed",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Caps how many tests are named under each heading.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "results_dir": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "results_dir",
+                "value": "",
+                "display_name": "Results folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Folder holding the two Playwright JSON reports. Anything that is not a real folder is ignored, so the Playground can send a greeting without breaking the run.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "run1_file": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "run1_file",
+                "value": "result1.json",
+                "display_name": "Run 1 file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "run1_json": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "run1_json",
+                "value": "",
+                "display_name": "Run 1 JSON",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste a report here to use it instead of reading run 1 from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "run2_file": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "run2_file",
+                "value": "result2.json",
+                "display_name": "Run 2 file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "run2_json": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "run2_json",
+                "value": "",
+                "display_name": "Run 2 JSON",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste a report here to use it instead of reading run 2 from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              }
+            },
+            "description": "Compares two Playwright JSON reports and names the flaky tests.",
+            "icon": "activity",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Flaky Test Comparator",
+            "documentation": "https://playwright.dev/docs/test-reporters#json-reporter",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "report",
+                "display_name": "Comparison",
+                "method": "build_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "findings",
+                "display_name": "Findings",
+                "method": "build_findings",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "results_dir",
+              "fallback_dir",
+              "run1_file",
+              "run2_file",
+              "run1_json",
+              "run2_json",
+              "max_listed"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.flaky_test_comparator",
+              "code_hash": "f1b7a0d40459",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 460
+        }
+      },
+      {
+        "id": "Prompt Template-Rp2Vb",
+        "type": "genericNode",
+        "position": {
+          "x": 560.0,
+          "y": 240.0
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are a senior QA engineer reporting on the health of an automated test suite.\n\nBelow is a deterministic comparison of two Playwright runs of the same suite. The counts in it are already correct. Do not recount anything, do not invent tests that are not listed, and do not change any number.\n\nWrite a report of under 300 words, in this order:\n\n1. One opening line giving the number of flaky tests out of the number compared.\n2. \"Flaky tests\" - name each one, say what it did in run 1 and in run 2, and give the most likely cause in one clause, based on the error that is shown.\n3. \"Not flaky - actually broken\" - name the tests that failed in both runs and say plainly that re-running them will not help.\n4. \"What to do next\" - two or three concrete actions for the team.\n\nWrite plain sentences. No preamble, no closing pleasantries.\n\nCOMPARISON\n{comparison}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "comparison": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "comparison",
+                "display_name": "comparison",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "comparison"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Rp2Vb"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 347
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Gq7Xn",
+        "type": "genericNode",
+        "position": {
+          "x": 1000.0,
+          "y": 200.0
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "groq/compound",
+                  "allam-2-7b",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound-mini",
+                  "qwen/qwen3.6-27b"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.1,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "1d4f1d82-9619-4dab-9825-eada514790f2"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-13T22:22:08.892Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Gq7Xn",
+          "selected_output": "text_output"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 495
+        }
+      },
+      {
+        "id": "ChatOutput-Co4Ms",
+        "type": "genericNode",
+        "position": {
+          "x": 1440.0,
+          "y": 300.0
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Co4Ms"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 192,
+          "height": 52
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "ChatInput-Fl1Ky",
+        "sourceHandle": "{œdataTypeœ:œChatInputœ,œidœ:œChatInput-Fl1Kyœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "FlakyTestComparator-Fk9Qa",
+        "targetHandle": "{œfieldNameœ:œresults_dirœ,œidœ:œFlakyTestComparator-Fk9Qaœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "results_dir",
+            "id": "FlakyTestComparator-Fk9Qa",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ChatInput",
+            "id": "ChatInput-Fl1Ky",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ChatInput-Fl1Ky{œdataTypeœ:œChatInputœ,œidœ:œChatInput-Fl1Kyœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-FlakyTestComparator-Fk9Qa{œfieldNameœ:œresults_dirœ,œidœ:œFlakyTestComparator-Fk9Qaœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "FlakyTestComparator-Fk9Qa",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œFlakyTestComparator-Fk9Qaœ,œnameœ:œreportœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Rp2Vb",
+        "targetHandle": "{œfieldNameœ:œcomparisonœ,œidœ:œPrompt Template-Rp2Vbœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "comparison",
+            "id": "Prompt Template-Rp2Vb",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "FlakyTestComparator-Fk9Qa",
+            "name": "report",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__FlakyTestComparator-Fk9Qa{œdataTypeœ:œCustomComponentœ,œidœ:œFlakyTestComparator-Fk9Qaœ,œnameœ:œreportœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Rp2Vb{œfieldNameœ:œcomparisonœ,œidœ:œPrompt Template-Rp2Vbœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Rp2Vb",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Rp2Vbœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Gq7Xn",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Gq7Xnœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Gq7Xn",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Rp2Vb",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Rp2Vb{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Rp2Vbœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Gq7Xn{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Gq7Xnœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Gq7Xn",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Gq7Xnœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Co4Ms",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Co4Msœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Co4Ms",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Gq7Xn",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Gq7Xn{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Gq7Xnœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Co4Ms{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Co4Msœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.7
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
