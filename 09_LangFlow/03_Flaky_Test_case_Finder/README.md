@@ -39,6 +39,7 @@ and you ship the bug, chase a flaky test as a bug and you waste a morning.
 | `results/result1.json` | First test run — 100 tests |
 | `results/result2.json` | Second test run — the same 100 tests |
 | `Flow_Flaky_Test_Finder_result.png` | The screenshot above |
+| `Flaky Test Finder UI/` | A browser front end for the flow — see [its README](Flaky%20Test%20Finder%20UI/README.md) |
 
 The Python file is the same code that is embedded inside the flow JSON. It is
 kept here separately so you can read it without opening Langflow.
@@ -153,6 +154,30 @@ C:/some/other/folder/with/two/reports
 | **Flaky tests** | Each one named, what it did in each run, and the likely cause |
 | **Not flaky - actually broken** | Failed in both runs, so re-running will not help |
 | **What to do next** | Two or three concrete actions |
+
+---
+
+## The browser UI
+
+The Playground is fine for checking the flow works. For everyday use there is a
+front end in **`Flaky Test Finder UI/`** — open `index.html` and you get the same
+comparison laid out properly.
+
+![The Flaky Test Finder UI after a comparison. A banner reads "2 flaky tests", followed by tiles for compared, flaky, broken, stable and flake rate, then a run composition chart, then a card for each flaky test showing its attempts in run 1 and run 2 as coloured squares, a separate section for the two tests that are broken rather than flaky, and the agent's recommendations at the bottom](Flaky%20Test%20Finder%20UI/Flaky_Test_Finder_UI.png)
+
+Each test card carries its **attempts** as squares, one per try, so the flake is
+visible without reading anything:
+
+```
+catalog/search.spec.ts
+Search › shows type-ahead suggestions after three characters
+RUN 1  ✗ ✗   →   RUN 2  ✓
+```
+
+A test that is broken rather than flaky reads `✗ ✗ → ✗ ✗`, which is just as
+plain. It keeps run history, works in light and dark, and needs no build step.
+
+Full instructions are in [its own README](Flaky%20Test%20Finder%20UI/README.md).
 
 ---
 
