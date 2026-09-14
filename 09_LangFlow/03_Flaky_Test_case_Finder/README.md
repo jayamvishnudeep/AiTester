@@ -40,6 +40,7 @@ and you ship the bug, chase a flaky test as a bug and you waste a morning.
 | `results/result2.json` | Second test run — the same 100 tests |
 | `Flow_Flaky_Test_Finder_result.png` | The screenshot above |
 | `Flaky Test Finder UI/` | A browser front end for the flow — see [its README](Flaky%20Test%20Finder%20UI/README.md) |
+| `Hosted UI/` | A standalone version that needs no install — see [below](#the-hosted-version-no-install) |
 
 The Python file is the same code that is embedded inside the flow JSON. It is
 kept here separately so you can read it without opening Langflow.
@@ -178,6 +179,36 @@ A test that is broken rather than flaky reads `✗ ✗ → ✗ ✗`, which is ju
 plain. It keeps run history, works in light and dark, and needs no build step.
 
 Full instructions are in [its own README](Flaky%20Test%20Finder%20UI/README.md).
+
+---
+
+## The hosted version (no install)
+
+**[Open the Flaky Test Finder →](https://claude.ai/code/artifact/7a6d0ba6-011f-4800-bbc9-c539631a1f4b)**
+
+Press **Upload files**, pick two Playwright JSON reports from your machine, and
+read the result. No Langflow, no API key, nothing to install.
+
+![The hosted Flaky Test Finder after uploading two reports. The two files are shown side by side as Run 1 and Run 2 with their timestamps and test counts, then a banner reading "2 flaky tests", tiles for compared, flaky, broken, stable and flake rate, a run composition chart, and a card for each flaky test showing its attempts in both runs as coloured squares, with the two genuinely broken tests in a separate section below](Hosted%20UI/Flaky_Test_Finder_Hosted_UI.png)
+
+The comparison runs **in your browser** — the reports are read locally and never
+uploaded anywhere. It reads each report's `stats.startTime` to work out which run
+came first, so the order you pick the files in does not matter, and there is a
+swap button if you want to reverse it.
+
+`Hosted UI/index.html` is the source, and it is the same file that is deployed.
+
+### How it differs from the Langflow flow
+
+| | Langflow flow | Hosted page |
+|---|---|---|
+| Setup | Import the flow, add a Groq key | None — open the link |
+| Reports come from | A folder on the machine running Langflow | Files you pick in the browser |
+| The comparison | A Python component in the flow | The same logic, in JavaScript |
+| Written summary | Groq writes one | None — the tables say it |
+
+Both give the same verdict on the same input. The flow is the version that fits a
+pipeline; the hosted page is the one to send someone.
 
 ---
 
