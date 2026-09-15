@@ -1,0 +1,1466 @@
+{
+  "name": "Manual to Playwright",
+  "description": "Turns written manual test cases into a Playwright spec file in TypeScript and writes it to disk.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Mn1Ua",
+        "type": "genericNode",
+        "position": {
+          "x": 60.0,
+          "y": 300.0
+        },
+        "data": {
+          "id": "TextInput-Mn1Ua",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "Feature: Login\nBase URL: https://shopfront.example.com\n\nTC-01 - Sign in with valid credentials\nPrecondition: A registered account exists with email ada@example.com and password Correct-Horse-9.\n1. Open the login page.\n2. Enter ada@example.com in the Email field.\n3. Enter Correct-Horse-9 in the Password field.\n4. Click the Sign in button.\nExpected: The shopper lands on the account dashboard, and the account menu shows the name \"Ada\".\n\nTC-02 - Reject a wrong password\nPrecondition: The account ada@example.com exists.\n1. Open the login page.\n2. Enter ada@example.com in the Email field.\n3. Enter not-the-password in the Password field.\n4. Click the Sign in button.\nExpected: An error message reads \"Email or password is incorrect.\" The shopper stays on the login page and the Password field is cleared.\n\nTC-03 - Require both fields before submitting\nPrecondition: None.\n1. Open the login page.\n2. Leave the Email and Password fields empty.\nExpected: The Sign in button is disabled."
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Cv2Bd",
+        "type": "genericNode",
+        "position": {
+          "x": 500.0,
+          "y": 280.0
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are an SDET who turns manual test cases into Playwright tests.\n\nConvert the manual test cases below into ONE Playwright test file in TypeScript.\n\nRules:\n- Begin the file with a marker line naming it, for example: // file: login.spec.ts\n- Then import: import {{ test, expect }} from '@playwright/test';\n- Wrap the tests in one test.describe named after the feature.\n- Write one test() per manual case. Use the case title as the test name, in lower case, without the TC number.\n- Locate elements by role, label or text: getByRole, getByLabel, getByText, getByTestId. Never use CSS or XPath selectors.\n- Assert with web-first assertions: await expect(locator).toBeVisible(), .toHaveText(), .toBeDisabled(), .toHaveValue().\n- Turn every Expected line into at least one assertion.\n- The base URL is set in playwright.config.ts, so navigate with a relative path such as page.goto('/login').\n- Where a precondition cannot be set up from the browser, leave a // TODO comment inside the test saying what the fixture must provide.\n- Output the code and nothing else. No explanation before or after it.\n\nMANUAL TEST CASES\n{manual_steps}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "manual_steps": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "manual_steps",
+                "display_name": "manual_steps",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "manual_steps"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Cv2Bd"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 347
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Gq3Wp",
+        "type": "genericNode",
+        "position": {
+          "x": 940.0,
+          "y": 240.0
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "groq/compound",
+                  "allam-2-7b",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound-mini",
+                  "qwen/qwen3.6-27b"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.1,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "1d4f1d82-9619-4dab-9825-eada514790f2"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-13T22:22:08.892Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Gq3Wp",
+          "selected_output": "text_output"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 495
+        }
+      },
+      {
+        "id": "PlaywrightSpecWriter-Wr4Ts",
+        "type": "genericNode",
+        "position": {
+          "x": 1380.0,
+          "y": 280.0
+        },
+        "data": {
+          "id": "PlaywrightSpecWriter-Wr4Ts",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Playwright Spec Writer - a Langflow custom component.\n\nTakes whatever the model wrote and turns it into files on disk.\n\nA language model asked for code returns prose around it: a fenced block, a\nsentence of explanation, sometimes a \"Here you go:\". None of that belongs in a\n.spec.ts file, and a tester should not have to strip it by hand. This component\ndoes the mechanical part - find the code, name the file, write it - so the model\nis only ever responsible for the code itself.\n\nIt writes one file per `// file: name.spec.ts` marker. With no markers it writes\na single file under the configured default name, so a simple prompt still works.\n\"\"\"\n\nimport re\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import BoolInput, MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# One fenced block. Non-greedy and unanchored, so it stops at the FIRST closing\n# fence rather than running on to the last one in the reply.\n_FENCE_ANY = re.compile(r\"```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\", re.DOTALL)\n# The whole reply as a single fence. Only trusted when there is exactly one block.\n_FENCE_WHOLE = re.compile(r\"^\\s*```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\\s*$\", re.DOTALL)\n# A file marker the prompt asks the model to emit above each block. The name is\n# captured; whatever else is on that line is skipped with it.\n_MARKER = re.compile(r\"^[ \\t]*(?://|/\\*)\\s*file:\\s*([^\\s*]+)\", re.MULTILINE)\n_SAFE = re.compile(r\"[^A-Za-z0-9._-]+\")\n\n# Line openings and endings that mean \"this is code, not commentary\".\n_CODE_START = (\"//\", \"/*\", \"*\", \"import \", \"export \", \"const \", \"let \", \"var \",\n               \"test\", \"await \", \"expect\", \"async \", \"function \", \"class \", \"return \",\n               \"if \", \"for \", \"}\", \")\", \"@\", \"{\")\n_CODE_END = (\"{\", \"}\", \";\", \")\", \",\", \"*/\", \"=>\", \"[\", \"]\")\n\n\nclass PlaywrightSpecWriter(Component):\n    display_name = \"Playwright Spec Writer\"\n    description = \"Strips the prose off generated code and writes .spec.ts files.\"\n    documentation = \"https://playwright.dev/docs/writing-tests\"\n    icon = \"file-code\"\n    name = \"PlaywrightSpecWriter\"\n\n    # how much text counts as a real set of manual steps rather than a stray word\n    MIN_STEPS = 40\n\n    inputs = [\n        MessageTextInput(\n            name=\"generated\",\n            display_name=\"Generated code\",\n            info=\"The model's reply. Fences and commentary are removed before writing.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"source_steps\",\n            display_name=\"Manual steps (guard)\",\n            info=(\n                \"The manual cases the code was generated from. Wire the input node here. \"\n                \"With nothing in it the component refuses to write, because a model given an \"\n                \"empty brief returns confident, well-formed, entirely invented tests.\"\n            ),\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Output folder\",\n            info=\"Where the .spec.ts files are written. Created if it does not exist.\",\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"default_name\",\n            display_name=\"Default file name\",\n            info=\"Used when the model emits no '// file:' marker.\",\n            value=\"generated.spec.ts\",\n        ),\n        BoolInput(\n            name=\"overwrite\",\n            display_name=\"Overwrite existing files\",\n            info=\"Off: an existing file is kept and a numbered copy is written beside it.\",\n            value=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_files\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    # ------------------------------------------------------------- naming\n\n    @staticmethod\n    def _split_name(name: str) -> tuple:\n        \"\"\"Stem and suffix, honouring the double extension in '.spec.ts'.\"\"\"\n        if name.endswith(\".spec.ts\"):\n            return name[: -len(\".spec.ts\")], \".spec.ts\"\n        p = Path(name)\n        return p.stem, p.suffix or \".ts\"\n\n    @classmethod\n    def _safe_name(cls, name: str) -> str:\n        \"\"\"A file name, never a path - the model does not get to choose a folder.\"\"\"\n        stem = _SAFE.sub(\"-\", Path(name.strip()).name).strip(\"-.\")\n        if not stem:\n            stem = \"generated.spec.ts\"\n        if not stem.endswith(\".ts\"):\n            stem += \".spec.ts\" if not stem.endswith(\".spec\") else \".ts\"\n        return stem\n\n    # ----------------------------------------------------------- extracting\n\n    @staticmethod\n    def _is_prose(line: str) -> bool:\n        \"\"\"A line that reads like a sentence about the code rather than code.\"\"\"\n        s = line.strip()\n        if not s or s.startswith(_CODE_START) or s.endswith(_CODE_END):\n            return False\n        return \" \" in s\n\n    @classmethod\n    def _clean(cls, code: str) -> str:\n        \"\"\"Drop stray fences, and commentary on either side of the code.\"\"\"\n        lines = [ln for ln in (code or \"\").splitlines() if not ln.strip().startswith(\"```\")]\n        while lines and not lines[0].strip():\n            lines.pop(0)\n        if lines and cls._is_prose(lines[0]):\n            lines.pop(0)\n        # a closing paragraph after the code is just as unwelcome as a leading one\n        while lines and (not lines[-1].strip() or cls._is_prose(lines[-1])):\n            lines.pop()\n        return \"\\n\".join(lines).strip()\n\n    @classmethod\n    def _code_of(cls, chunk: str) -> str:\n        \"\"\"The code in one chunk: the fenced part if there is one, else the chunk.\"\"\"\n        fenced = _FENCE_ANY.search(chunk or \"\")\n        return cls._clean(fenced.group(1) if fenced else chunk)\n\n    def _split(self, text: str) -> list:\n        \"\"\"Return [(file name, code)] from the model's reply.\"\"\"\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned nothing to write.\"\n            raise ValueError(msg)\n\n        blocks = _FENCE_ANY.findall(raw)\n        # Unwrap the outer fence only when the whole reply IS one fence. Doing it\n        # on a multi-block reply would swallow the fences in between and keep one\n        # arbitrary block as if it were the whole answer.\n        body = blocks[0] if (len(blocks) == 1 and _FENCE_WHOLE.match(raw)) else raw\n\n        markers = list(_MARKER.finditer(body))\n        if markers:\n            files = []\n            for i, m in enumerate(markers):\n                # start after the marker's whole LINE, so nothing else on it leaks in\n                newline = body.find(\"\\n\", m.end())\n                start = len(body) if newline == -1 else newline + 1\n                end = markers[i + 1].start() if i + 1 < len(markers) else len(body)\n                code = self._code_of(body[start:end])\n                if code:\n                    files.append((self._safe_name(m.group(1)), code))\n            if not files:\n                msg = \"No code was found in the model's reply.\"\n                raise ValueError(msg)\n            return files\n\n        default = self._safe_name(self.default_name or \"generated.spec.ts\")\n        if len(blocks) > 1:\n            stem, suffix = self._split_name(default)\n            files = [(f\"{stem}-{i + 1}{suffix}\", self._clean(b)) for i, b in enumerate(blocks)]\n            files = [(n, c) for n, c in files if c]\n            if not files:\n                msg = \"No code was found in the model's reply.\"\n                raise ValueError(msg)\n            return files\n\n        code = self._clean(blocks[0] if blocks else body)\n        if not code:\n            msg = \"No code was found in the model's reply.\"\n            raise ValueError(msg)\n        return [(default, code)]\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        # Refuse before writing anything if there were no steps to convert. An empty\n        # brief does not produce an empty reply - it produces invented tests that look\n        # entirely plausible, which is the worst thing this component could write.\n        steps = (self.source_steps or \"\").strip()\n        if not steps:\n            msg = (\"No manual steps reached this component, so anything generated from them \"\n                   \"is invention. Put the cases in the input node, or wire it to the \"\n                   \"'Manual steps (guard)' field.\")\n            raise ValueError(msg)\n        if len(steps) < self.MIN_STEPS:\n            msg = (f\"Only {len(steps)} characters of manual steps were given. That is too \"\n                   \"little to convert, and the model will invent the rest.\")\n            raise ValueError(msg)\n\n        files = self._split(self.generated)\n\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set an output folder on the Playwright Spec Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        written = []\n        for name, code in files:\n            path = folder / name\n            if path.exists() and not self.overwrite:\n                stem, suffix = self._split_name(name)\n                n = 2\n                while path.exists():\n                    path = folder / f\"{stem}-{n}{suffix}\"\n                    n += 1\n            body = code if code.endswith(\"\\n\") else code + \"\\n\"\n            path.write_text(body, encoding=\"utf-8\")\n            written.append({\n                \"file\": path.name,\n                \"path\": str(path),\n                \"lines\": len(code.splitlines()),\n                \"bytes\": len(body.encode(\"utf-8\")),\n                # test( and test.only( count; test.describe( is a group, not a test\n                \"tests\": len(re.findall(r\"^\\s*test\\s*(?:\\.(?:only|skip|fixme))?\\s*\\(\",\n                                        code, re.MULTILINE)),\n            })\n\n        return {\"folder\": str(folder), \"written\": written,\n                \"file_count\": len(written),\n                \"test_count\": sum(w[\"tests\"] for w in written)}\n\n    # -------------------------------------------------------------- outputs\n\n    def write_files(self) -> Message:\n        result = self._write()\n        lines = [\n            f\"Wrote {result['file_count']} \"\n            f\"{'file' if result['file_count'] == 1 else 'files'} \"\n            f\"holding {result['test_count']} \"\n            f\"{'test' if result['test_count'] == 1 else 'tests'}.\",\n            \"\",\n            f\"Folder: {result['folder']}\",\n            \"\",\n        ]\n        for w in result[\"written\"]:\n            lines.append(f\"- {w['file']} — {w['tests']} tests, {w['lines']} lines\")\n        self.status = f\"{result['file_count']} files, {result['test_count']} tests\"\n        return Message(text=\"\\n\".join(lines))\n\n    def write_details(self) -> Data:\n        result = self._write()\n        self.status = f\"{result['file_count']} files, {result['test_count']} tests\"\n        return Data(data=result)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_name",
+                "value": "generated.spec.ts",
+                "display_name": "Default file name",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used when the model emits no '// file:' marker.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "generated": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "generated",
+                "value": "",
+                "display_name": "Generated code",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's reply. Fences and commentary are removed before writing.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/07_Manual_To_Playwright_Tests_AI_Agent/generated",
+                "display_name": "Output folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where the .spec.ts files are written. Created if it does not exist.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "overwrite": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "overwrite",
+                "value": true,
+                "display_name": "Overwrite existing files",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Off: an existing file is kept and a numbered copy is written beside it.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "source_steps": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "source_steps",
+                "value": "",
+                "display_name": "Manual steps (guard)",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The manual cases the code was generated from. Wire the input node here. With nothing in it the component refuses to write, because a model given an empty brief returns confident, well-formed, entirely invented tests.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Strips the prose off generated code and writes .spec.ts files.",
+            "icon": "file-code",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Playwright Spec Writer",
+            "documentation": "https://playwright.dev/docs/writing-tests",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_files",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "generated",
+              "source_steps",
+              "output_dir",
+              "default_name",
+              "overwrite"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.playwright_spec_writer",
+              "code_hash": "4f47d6e17cf1",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 400
+        }
+      },
+      {
+        "id": "ChatOutput-Co5Ms",
+        "type": "genericNode",
+        "position": {
+          "x": 1820.0,
+          "y": 320.0
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Co5Ms"
+        },
+        "selected": false,
+        "dragging": false,
+        "measured": {
+          "width": 192,
+          "height": 52
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Mn1Ua",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mn1Uaœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Cv2Bd",
+        "targetHandle": "{œfieldNameœ:œmanual_stepsœ,œidœ:œPrompt Template-Cv2Bdœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "manual_steps",
+            "id": "Prompt Template-Cv2Bd",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Mn1Ua",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Mn1Ua{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mn1Uaœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Cv2Bd{œfieldNameœ:œmanual_stepsœ,œidœ:œPrompt Template-Cv2Bdœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "TextInput-Mn1Ua",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mn1Uaœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "PlaywrightSpecWriter-Wr4Ts",
+        "targetHandle": "{œfieldNameœ:œsource_stepsœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "source_steps",
+            "id": "PlaywrightSpecWriter-Wr4Ts",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Mn1Ua",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Mn1Ua{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mn1Uaœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-PlaywrightSpecWriter-Wr4Ts{œfieldNameœ:œsource_stepsœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Cv2Bd",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Cv2Bdœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Gq3Wp",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Gq3Wpœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Gq3Wp",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Cv2Bd",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Cv2Bd{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Cv2Bdœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Gq3Wp{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Gq3Wpœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Gq3Wp",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Gq3Wpœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "PlaywrightSpecWriter-Wr4Ts",
+        "targetHandle": "{œfieldNameœ:œgeneratedœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "generated",
+            "id": "PlaywrightSpecWriter-Wr4Ts",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Gq3Wp",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Gq3Wp{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Gq3Wpœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-PlaywrightSpecWriter-Wr4Ts{œfieldNameœ:œgeneratedœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      },
+      {
+        "source": "PlaywrightSpecWriter-Wr4Ts",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Co5Ms",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Co5Msœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Co5Ms",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "PlaywrightSpecWriter-Wr4Ts",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__PlaywrightSpecWriter-Wr4Ts{œdataTypeœ:œCustomComponentœ,œidœ:œPlaywrightSpecWriter-Wr4Tsœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Co5Ms{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Co5Msœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "className": "",
+        "selected": false,
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
