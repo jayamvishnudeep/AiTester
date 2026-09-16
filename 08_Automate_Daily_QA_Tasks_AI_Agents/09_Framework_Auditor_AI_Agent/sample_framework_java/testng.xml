@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DELIBERATELY BAD. No parallel execution, no retry listener, no groups. -->
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ShopfrontSuite">
+  <test name="UiTests">
+    <classes>
+      <class name="com.shopfront.tests.LoginTest"/>
+      <class name="com.shopfront.tests.CheckoutTest"/>
+    </classes>
+  </test>
+</suite>

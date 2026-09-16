@@ -1,0 +1,14 @@
+{
+  "_comment": "DELIBERATELY OUT OF DATE. Audit fodder for the Framework Auditor.",
+  "name": "shopfront-e2e",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.28.0",
+    "typescript": "^4.5.5",
+    "ts-node": "*",
+    "dotenv": "^8.2.0"
+  }
+}
