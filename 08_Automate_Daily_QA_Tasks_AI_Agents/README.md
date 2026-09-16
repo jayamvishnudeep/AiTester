@@ -15,8 +15,9 @@ it works.
 | 06 | [Swagger to API Tests](06_Swagger_To_API_Tests) | Writing a baseline API suite by hand from the documentation |
 | 07 | [Manual to Playwright Tests](07_Manual_To_Playwright_Tests_AI_Agent) | Retyping manual test cases as automation, case by case |
 | 08 | [Page Object Generator](08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
+| 09 | [Framework Auditor](09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
 
-Agents 01 to 06 are n8n workflows. **07 and 08 are Langflow**, because both end
+Agents 01 to 06 are n8n workflows. **07, 08 and 09 are Langflow**, because both end
 by writing a file to disk — and n8n Cloud runs on someone else's machine, where
 "write a `.spec.ts`" can only ever mean "send you a download".
 
@@ -165,6 +166,28 @@ flakiness. So the check is mechanical: pull every string out of `getByLabel`,
 to appear in the source markup.
 
 See its [README](08_Page_Object_Generator_AI_Agent).
+
+## 09 — Framework Auditor
+
+A path to an automation repository goes in; an audit report comes out — what
+anti-patterns are in there, how many, where, which dependencies have rotted, and
+what to fix first.
+
+Its constraint is the folder's oldest one, at its sharpest. A middling Selenium
+suite is tens of thousands of lines and Groq's free tier allows eight thousand
+input tokens a minute, so **the model never sees the repository at all**. Code
+walks the tree and counts; the model is handed the totals and a dozen quoted
+lines. The useful consequence is that audit quality does not decay as the
+codebase grows, which is the opposite of what happens when source is fed to a
+model — and the big old codebase is the one that needed auditing.
+
+Its failure mode is different from every other agent here. The others risk being
+wrong; this one risks being **annoying**, which is worse for adoption. An auditor
+that flags a good locator gets skimmed once and never run again, so every rule is
+tested twice — on a line it must catch, and on the line a competent engineer
+would write instead, which it must leave alone.
+
+See its [README](09_Framework_Auditor_AI_Agent).
 
 ## What this section adds over `07_n8n_Workflows`
 
