@@ -1,0 +1,73 @@
+<!-- Checkout page of the Shopfront demo store.
+     Busier than the login page on purpose: a radio group, a repeated row, a
+     disabled action and a live total, which is where a generated Page Object
+     usually starts guessing. -->
+<main class="checkout" data-testid="checkout-page">
+  <h1>Checkout</h1>
+
+  <section class="checkout__address" aria-labelledby="address-heading">
+    <h2 id="address-heading">Delivery address</h2>
+
+    <p class="notice" data-testid="address-required" hidden>
+      Add a delivery address to continue.
+    </p>
+
+    <div class="field">
+      <label for="line1">Address line 1</label>
+      <input id="line1" name="line1" type="text" data-testid="address-line1" />
+    </div>
+
+    <div class="field">
+      <label for="postcode">Postcode</label>
+      <input id="postcode" name="postcode" type="text" data-testid="postcode" />
+      <button type="button" class="btn btn--ghost" data-testid="lookup-postcode">
+        Find address
+      </button>
+    </div>
+  </section>
+
+  <section class="checkout__payment" aria-labelledby="payment-heading">
+    <h2 id="payment-heading">Payment</h2>
+
+    <fieldset class="cards" data-testid="saved-cards">
+      <legend>Saved cards</legend>
+
+      <label class="card">
+        <input type="radio" name="card" value="4242" data-testid="card-4242" />
+        Visa ending 4242 — expires 09/29
+      </label>
+
+      <label class="card">
+        <input type="radio" name="card" value="1881" data-testid="card-1881" />
+        Mastercard ending 1881 — expires 01/24
+      </label>
+    </fieldset>
+
+    <div role="alert" class="checkout__error" data-testid="card-error" hidden>
+      Card expired. Use a different card.
+    </div>
+  </section>
+
+  <section class="checkout__summary" aria-labelledby="summary-heading">
+    <h2 id="summary-heading">Order summary</h2>
+
+    <div class="field field--inline">
+      <label for="promo">Promotion code</label>
+      <input id="promo" name="promo" type="text" data-testid="promo-input" />
+      <button type="button" class="btn btn--ghost" data-testid="apply-promo">Apply</button>
+    </div>
+
+    <dl class="totals">
+      <dt>Subtotal</dt>
+      <dd data-testid="subtotal">£24.00</dd>
+      <dt>Discount</dt>
+      <dd data-testid="discount">£0.00</dd>
+      <dt>Total</dt>
+      <dd data-testid="total">£24.00</dd>
+    </dl>
+
+    <button type="submit" class="btn btn--primary" data-testid="pay-button" disabled>
+      Pay £24.00
+    </button>
+  </section>
+</main>

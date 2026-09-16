@@ -1,0 +1,43 @@
+<!-- Sign-in page of the Shopfront demo store.
+     A DOM snapshot of the kind you get from DevTools: Copy > Copy outerHTML.
+     Labels, roles and data-testid attributes are what the generator locates by. -->
+<main class="auth" data-testid="login-page">
+  <h1>Sign in</h1>
+
+  <p class="auth__intro">
+    New here? <a href="/signup" data-testid="signup-link">Create an account</a>
+  </p>
+
+  <div role="alert" class="auth__error" data-testid="login-error" hidden>
+    Email or password is incorrect.
+  </div>
+
+  <form class="auth__form" method="post" action="/session" novalidate>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="username"
+             data-testid="email-input" required />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password"
+             autocomplete="current-password" data-testid="password-input" required />
+      <button type="button" class="field__reveal" aria-label="Show password"
+              data-testid="reveal-password"></button>
+    </div>
+
+    <div class="field field--inline">
+      <input id="remember" name="remember" type="checkbox" data-testid="remember-me" />
+      <label for="remember">Keep me signed in</label>
+    </div>
+
+    <button type="submit" class="btn btn--primary" data-testid="signin-button" disabled>
+      Sign in
+    </button>
+  </form>
+
+  <a href="/forgot-password" class="auth__forgot" data-testid="forgot-link">
+    Forgotten your password?
+  </a>
+</main>
