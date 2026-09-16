@@ -1,0 +1,900 @@
+{
+  "repository": "e:\\Visual Studio Code\\AiTester\\08_Automate_Daily_QA_Tasks_AI_Agents\\09_Framework_Auditor_AI_Agent\\sample_framework_java",
+  "files_scanned": 4,
+  "files_by_ecosystem": {
+    "java": 4
+  },
+  "lines_scanned": 209,
+  "findings_total": 65,
+  "severity_counts": {
+    "high": 26,
+    "medium": 37,
+    "low": 2
+  },
+  "rules_triggered": [
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "count": 15,
+      "files": 4
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "count": 5,
+      "files": 3
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "count": 3,
+      "files": 3
+    },
+    {
+      "rule": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "count": 2,
+      "files": 1
+    },
+    {
+      "rule": "hardcoded_credential",
+      "name": "Credential in source",
+      "severity": "high",
+      "count": 1,
+      "files": 1
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "count": 15,
+      "files": 2
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "count": 6,
+      "files": 3
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "count": 6,
+      "files": 3
+    },
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "count": 5,
+      "files": 3
+    },
+    {
+      "rule": "implicit_wait",
+      "name": "Implicit wait",
+      "severity": "medium",
+      "count": 3,
+      "files": 3
+    },
+    {
+      "rule": "disabled_test_java",
+      "name": "Disabled test",
+      "severity": "medium",
+      "count": 2,
+      "files": 1
+    },
+    {
+      "rule": "console_output_java",
+      "name": "Console output instead of logging",
+      "severity": "low",
+      "count": 2,
+      "files": 1
+    }
+  ],
+  "worst_offenders": [
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 18,
+      "snippet": "Thread.sleep(2000);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 22,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[1]/input\")).sendKeys(email);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 26,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[2]/input\")).sendKeys(password);"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 31,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 36,
+      "snippet": "Assert.assertTrue(driver.getCurrentUrl().contains(\"dashboard\"),"
+    },
+    {
+      "rule": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 42,
+      "snippet": "Assert.assertEquals(actual, expected);"
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/utils/DriverFactory.java",
+      "line": 10,
+      "snippet": "public static WebDriver driver;"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/utils/DriverFactory.java",
+      "line": 22,
+      "snippet": "Thread.sleep(millis);"
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 14,
+      "snippet": "public static WebDriver driver;"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 25,
+      "snippet": "Thread.sleep(4000);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 27,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/section[3]/button\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 28,
+      "snippet": "Thread.sleep(4000);"
+    }
+  ],
+  "dependencies_total": 8,
+  "dependencies_stale": [
+    {
+      "name": "selenium-java",
+      "version": "3.141.59",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "Selenium 4 has been current since 2021; 3.x predates the W3C WebDriver protocol and bundled Selenium Manager"
+    },
+    {
+      "name": "testng",
+      "version": "6.14.3",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "TestNG 7 has been current since 2019 and is required for recent JDKs"
+    },
+    {
+      "name": "junit",
+      "version": "4.12",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "JUnit 4 is in maintenance only; JUnit 5 is the current platform"
+    },
+    {
+      "name": "webdrivermanager",
+      "version": "4.4.3",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "Selenium 4.6 manages drivers itself, so this may not be needed at all any more"
+    },
+    {
+      "name": "commons-lang3",
+      "version": "3.9",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "commons-lang3 3.9 is from 2019"
+    },
+    {
+      "name": "maven-surefire-plugin",
+      "version": "2.22.2",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "Surefire 3 is required for JUnit 5 and recent JDKs"
+    },
+    {
+      "name": "maven.compiler.target",
+      "version": "8",
+      "file": "pom.xml",
+      "stale": true,
+      "note": "Java 17 and 21 are the current LTS releases"
+    }
+  ],
+  "findings": [
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 17,
+      "snippet": "driver.get(\"https://shopfront.example.com/login\");"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 18,
+      "snippet": "Thread.sleep(2000);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 22,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[1]/input\")).sendKeys(email);"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 22,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[1]/input\")).sendKeys(email);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 26,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[2]/input\")).sendKeys(password);"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 26,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/div[2]/input\")).sendKeys(password);"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 30,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--primary\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 31,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 36,
+      "snippet": "Assert.assertTrue(driver.getCurrentUrl().contains(\"dashboard\"),"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 41,
+      "snippet": "String actual = driver.findElement(By.cssSelector(\"div.auth__error > span.text-red-500\")).getText();"
+    },
+    {
+      "rule": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/pages/LoginPage.java",
+      "line": 42,
+      "snippet": "Assert.assertEquals(actual, expected);"
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/utils/DriverFactory.java",
+      "line": 10,
+      "snippet": "public static WebDriver driver;"
+    },
+    {
+      "rule": "implicit_wait",
+      "name": "Implicit wait",
+      "severity": "medium",
+      "file": "src/main/java/com/shopfront/utils/DriverFactory.java",
+      "line": 15,
+      "snippet": "driver.manage().timeouts().implicitlyWait(30, java.util.concurrent.TimeUnit.SECONDS);"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/main/java/com/shopfront/utils/DriverFactory.java",
+      "line": 22,
+      "snippet": "Thread.sleep(millis);"
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 14,
+      "snippet": "public static WebDriver driver;"
+    },
+    {
+      "rule": "implicit_wait",
+      "name": "Implicit wait",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 19,
+      "snippet": "driver.manage().timeouts().implicitlyWait(30, java.util.concurrent.TimeUnit.SECONDS);"
+    },
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 24,
+      "snippet": "driver.get(\"https://shopfront.example.com/cart\");"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 25,
+      "snippet": "Thread.sleep(4000);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 27,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/section[3]/button\")).click();"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 27,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/section[3]/button\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 27,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/section[3]/button\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 28,
+      "snippet": "Thread.sleep(4000);"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 30,
+      "snippet": "driver.findElement(By.xpath(\"//*[@id=\\\"root\\\"]/div/div[2]/div[1]/label[1]/input\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 30,
+      "snippet": "driver.findElement(By.xpath(\"//*[@id=\\\"root\\\"]/div/div[2]/div[1]/label[1]/input\")).click();"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 31,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--primary\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 31,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--primary\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 33,
+      "snippet": "Thread.sleep(8000);"
+    },
+    {
+      "rule": "disabled_test_java",
+      "name": "Disabled test",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 38,
+      "snippet": "@Ignore"
+    },
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 41,
+      "snippet": "driver.get(\"https://shopfront.example.com/checkout\");"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 42,
+      "snippet": "Thread.sleep(4000);"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 43,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--primary\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 43,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--primary\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 44,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 46,
+      "snippet": "driver.findElement(By.cssSelector(\"div.checkout__error\")).getText(),"
+    },
+    {
+      "rule": "disabled_test_java",
+      "name": "Disabled test",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 50,
+      "snippet": "@Test(enabled = false)"
+    },
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 52,
+      "snippet": "driver.get(\"https://shopfront.example.com/checkout\");"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 53,
+      "snippet": "Thread.sleep(4000);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 54,
+      "snippet": "driver.findElement(By.id(\"promo\")).sendKeys(\"APRON10\");"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 55,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--ghost\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 55,
+      "snippet": "driver.findElement(By.cssSelector(\"button.btn.btn--ghost\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 56,
+      "snippet": "Thread.sleep(2000);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 57,
+      "snippet": "Assert.assertEquals(driver.findElement(By.cssSelector(\"dd.total\")).getText(), \"£21.60\");"
+    },
+    {
+      "rule": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 15,
+      "snippet": "public static WebDriver driver;"
+    },
+    {
+      "rule": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 17,
+      "snippet": "private static final String BASE_URL = \"https://shopfront.example.com\";"
+    },
+    {
+      "rule": "hardcoded_credential",
+      "name": "Credential in source",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 19,
+      "snippet": "private static final String PASSWORD = \"Passw0rd123\";"
+    },
+    {
+      "rule": "implicit_wait",
+      "name": "Implicit wait",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 26,
+      "snippet": "driver.manage().timeouts().implicitlyWait(30, java.util.concurrent.TimeUnit.SECONDS);"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 32,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 34,
+      "snippet": "driver.findElement(By.id(\"email\")).sendKeys(USERNAME);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 35,
+      "snippet": "driver.findElement(By.id(\"password\")).sendKeys(PASSWORD);"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 36,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 36,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 36,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 38,
+      "snippet": "Thread.sleep(5000);"
+    },
+    {
+      "rule": "console_output_java",
+      "name": "Console output instead of logging",
+      "severity": "low",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 40,
+      "snippet": "System.out.println(\"Logged in, current url is \" + driver.getCurrentUrl());"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 47,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 49,
+      "snippet": "driver.findElement(By.id(\"email\")).sendKeys(USERNAME);"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 50,
+      "snippet": "driver.findElement(By.id(\"password\")).sendKeys(\"not-the-password\");"
+    },
+    {
+      "rule": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 51,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 51,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 51,
+      "snippet": "driver.findElement(By.xpath(\"/html/body/div[1]/main/form/button\")).click();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 53,
+      "snippet": "Thread.sleep(2000);"
+    },
+    {
+      "rule": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 55,
+      "snippet": "String error = driver.findElement(By.cssSelector(\"div.auth__error > span.text-red-500\")).getText();"
+    },
+    {
+      "rule": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 55,
+      "snippet": "String error = driver.findElement(By.cssSelector(\"div.auth__error > span.text-red-500\")).getText();"
+    },
+    {
+      "rule": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 62,
+      "snippet": "Thread.sleep(3000);"
+    },
+    {
+      "rule": "console_output_java",
+      "name": "Console output instead of logging",
+      "severity": "low",
+      "file": "src/test/java/com/shopfront/tests/LoginTest.java",
+      "line": 64,
+      "snippet": "System.out.println(\"checked the button\");"
+    }
+  ],
+  "rule_reference": [
+    {
+      "id": "hard_sleep_java",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "why": "A fixed sleep is either longer than needed, which slows every run, or shorter than needed, which makes the test flaky. It cannot be both right and fast.",
+      "fix": "Replace with WebDriverWait and an ExpectedCondition for the state you are waiting for."
+    },
+    {
+      "id": "hard_sleep_ts",
+      "name": "Hard-coded sleep",
+      "severity": "high",
+      "why": "waitForTimeout pauses for a fixed period regardless of whether the page is ready, which is the single most common source of flakiness in a Playwright suite.",
+      "fix": "Use a web-first assertion or locator wait - Playwright retries until the condition holds."
+    },
+    {
+      "id": "implicit_wait",
+      "name": "Implicit wait",
+      "severity": "medium",
+      "why": "An implicit wait applies to every findElement in the session and interacts badly with explicit waits, producing timeouts far longer than either setting suggests.",
+      "fix": "Remove it and wait explicitly where a wait is actually needed."
+    },
+    {
+      "id": "absolute_xpath",
+      "name": "Absolute XPath",
+      "severity": "high",
+      "why": "An absolute XPath encodes the whole document structure, so any markup change anywhere above the element breaks it.",
+      "fix": "Locate by role, label, test id or a stable attribute instead."
+    },
+    {
+      "id": "indexed_xpath",
+      "name": "Index-based XPath",
+      "severity": "medium",
+      "why": "An XPath that selects by position breaks as soon as a sibling is added or reordered.",
+      "fix": "Anchor on an attribute or accessible name rather than position."
+    },
+    {
+      "id": "styling_css_selector",
+      "name": "Selector tied to styling",
+      "severity": "medium",
+      "why": "A selector built from utility or styling classes breaks when the design changes, which is exactly when nobody expects the tests to break.",
+      "fix": "Use a data-testid or an accessible role and name."
+    },
+    {
+      "id": "nth_child_selector",
+      "name": "Positional CSS selector",
+      "severity": "medium",
+      "why": "nth-child ties the selector to sibling order, so inserting an element anywhere before it silently changes what the test clicks.",
+      "fix": "Select by role, label or test id."
+    },
+    {
+      "id": "driver_in_test",
+      "name": "WebDriver call in the test layer",
+      "severity": "medium",
+      "why": "findElement inside a test method means the locator lives in the test, so the same element is re-located in every test that touches it and one markup change edits many files.",
+      "fix": "Move the locator into a page object and call a named method from the test."
+    },
+    {
+      "id": "raw_page_call_in_test",
+      "name": "Raw selector in the test layer",
+      "severity": "medium",
+      "why": "page.click and page.fill with a literal selector put the locator in the test, which is the thing a Page Object exists to prevent.",
+      "fix": "Move the locator into a Page Object and expose a named action."
+    },
+    {
+      "id": "assertion_in_page_object",
+      "name": "Assertion inside a page object",
+      "severity": "high",
+      "why": "A page object that asserts decides whether a test passes, so the test no longer says what it is checking and the page object cannot be reused by a test that expects failure.",
+      "fix": "Return the value and let the test assert on it."
+    },
+    {
+      "id": "static_mutable_driver",
+      "name": "Static mutable driver",
+      "severity": "high",
+      "why": "A static WebDriver is shared by every class in the JVM, so the suite can never run in parallel and one test's state leaks into the next.",
+      "fix": "Hold the driver per test instance, or in a ThreadLocal if it must be shared."
+    },
+    {
+      "id": "disabled_test_java",
+      "name": "Disabled test",
+      "severity": "medium",
+      "why": "A disabled test is coverage the team believes it has and does not. They are rarely re-enabled once the reason is forgotten.",
+      "fix": "Fix it, or delete it and record the gap."
+    },
+    {
+      "id": "disabled_test_ts",
+      "name": "Disabled test",
+      "severity": "medium",
+      "why": "A skipped test is coverage the team believes it has and does not.",
+      "fix": "Fix it, or delete it and record the gap."
+    },
+    {
+      "id": "console_output_java",
+      "name": "Console output instead of logging",
+      "severity": "low",
+      "why": "System.out has no level, no timestamp and no destination, so it is invisible in CI and cannot be turned down.",
+      "fix": "Use a logger."
+    },
+    {
+      "id": "console_output_ts",
+      "name": "Console output instead of logging",
+      "severity": "low",
+      "why": "console.log in a test is noise in the CI log and tells you nothing on a failure that the trace does not already show.",
+      "fix": "Remove it, or attach the information to the test report."
+    },
+    {
+      "id": "empty_catch",
+      "name": "Empty catch block",
+      "severity": "high",
+      "why": "A swallowed exception turns a real failure into a pass. It is the only anti-pattern here that can make a broken suite look green.",
+      "fix": "Handle it, log it, or let it propagate."
+    },
+    {
+      "id": "hardcoded_credential",
+      "name": "Credential in source",
+      "severity": "high",
+      "why": "A password committed to the repository is a password that has to be rotated when anyone leaves, and it is in the history for ever.",
+      "fix": "Read it from the environment or a secret store."
+    },
+    {
+      "id": "hardcoded_environment_url",
+      "name": "Environment URL in source",
+      "severity": "medium",
+      "why": "A URL written into the test means the suite can only ever run against one environment.",
+      "fix": "Take the base URL from configuration."
+    }
+  ]
+}
