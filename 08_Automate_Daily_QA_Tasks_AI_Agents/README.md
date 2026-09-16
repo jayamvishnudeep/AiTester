@@ -13,6 +13,12 @@ it works.
 | 04 | [Persona-Based Testing Engine](04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
 | 05 | [Visual Diff Explainer](05_Visual_Diff_Explainer) | Squinting at two screenshots trying to name what moved |
 | 06 | [Swagger to API Tests](06_Swagger_To_API_Tests) | Writing a baseline API suite by hand from the documentation |
+| 07 | [Manual to Playwright Tests](07_Manual_To_Playwright_Tests_AI_Agent) | Retyping manual test cases as automation, case by case |
+| 08 | [Page Object Generator](08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
+
+Agents 01 to 06 are n8n workflows. **07 and 08 are Langflow**, because both end
+by writing a file to disk — and n8n Cloud runs on someone else's machine, where
+"write a `.spec.ts`" can only ever mean "send you a download".
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -118,7 +124,49 @@ ship as documented stubs rather than as requests pretending to be runnable.
 
 See its [README](06_Swagger_To_API_Tests).
 
-## What this section adds over 07
+## 07 — Manual to Playwright Tests
+
+Manual test cases go in, as a tester wrote them; a Playwright spec file in
+TypeScript comes out, on disk, one per feature.
+
+Its line between code and model is about packaging. **The model writes the code;
+code decides what the file is called, where it goes, and what counts as code at
+all.** A model asked for a test file returns one wrapped in things that are not a
+test file — a fence, a "Here you go:", sometimes a closing paragraph explaining
+what it wrote. None of that compiles, and a regular expression is perfect at
+removing it.
+
+Its failure mode is the sharpest in the folder, because it looks exactly like
+success: run the flow with **no** steps and it does not return nothing. It
+returns fluent, well-formed, entirely fictional login tests. So the input runs
+to the writer as well as to the prompt, and the writer refuses to write when no
+steps arrived. What gets checked is not "did it produce code" but whether every
+literal in the manual case — the email, the password, the exact expected message
+— survived into the output.
+
+See its [README](07_Manual_To_Playwright_Tests_AI_Agent).
+
+## 08 — Page Object Generator
+
+An HTML snapshot goes in; a Playwright Page Object class in TypeScript comes
+out, named after the class it contains.
+
+Naming is its rule. **The model writes the class; the code names the file after
+the class it actually found.** A Page Object file is named for the class inside
+it, and a model asked to produce both will occasionally disagree with itself —
+naming the file `Login.ts` while writing `class SignInPage`. Deriving the name
+from the thing being named is the one rule that cannot be wrong.
+
+Its failure mode is inventing elements. A Page Object is a promise that these
+locators exist on that page, and a class with a `rememberMeCheckbox` the page
+does not have compiles, reads well, and fails later as a timeout that looks like
+flakiness. So the check is mechanical: pull every string out of `getByLabel`,
+`getByText`, `getByTestId` and `getByRole(..., { name })`, and require each one
+to appear in the source markup.
+
+See its [README](08_Page_Object_Generator_AI_Agent).
+
+## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
 box. The prompt, the taxonomies and the refusal rules all live in the exported
@@ -153,3 +201,13 @@ model could not determine.
 - **Read the tool's own source before styling it.** n8n's form template reads a
   CSS variable it never defines, and guessing at selectors matched the wrong
   elements.
+- **An empty brief does not produce an empty answer.** Give a model no input and
+  it fills the gap with something plausible and completely invented — the one
+  output worse than an error, because it looks like success. Where an agent
+  writes a file, the writer should see the original input too, and refuse.
+- **A literal `{` in a Langflow prompt is a template variable.** An
+  `import { test, expect }` line in the instructions stops the flow from
+  building until the braces are doubled.
+- **Name generated files from the code, not from the model's opinion of it.**
+  The class, the feature, the thing being named — anything derived from content
+  cannot drift out of step with it.
