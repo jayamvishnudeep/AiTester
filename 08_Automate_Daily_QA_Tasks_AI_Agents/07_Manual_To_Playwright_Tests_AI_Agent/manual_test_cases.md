@@ -87,3 +87,57 @@ and the cart badge reads 3.
 
 **Expected:** The cart shows the message "Your cart is empty", the cart badge
 disappears, and the **Checkout** button is no longer shown.
+
+---
+
+## Feature: Checkout
+
+### TC-07 — Pay with a saved card
+
+**Precondition:** The shopper is signed in as `ada@example.com`, the cart holds
+one "Linen Apron" at £24.00, and a card ending `4242` is saved on the account.
+
+1. Open the cart and click **Checkout**.
+2. Choose the saved card ending `4242`.
+3. Click **Pay £24.00**.
+
+**Expected:** A confirmation page appears with the heading "Order confirmed" and
+an order number in the form `SF-` followed by six digits.
+
+---
+
+### TC-08 — Reject an expired card
+
+**Precondition:** The shopper is at the payment step with a card expiring
+`01/24` saved on the account.
+
+1. Choose the card expiring `01/24`.
+2. Click **Pay £24.00**.
+
+**Expected:** An error reads "Card expired. Use a different card." The shopper
+stays on the payment step and no order number is issued.
+
+---
+
+### TC-09 — Require a delivery address before paying
+
+**Precondition:** The shopper is signed in with no saved address and the cart
+holds one item.
+
+1. Open the cart and click **Checkout**.
+
+**Expected:** The **Pay** button is disabled and a prompt reads "Add a delivery
+address to continue."
+
+---
+
+### TC-10 — Apply a promotion code
+
+**Precondition:** The cart holds one "Linen Apron" at £24.00 and the code
+`APRON10` gives 10% off.
+
+1. Open the cart and click **Checkout**.
+2. Enter `APRON10` in the Promotion code field.
+3. Click **Apply**.
+
+**Expected:** A discount line reads "-£2.40" and the total updates to £21.60.
