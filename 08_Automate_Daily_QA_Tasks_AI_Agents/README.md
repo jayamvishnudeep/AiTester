@@ -17,9 +17,9 @@ it works.
 | 08 | [Page Object Generator](08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
 | 09 | [Framework Auditor](09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
 
-Agents 01 to 06 are n8n workflows. **07, 08 and 09 are Langflow**, because both end
-by writing a file to disk — and n8n Cloud runs on someone else's machine, where
-"write a `.spec.ts`" can only ever mean "send you a download".
+Agents 01 to 06 are n8n workflows. **07, 08 and 09 are Langflow**, because each
+of them ends by writing a file to disk — and n8n Cloud runs on someone else's
+machine, where "write a `.spec.ts`" can only ever mean "send you a download".
 
 ## 01 — Screenshot to Bug Reporter
 
