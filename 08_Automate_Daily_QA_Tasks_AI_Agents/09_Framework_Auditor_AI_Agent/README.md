@@ -55,7 +55,7 @@ is why the audit works the same on a repository of four files or four thousand.
 | `Framework_Auditor_langflow_flow.json` | The flow. Import this into Langflow |
 | `framework_scanner.py` | Walks the repository and counts what is in it |
 | `audit_report_writer.py` | Composes the report and writes it out |
-| `test_framework_auditor.py` | Their tests — 59, no Langflow needed |
+| `test_framework_auditor.py` | Their tests — 79, no Langflow needed |
 | `sample_framework_java/` | A Selenium/Maven framework with deliberate debt |
 | `sample_framework_ts/` | A Playwright framework with deliberate debt |
 | `reports/` | Output — the report and the raw findings |
@@ -100,7 +100,7 @@ are the values to change after cloning.
 Put the path to the repository in the **Text Input** node, then
 **Playground → Run Flow**.
 
-![The Langflow Playground after a run: "Audited 4 files and found 65 issues — 26 high, 37 medium, 2 low. 7 dependencies are behind the current line", followed by the paths to the report and the findings JSON. The run took 6.7 seconds and used 2.1K tokens](Framework_Auditor_Playground_Run.png)
+![The Langflow Playground after a run: "Audited 4 files and found 68 issues — 26 high, 37 medium, 5 low. 7 dependencies are behind the current line", followed by the paths to the report and the findings JSON](Framework_Auditor_Playground_Run.png)
 
 Try it with what is already in the node — `sample_framework_java`. Point it at
 `sample_framework_ts` for the Playwright rules, or at any repository on your
@@ -110,11 +110,11 @@ machine.
 
 | | Java / Selenium | TypeScript / Playwright |
 |---|---|---|
-| **Waits** | `Thread.sleep`, implicit waits | `waitForTimeout` |
+| **Waits** | `Thread.sleep`, implicit waits, polling loops | `waitForTimeout`, `setTimeout` sleeps, `networkidle`, minute-plus timeouts |
 | **Locators** | absolute and index-based XPath, styling-class selectors | the same, plus `nth-child` |
-| **Structure** | `findElement` in tests, assertions in page objects, static drivers | literal selectors in tests |
-| **Hygiene** | `@Ignore`, empty catch blocks, `System.out` | `test.skip`, `test.fixme`, `console.log` |
-| **Both** | credentials and environment URLs in source | |
+| **Structure** | `findElement` in tests, assertions in page objects, static drivers, page objects returning `WebElement` | literal selectors in tests, a `Page` shared at module scope, `workers: 1` |
+| **Hygiene** | `@Ignore`, empty catch blocks, `System.out` | `test.skip`, `test.fixme`, `console.log`, an `expect()` with no `await` |
+| **Both** | credentials and environment URLs in source, commented-out code | |
 | **Dependencies** | `pom.xml` versions, compiler target | `package.json` versions, unpinned ranges |
 
 Rules are deliberately narrow. `getByRole('button', { name: 'Sign in' })` is a

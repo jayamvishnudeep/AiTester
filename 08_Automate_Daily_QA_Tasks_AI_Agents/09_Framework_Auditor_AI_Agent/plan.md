@@ -5,7 +5,7 @@ is in there, how much of it, where, and what to fix first.
 
 Status: **built and verified against the live Groq API.** Both sample frameworks
 audit end to end, the report's numbers are reproducible from the committed JSON,
-and 59 tests cover the rule set.
+and 79 tests cover the 27 rules.
 
 ## The brief
 
@@ -54,7 +54,7 @@ run again. Trust is the whole product.
 
 So rules are deliberately narrow, and every one is tested **twice**: once on a
 line it must catch, and once on the line an experienced engineer would actually
-write in its place, which it must leave alone. Thirty-six of the fifty-nine tests
+write in its place, which it must leave alone. Fifty-four of the seventy-nine tests
 are that pair, one per rule.
 
 Two rules failed their own test during development and were tightened rather than
@@ -69,6 +69,17 @@ kept:
 
 Both were found by running the scanner against the sample frameworks and reading
 what it said, which is the cheapest code review there is.
+
+A third came from elsewhere. A fan-out of subagents was asked to propose and vet
+detection rules independently; it returned 33, most of which duplicated the set
+above, but nine did not — and one of its observations was that
+`implicitlyWait(Duration.ZERO)` is the *remediation* for an implicit wait, not an
+instance of it. The rule as written flagged the fix. The nine additions are the
+ones this scanner could not have found by reading its own samples: an `expect()`
+with no `await`, which is an assertion that can never fail; a `Page` held at
+module scope, which is the TypeScript analogue of the static driver; and the
+`new Promise(r => setTimeout(r, n))` sleep that survives any lint rule banning
+`waitForTimeout`.
 
 ## The Langflow constraint that changed the design
 
@@ -121,7 +132,7 @@ Text Input         the repository path
 ## Verified
 
 - Both sample frameworks audit end to end, from the node and from the API.
-- 59 tests: every rule on a line it must catch and a line it must not, the
+- 79 tests: every rule on a line it must catch and a line it must not, the
   layer-awareness rules, dependency staleness, the directories it must skip, both
   components' guards, and the scanner-to-writer hand-off.
 - The flow survives being opened in the canvas — 5 edges before and after.
