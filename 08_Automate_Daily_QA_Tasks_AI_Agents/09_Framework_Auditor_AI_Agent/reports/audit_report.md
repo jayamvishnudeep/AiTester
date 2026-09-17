@@ -1,6 +1,6 @@
 # Framework audit — sample_framework_java
 
-*Generated 2026-09-16 by the Framework Auditor. Every count below is measured, not estimated — re-run the scanner to reproduce it.*
+*Generated 2026-09-17 by the Framework Auditor. Every count below is measured, not estimated — re-run the scanner to reproduce it.*
 
 ## At a glance
 
@@ -9,7 +9,7 @@
 | Repository | `e:\Visual Studio Code\AiTester\08_Automate_Daily_QA_Tasks_AI_Agents\09_Framework_Auditor_AI_Agent\sample_framework_java` |
 | Files scanned | 4 (4 java) |
 | Lines scanned | 209 |
-| Findings | **65** — 26 high, 37 medium, 2 low |
+| Findings | **68** — 26 high, 37 medium, 5 low |
 | Dependencies behind | 7 of 8 |
 
 ## What was found
@@ -27,6 +27,7 @@
 | MEDIUM | Environment URL in source | 5 | 3 |
 | MEDIUM | Implicit wait | 3 | 3 |
 | MEDIUM | Disabled test | 2 | 1 |
+| LOW | Commented-out code | 3 | 1 |
 | LOW | Console output instead of logging | 2 | 1 |
 
 ## Dependencies behind the current line
@@ -47,25 +48,25 @@
 
 *This section is written by a language model from the evidence above. The counts are not its work; the priorities are.*
 
-The framework is structurally unsound, with 65 findings indicating a brittle, non-scalable foundation. The single biggest problem is the **static mutable driver** in `DriverFactory.java:10` and `CheckoutTest.java:14`. This architectural flaw serializes the entire suite, preventing parallel execution and causing state leakage between tests, which caps throughput and introduces unpredictable flakiness that no amount of waiting can fix.
+The framework is structurally unsound, with 68 findings indicating a lack of basic isolation and stability. The single biggest problem is the **static mutable driver** in `DriverFactory.java:10` and `CheckoutTest.java:14`. This shared state is the hard blocker preventing parallel execution and causing state leakage between tests, rendering the suite fragile and slow regardless of other optimizations.
 
 **Fix first**
-1.  **Replace static drivers with instance-scoped drivers.** Refactor `DriverFactory.java:10` and `CheckoutTest.java:14` to use `@BeforeMethod`/`@AfterMethod` or TestNG `@Factory` to instantiate a fresh `WebDriver` per test. This is a medium-sized refactor (approx. 1-2 days) that removes the primary blocker to parallelization, potentially reducing total suite runtime by 50-70% and eliminating cross-test state pollution.
-2.  **Eliminate hard-coded sleeps.** Replace the 15 occurrences of `Thread.sleep` (e.g., `LoginPage.java:18`, `CheckoutTest.java:25`) with explicit `WebDriverWait` conditions. This is a low-effort task (approx. 1 day) that directly reduces execution time by removing unnecessary waits (e.g., the 4000ms wait in `CheckoutTest.java:25`) and increases reliability by waiting for actual state changes rather than arbitrary time.
-3.  **Move assertions out of page objects.** Remove `Assert` calls from `LoginPage.java:36` and `LoginPage.java:42`. This is a small change (approx. 4 hours) that restores the Single Responsibility Principle, allowing page objects to be reused for negative testing and making test intent explicit in the test layer.
+1.  **Replace static drivers with instance-scoped drivers.** Refactor `DriverFactory.java:10` and `CheckoutTest.java:14` to use TestNG `@BeforeMethod`/`@AfterMethod` or JUnit 5 lifecycle methods. This is a medium-sized refactor (approx. 1-2 days) that buys the ability to run tests in parallel, potentially reducing total suite time by 50-70% and eliminating cross-test contamination.
+2.  **Eliminate hard-coded sleeps.** Replace the 15 occurrences of `Thread.sleep` (e.g., `LoginPage.java:18`, `CheckoutTest.java:25`) with explicit waits (`WebDriverWait`) targeting specific conditions. This is a low-effort change (approx. 1 day) that removes unnecessary seconds from every run, directly improving CI feedback speed and reducing flakiness caused by arbitrary timing.
+3.  **Move assertions out of page objects.** Remove `Assert` calls from `LoginPage.java:36` and `LoginPage.java:42`. This is a small change (approx. 4 hours) that restores the Single Responsibility Principle, allowing page objects to be reused for negative testing and making test intent explicit.
 
 **Then**
-*   Replace absolute XPaths (e.g., `LoginPage.java:22`) with stable CSS selectors or data attributes to reduce maintenance overhead.
-*   Externalize environment URLs and credentials (e.g., `pom.xml` dependencies, source code) to configuration files to enable multi-environment testing and security compliance.
-*   Upgrade Selenium to 4.x in `pom.xml` to leverage W3C protocol improvements and remove the need for `webdrivermanager`.
+*   Replace absolute XPaths (e.g., `LoginPage.java:22`) with stable CSS selectors or `data-testid` attributes to survive minor UI changes.
+*   Externalize environment URLs and credentials (currently in source) to configuration files or environment variables to enable multi-environment testing and secure credential rotation.
+*   Upgrade Selenium to 4.x and TestNG to 7.x in `pom.xml` to gain W3C protocol support and modern driver management, removing the need for `webdrivermanager`.
 
 **Leave for now**
-*   **Disabled tests:** While 2 disabled tests represent lost coverage, re-enabling them requires investigating the original failure cause, which is higher effort than the immediate structural fixes above.
-*   **Console output:** Replacing `System.out` with a logging framework is low priority as it does not impact test stability or execution speed, only observability.
+*   **Disabled tests:** While these represent false coverage, re-enabling them requires investigating why they were disabled. This is a business decision on test value, not a framework fix, and should be scheduled after the structural stability fixes above are complete.
+*   **Commented-out code:** Low priority; clean up during the next major refactor or code review cycle.
 
 ---
 
-## Appendix — every occurrence (65)
+## Appendix — every occurrence (68)
 
 ### Hard-coded sleep — 15 [high]
 
@@ -162,6 +163,12 @@ The framework is structurally unsound, with 65 findings indicating a brittle, no
 
 - `src/test/java/com/shopfront/tests/CheckoutTest.java:38` — `@Ignore`
 - `src/test/java/com/shopfront/tests/CheckoutTest.java:50` — `@Test(enabled = false)`
+
+### Commented-out code — 3 [low]
+
+- `src/test/java/com/shopfront/tests/CheckoutTest.java:60` — `// public void deliveryAddressRequired() {`
+- `src/test/java/com/shopfront/tests/CheckoutTest.java:61` — `//     driver.get("https://shopfront.example.com/checkout");`
+- `src/test/java/com/shopfront/tests/CheckoutTest.java:63` — `//     Assert.assertFalse(driver.findElement(By.id("pay")).isEnabled());`
 
 ### Console output instead of logging — 2 [low]
 

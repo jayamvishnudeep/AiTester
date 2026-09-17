@@ -5,11 +5,11 @@
     "java": 4
   },
   "lines_scanned": 209,
-  "findings_total": 65,
+  "findings_total": 68,
   "severity_counts": {
     "high": 26,
     "medium": 37,
-    "low": 2
+    "low": 5
   },
   "rules_triggered": [
     {
@@ -87,6 +87,13 @@
       "name": "Disabled test",
       "severity": "medium",
       "count": 2,
+      "files": 1
+    },
+    {
+      "rule": "commented_out_code",
+      "name": "Commented-out code",
+      "severity": "low",
+      "count": 3,
       "files": 1
     },
     {
@@ -585,6 +592,30 @@
       "snippet": "Assert.assertEquals(driver.findElement(By.cssSelector(\"dd.total\")).getText(), \"£21.60\");"
     },
     {
+      "rule": "commented_out_code",
+      "name": "Commented-out code",
+      "severity": "low",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 60,
+      "snippet": "// public void deliveryAddressRequired() {"
+    },
+    {
+      "rule": "commented_out_code",
+      "name": "Commented-out code",
+      "severity": "low",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 61,
+      "snippet": "//     driver.get(\"https://shopfront.example.com/checkout\");"
+    },
+    {
+      "rule": "commented_out_code",
+      "name": "Commented-out code",
+      "severity": "low",
+      "file": "src/test/java/com/shopfront/tests/CheckoutTest.java",
+      "line": 63,
+      "snippet": "//     Assert.assertFalse(driver.findElement(By.id(\"pay\")).isEnabled());"
+    },
+    {
       "rule": "static_mutable_driver",
       "name": "Static mutable driver",
       "severity": "high",
@@ -792,6 +823,34 @@
       "fix": "Remove it and wait explicitly where a wait is actually needed."
     },
     {
+      "id": "inflated_wait_timeout",
+      "name": "Wait timeout of a minute or more",
+      "severity": "medium",
+      "why": "A minute-plus timeout is usually an old flake papered over rather than a real service level, and it turns every genuine failure into a minute of dead CI time.",
+      "fix": "Bring it back to the project default and wait on the real completion signal instead."
+    },
+    {
+      "id": "settimeout_sleep",
+      "name": "Hand-rolled sleep",
+      "severity": "high",
+      "why": "This is the sleep that survives a lint rule banning waitForTimeout. It costs the same fixed dead time and races the same way under CI load.",
+      "fix": "Wait on a condition: a web-first assertion, expect.poll, or waitForResponse."
+    },
+    {
+      "id": "networkidle_wait",
+      "name": "networkidle as a readiness signal",
+      "severity": "medium",
+      "why": "networkidle never settles on an app that polls or holds a websocket, and settles too early on one that renders lazily, so it is both a hang risk and a false ready signal.",
+      "fix": "Wait for the element the test needs, or for the specific response."
+    },
+    {
+      "id": "polling_loop",
+      "name": "Hand-rolled polling loop",
+      "severity": "medium",
+      "why": "It re-implements a wait without a timeout, a poll interval or a readable failure, so when it breaks the job hangs until CI kills it and the report explains nothing.",
+      "fix": "Use WebDriverWait with an ExpectedCondition, or a web-first assertion."
+    },
+    {
       "id": "absolute_xpath",
       "name": "Absolute XPath",
       "severity": "high",
@@ -848,6 +907,34 @@
       "fix": "Hold the driver per test instance, or in a ThreadLocal if it must be shared."
     },
     {
+      "id": "shared_module_page",
+      "name": "Shared Page at module scope",
+      "severity": "high",
+      "why": "A Page or BrowserContext held at module scope is reused by every test in the file, so they can no longer run in parallel and one test's state leaks into the next.",
+      "fix": "Take the page from the test fixture instead: test('...', async ({ page }) => ...)."
+    },
+    {
+      "id": "page_object_returns_element",
+      "name": "Page object returns a WebElement",
+      "severity": "medium",
+      "why": "Returning a WebElement leaks the driver's vocabulary into the test, so the test ends up doing the finding and clicking that the page object exists to hide.",
+      "fix": "Return the value the test needs - a string, a boolean - or expose a named action."
+    },
+    {
+      "id": "unawaited_assertion",
+      "name": "Playwright assertion without await",
+      "severity": "high",
+      "why": "A web-first assertion returns a promise. Without await it never runs to completion, so the test passes whatever the page does - the worst possible failure, a green lie.",
+      "fix": "Add await. Consider the no-floating-promises lint rule so the compiler catches the rest."
+    },
+    {
+      "id": "serial_execution",
+      "name": "Pinned to serial execution",
+      "severity": "medium",
+      "why": "workers: 1 or fullyParallel: false throws away Playwright's main advantage, and is usually a workaround for shared state that was never fixed.",
+      "fix": "Fix the shared state, then let Playwright choose the worker count."
+    },
+    {
       "id": "disabled_test_java",
       "name": "Disabled test",
       "severity": "medium",
@@ -888,6 +975,13 @@
       "severity": "high",
       "why": "A password committed to the repository is a password that has to be rotated when anyone leaves, and it is in the history for ever.",
       "fix": "Read it from the environment or a secret store."
+    },
+    {
+      "id": "commented_out_code",
+      "name": "Commented-out code",
+      "severity": "low",
+      "why": "Code kept in a comment is a decision nobody made. It rots against the file around it and the version history already holds it.",
+      "fix": "Delete it. Git remembers."
     },
     {
       "id": "hardcoded_environment_url",
