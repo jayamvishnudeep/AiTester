@@ -86,8 +86,32 @@ _RULE_SPECS = [
     ("implicit_wait", "Implicit wait", "java", "medium",
      "An implicit wait applies to every findElement in the session and interacts badly with "
      "explicit waits, producing timeouts far longer than either setting suggests.",
-     r"implicitlyWait\s*\(",
+     # Duration.ZERO and 0 are the remediation, not the debt - do not flag the fix
+     r"implicitlyWait\s*\(\s*(?!\s*(?:Duration\s*\.\s*ZERO|Duration\s*\.\s*of\w+\s*\(\s*0+L?\s*\)|0+L?\s*[,)]))",
      "Remove it and wait explicitly where a wait is actually needed."),
+    ("inflated_wait_timeout", "Wait timeout of a minute or more", "both", "medium",
+     "A minute-plus timeout is usually an old flake papered over rather than a real service "
+     "level, and it turns every genuine failure into a minute of dead CI time.",
+     r"Duration\s*\.\s*of(?:Seconds\s*\(\s*(?:[6-9]\d|\d{3,})|Minutes\s*\(\s*[1-9]|Hours\s*\(\s*[1-9])"
+     r"|timeout\s*:\s*(?:[6-9]\d{4}|\d{6,})",
+     "Bring it back to the project default and wait on the real completion signal instead."),
+    ("settimeout_sleep", "Hand-rolled sleep", "typescript", "high",
+     "This is the sleep that survives a lint rule banning waitForTimeout. It costs the same "
+     "fixed dead time and races the same way under CI load.",
+     r"new\s+Promise\s*(?:<[^>]*>)?\s*\(\s*\(?\s*\w*\s*\)?\s*=>\s*(?:\{\s*)?setTimeout\s*\(",
+     "Wait on a condition: a web-first assertion, expect.poll, or waitForResponse."),
+    ("networkidle_wait", "networkidle as a readiness signal", "typescript", "medium",
+     "networkidle never settles on an app that polls or holds a websocket, and settles too "
+     "early on one that renders lazily, so it is both a hang risk and a false ready signal.",
+     r"""['"`]networkidle['"`]""",
+     "Wait for the element the test needs, or for the specific response."),
+    ("polling_loop", "Hand-rolled polling loop", "both", "medium",
+     "It re-implements a wait without a timeout, a poll interval or a readable failure, so "
+     "when it breaks the job hangs until CI kills it and the report explains nothing.",
+     # the subject may itself contain parentheses - getByTestId('x'), await (...) - so the
+     # class excludes only the statement terminators
+     r"while\s*\(\s*!\s*[^;{]{0,140}\.\s*(?:isDisplayed|isEnabled|isSelected|isVisible|isChecked)\s*\(",
+     "Use WebDriverWait with an ExpectedCondition, or a web-first assertion."),
 
     # -- locators ----------------------------------------------------------
     ("absolute_xpath", "Absolute XPath", "both", "high",
@@ -134,6 +158,28 @@ _RULE_SPECS = [
      # - getDriver() - is not mistaken for a shared static field
      r"\bstatic\s+(?:WebDriver|ChromeDriver|RemoteWebDriver)\s+\w+\s*(?:=|;)",
      "Hold the driver per test instance, or in a ThreadLocal if it must be shared."),
+    ("shared_module_page", "Shared Page at module scope", "typescript", "high",
+     "A Page or BrowserContext held at module scope is reused by every test in the file, so "
+     "they can no longer run in parallel and one test's state leaks into the next.",
+     r"^(?:let|var)\s+\w*(?:[Pp]age|[Cc]ontext|[Bb]rowser)\w*\s*:",
+     "Take the page from the test fixture instead: test('...', async ({ page }) => ...)."),
+    ("page_object_returns_element", "Page object returns a WebElement", "java", "medium",
+     "Returning a WebElement leaks the driver's vocabulary into the test, so the test ends up "
+     "doing the finding and clicking that the page object exists to hide.",
+     r"^\s*(?:public|protected)\s+(?:List\s*<\s*)?WebElement\b",
+     "Return the value the test needs - a string, a boolean - or expose a named action."),
+    ("unawaited_assertion", "Playwright assertion without await", "typescript", "high",
+     "A web-first assertion returns a promise. Without await it never runs to completion, so "
+     "the test passes whatever the page does - the worst possible failure, a green lie.",
+     r"^\s*expect\s*\([^;]*\b(?:page|locator|getBy[A-Z]\w*)\b[^;]*\)\s*\.\s*"
+     r"(?:toBeVisible|toBeHidden|toHaveText|toHaveValue|toBeEnabled|toBeDisabled|toHaveCount"
+     r"|toContainText|toHaveAttribute|toHaveURL)\s*\(",
+     "Add await. Consider the no-floating-promises lint rule so the compiler catches the rest."),
+    ("serial_execution", "Pinned to serial execution", "typescript", "medium",
+     "workers: 1 or fullyParallel: false throws away Playwright's main advantage, and is "
+     "usually a workaround for shared state that was never fixed.",
+     r"^\s*(?:workers\s*:\s*1\b|fullyParallel\s*:\s*false\b)",
+     "Fix the shared state, then let Playwright choose the worker count."),
 
     # -- hygiene -----------------------------------------------------------
     ("disabled_test_java", "Disabled test", "java", "medium",
@@ -165,6 +211,12 @@ _RULE_SPECS = [
      "leaves, and it is in the history for ever.",
      r"(?i)\b(?:password|passwd|secret|api[_-]?token|apikey|api[_-]?key)\s*[:=]\s*[\"'][^\"']{6,}[\"']",
      "Read it from the environment or a secret store."),
+    ("commented_out_code", "Commented-out code", "both", "low",
+     "Code kept in a comment is a decision nobody made. It rots against the file around it and "
+     "the version history already holds it.",
+     r"^\s*(?://|#)\s*(?:await\s|driver\s*\.|page\s*\.|Assert\s*\.|expect\s*\(|public\s+\w|"
+     r"private\s+\w|return\s+\w|if\s*\(|for\s*\(|\w+\s*\([^)]*\)\s*;)",
+     "Delete it. Git remembers."),
     ("hardcoded_environment_url", "Environment URL in source", "both", "medium",
      "A URL written into the test means the suite can only ever run against one environment.",
      r"""["'`]https?://(?!localhost|127\.0\.0\.1)[^"'`\s]+["'`]""",
@@ -279,10 +331,13 @@ class FrameworkScanner(Component):
 
             for number, line in enumerate(lines, 1):
                 stripped = line.strip()
-                # a commented-out line is debt of a different kind; do not double-count it
-                if stripped.startswith(("//", "*", "/*", "#")):
-                    continue
+                # A commented-out anti-pattern is not a live one, so the rules do not run on
+                # comment lines. The exception is the rule about commented-out code itself,
+                # which only has comment lines to look at.
+                is_comment = stripped.startswith(("//", "*", "/*", "#"))
                 for rule in _RULES:
+                    if is_comment != (rule["id"] == "commented_out_code"):
+                        continue
                     if rule["ecosystem"] not in (eco, "both"):
                         continue
                     if rule["id"] in ("driver_in_test", "raw_page_call_in_test") and not in_test_layer:
