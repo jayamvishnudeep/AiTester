@@ -86,7 +86,7 @@ at the same place — the scanner writes `audit_findings.json` there and the wri
 reads it back:
 
 ```
-C:/Users/you/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/09_Framework_Auditor_AI_Agent/reports
+C:/Users/you/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/09_Framework_Auditor_AI_Agent/reports
 ```
 
 Also set the scanner's **Default repository path** to the framework you want

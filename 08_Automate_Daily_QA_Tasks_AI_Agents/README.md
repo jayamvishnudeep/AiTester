@@ -7,19 +7,25 @@ it works.
 
 | | Agent | What it replaces |
 |---|---|---|
-| 01 | [Screenshot to Bug Reporter](01_Screenshot_To_Bug_Reporter_AI_Agent) | Writing up a bug from a screenshot by hand |
-| 02 | [Flaky Test RCA Analyzer](02_Flaky_Test_RCA_Analyzer) | Reading a dozen CI logs by eye to find what the failures share |
-| 03 | [Performance Test Analyzer](03_Performance_Test_Analyzer) | Turning a load test CSV into something a stakeholder can act on |
-| 04 | [Persona-Based Testing Engine](04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
-| 05 | [Visual Diff Explainer](05_Visual_Diff_Explainer) | Squinting at two screenshots trying to name what moved |
-| 06 | [Swagger to API Tests](06_Swagger_To_API_Tests) | Writing a baseline API suite by hand from the documentation |
-| 07 | [Manual to Playwright Tests](07_Manual_To_Playwright_Tests_AI_Agent) | Retyping manual test cases as automation, case by case |
-| 08 | [Page Object Generator](08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
-| 09 | [Framework Auditor](09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
+| 01 | [Screenshot to Bug Reporter](01_n8n_Agents/01_Screenshot_To_Bug_Reporter_AI_Agent) | Writing up a bug from a screenshot by hand |
+| 02 | [Flaky Test RCA Analyzer](01_n8n_Agents/02_Flaky_Test_RCA_Analyzer) | Reading a dozen CI logs by eye to find what the failures share |
+| 03 | [Performance Test Analyzer](01_n8n_Agents/03_Performance_Test_Analyzer) | Turning a load test CSV into something a stakeholder can act on |
+| 04 | [Persona-Based Testing Engine](01_n8n_Agents/04_Persona_Based_Testing_Engine) | Testing the happy path for one imagined average user |
+| 05 | [Visual Diff Explainer](01_n8n_Agents/05_Visual_Diff_Explainer) | Squinting at two screenshots trying to name what moved |
+| 06 | [Swagger to API Tests](01_n8n_Agents/06_Swagger_To_API_Tests) | Writing a baseline API suite by hand from the documentation |
+| 07 | [Manual to Playwright Tests](02_Langflow_Agents/07_Manual_To_Playwright_Tests_AI_Agent) | Retyping manual test cases as automation, case by case |
+| 08 | [Page Object Generator](02_Langflow_Agents/08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
+| 09 | [Framework Auditor](02_Langflow_Agents/09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
+| 10 | [Vendor License Monitor](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent) | Combing a seat list by hand to find who stopped using a tool |
 
-Agents 01 to 06 are n8n workflows. **07, 08 and 09 are Langflow**, because each
-of them ends by writing a file to disk — and n8n Cloud runs on someone else's
-machine, where "write a `.spec.ts`" can only ever mean "send you a download".
+The agents live in two folders by the tool that runs them:
+[`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
+[`02_Langflow_Agents`](02_Langflow_Agents) holds 07–10. The split tracks a real
+constraint, not a preference: 07 onward each end by writing a file to disk, and
+n8n Cloud runs on someone else's machine — "write a `.spec.ts`" there can only
+ever mean "send you a download". Numbering stays attached to each agent across
+the split, so "agent 09" means the same thing here as everywhere else in this
+repo.
 
 ## 01 — Screenshot to Bug Reporter
 
@@ -34,7 +40,7 @@ and that changes what mattered: a form and a result page a tester will trust,
 guard rails so the output is never confidently wrong, and defensive parsing so a
 bad model response cannot reach Jira.
 
-See its [README](01_Screenshot_To_Bug_Reporter_AI_Agent) for the full walkthrough
+See its [README](01_n8n_Agents/01_Screenshot_To_Bug_Reporter_AI_Agent) for the full walkthrough
 and screenshots.
 
 ## 02 — Flaky Test RCA Analyzer
@@ -53,7 +59,7 @@ The counting is too — flakiness is a frequency claim, and models miscount.
 Its guard rail is the direct analogue of 01's refusal to invent repro steps:
 **one failing run is a stack trace, not a pattern.**
 
-See its [README](02_Flaky_Test_RCA_Analyzer).
+See its [README](01_n8n_Agents/02_Flaky_Test_RCA_Analyzer).
 
 ## 03 — Performance Test Analyzer
 
@@ -70,7 +76,7 @@ Scale forced the other decisions. A one-hour run at 200 rps is ~720,000 rows,
 past n8n's payload limit and any token budget, so percentiles come from a
 single-pass histogram and the model never sees a row.
 
-See its [README](03_Performance_Test_Analyzer).
+See its [README](01_n8n_Agents/03_Performance_Test_Analyzer).
 
 ## 04 — Persona-Based Testing Engine
 
@@ -85,7 +91,7 @@ one property that matters. Every step also names the persona trait that caused
 it, which turns "trust me, this is persona-specific" into something a reviewer
 can verify.
 
-See its [README](04_Persona_Based_Testing_Engine).
+See its [README](01_n8n_Agents/04_Persona_Based_Testing_Engine).
 
 ## 05 — Visual Diff Explainer
 
@@ -104,7 +110,7 @@ a side-by-side probe picked a better one. And its detection floor is measured
 and documented rather than assumed - it catches text changes and misses small
 colour shifts.
 
-See its [README](05_Visual_Diff_Explainer).
+See its [README](01_n8n_Agents/05_Visual_Diff_Explainer).
 
 ## 06 — Swagger to API Tests
 
@@ -123,7 +129,7 @@ What the model adds is the part a schema cannot state: cancel an order twice,
 fetch one belonging to another customer, check a limit does not pad. Those
 ship as documented stubs rather than as requests pretending to be runnable.
 
-See its [README](06_Swagger_To_API_Tests).
+See its [README](01_n8n_Agents/06_Swagger_To_API_Tests).
 
 ## 07 — Manual to Playwright Tests
 
@@ -145,7 +151,7 @@ steps arrived. What gets checked is not "did it produce code" but whether every
 literal in the manual case — the email, the password, the exact expected message
 — survived into the output.
 
-See its [README](07_Manual_To_Playwright_Tests_AI_Agent).
+See its [README](02_Langflow_Agents/07_Manual_To_Playwright_Tests_AI_Agent).
 
 ## 08 — Page Object Generator
 
@@ -165,7 +171,7 @@ flakiness. So the check is mechanical: pull every string out of `getByLabel`,
 `getByText`, `getByTestId` and `getByRole(..., { name })`, and require each one
 to appear in the source markup.
 
-See its [README](08_Page_Object_Generator_AI_Agent).
+See its [README](02_Langflow_Agents/08_Page_Object_Generator_AI_Agent).
 
 ## 09 — Framework Auditor
 
@@ -187,7 +193,7 @@ that flags a good locator gets skimmed once and never run again, so every rule i
 tested twice — on a line it must catch, and on the line a competent engineer
 would write instead, which it must leave alone.
 
-See its [README](09_Framework_Auditor_AI_Agent).
+See its [README](02_Langflow_Agents/09_Framework_Auditor_AI_Agent).
 
 ## What this section adds over `07_n8n_Workflows`
 

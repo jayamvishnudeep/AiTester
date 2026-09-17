@@ -103,7 +103,7 @@ name, so no key is stored in the JSON.
 **Output folder** to where you want the classes written:
 
 ```
-C:/Users/you/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/08_Page_Object_Generator_AI_Agent/generated
+C:/Users/you/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/08_Page_Object_Generator_AI_Agent/generated
 ```
 
 This is the one value that must change after cloning — it holds an absolute path
