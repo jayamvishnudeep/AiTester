@@ -105,6 +105,33 @@ CASES = [
     ("hardcoded_environment_url", "tests/a.spec.ts",
      "  await page.goto('https://shopfront.example.com/login');",
      "  await page.goto('/login');"),
+    ("inflated_wait_timeout", "tests/a.spec.ts",
+     "  await expect(page.getByTestId('report')).toBeVisible({ timeout: 120000 });",
+     "  await expect(page.getByTestId('report')).toBeVisible({ timeout: 15000 });"),
+    ("settimeout_sleep", "tests/a.spec.ts",
+     "  await new Promise((resolve) => setTimeout(resolve, 2000));",
+     "  await new Promise<void>((resolve) => server.close(() => resolve()));"),
+    ("networkidle_wait", "tests/a.spec.ts",
+     "  await page.waitForLoadState('networkidle');",
+     "  await page.waitForLoadState('domcontentloaded');"),
+    ("polling_loop", "src/test/java/T.java",
+     '        while (!driver.findElement(By.id("spinner")).isDisplayed()) {',
+     "        while (nextPage.isEnabled()) { nextPage.click(); }"),
+    ("shared_module_page", "tests/a.spec.ts",
+     "let sharedPage: Page;",
+     "  let page: Page;"),
+    ("page_object_returns_element", "src/main/java/pages/P.java",
+     "    public WebElement getSubmitButton() {",
+     "    public String getErrorText() {"),
+    ("unawaited_assertion", "tests/a.spec.ts",
+     "  expect(page.getByRole('alert')).toBeVisible();",
+     "  await expect(page.getByRole('alert')).toBeVisible();"),
+    ("serial_execution", "playwright.config.ts",
+     "  workers: 1,",
+     "  workers: process.env.CI ? 2 : undefined,"),
+    ("commented_out_code", "src/test/java/T.java",
+     '        // Assert.assertFalse(driver.findElement(By.id("pay")).isEnabled());',
+     "        // Sign in first, then check the banner"),
 ]
 
 print("\nevery rule catches what it should")
@@ -118,6 +145,14 @@ for rule_id, path, _bad, good in CASES:
     audit, _ = scan({path: f"class X {{\n{good}\n}}\n"})
     check(f"{rule_id} ignores the good line", rule_id not in rules_hit(audit),
           "wrongly hit; all: " + ", ".join(sorted(rules_hit(audit))))
+
+print("\nthe remediation is not mistaken for the debt")
+for good_wait in ("implicitlyWait(Duration.ZERO)", "implicitlyWait(0, SECONDS)"):
+    audit, _ = scan({"src/test/java/T.java":
+                     "class X {\n    void f() { driver.manage().timeouts()."
+                     + good_wait + "; }\n}\n"})
+    check(f"{good_wait} is not flagged", "implicit_wait" not in rules_hit(audit),
+          ", ".join(sorted(rules_hit(audit))))
 
 print("\ncomments are not counted as code")
 audit, _ = scan({"src/test/java/T.java":
