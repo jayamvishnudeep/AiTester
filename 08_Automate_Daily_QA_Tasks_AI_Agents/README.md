@@ -195,6 +195,30 @@ would write instead, which it must leave alone.
 
 See its [README](02_Langflow_Agents/09_Framework_Auditor_AI_Agent).
 
+## 10 — Vendor License Monitor
+
+A tool activity export goes in; a costed list of seats worth cutting comes out —
+who has not logged in, for how long, what the seat costs, and which are safe to
+revoke outright rather than ask about first.
+
+Its line between code and model is the same one as 03's, drawn where the stakes
+are highest. **Code decides who is on the list and what it costs; the model only
+decides what to do first.** Whether a seat is dormant is two dates subtracted,
+and the saving is a multiplication — a model would answer both slightly
+differently on a re-run, and "slightly differently" here means a different
+colleague's name.
+
+Its failure mode is the only one in this folder that reaches a person. Every
+other agent here is wrong in a document that gets skimmed; this one is wrong by
+having someone's access taken away on Monday. So a never-used account created
+last week is treated as **new rather than dormant**, an exception never deletes
+a finding but moves it to a table showing what it suppressed and why, and the
+first real run's lesson is on the page — the model stated `$2,048.00` for a
+column adding to `$2,016.00`, and the tables were right anyway, because it never
+touched them.
+
+See its [README](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -240,3 +264,12 @@ model could not determine.
 - **Name generated files from the code, not from the model's opinion of it.**
   The class, the feature, the thing being named — anything derived from content
   cannot drift out of step with it.
+- **A Langflow edge must describe the target field exactly as the node declares
+  it.** Chat Output's `input_value` is a `HandleInput` — `"type": "other"`, five
+  accepted types — and an edge calling it a plain `str`/`Message` handle is
+  dropped by the canvas with no error at all. Count the edges after opening a
+  generated flow; four of five drawn looks identical to five.
+- **Ask a model about data you did not send it and it will report it as
+  absent.** A brief that carried only a *count* for one group produced a
+  confident "there are none", contradicting the table printed directly above it.
+  If the prompt asks for something by name, the brief has to carry the names.
