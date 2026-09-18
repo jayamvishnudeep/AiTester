@@ -1,0 +1,25 @@
+tool,plan,user_email,user_name,account_created,last_login,seat_cost_month
+Jira,Standard,ada@shopfront.example.com,Ada Lovelace,2024-01-10,2026-09-16,8.50
+Jira,Standard,raj@shopfront.example.com,Raj Patel,2024-02-01,2026-09-10,8.50
+Jira,Standard,mei@shopfront.example.com,Mei Lin,2024-03-15,2026-08-20,8.50
+Jira,Standard,sam@shopfront.example.com,Sam Okafor,2023-11-01,2025-10-02,8.50
+Jira,Standard,liam@shopfront.example.com,Liam Fitzgerald,2025-01-20,2026-09-15,8.50
+Jira,Standard,priya@shopfront.example.com,Priya Sharma,2024-06-01,2026-06-01,8.50
+Jira,Standard,noor@shopfront.example.com,Noor Hassan,2025-08-10,2026-07-01,8.50
+Jira,Standard,tom@shopfront.example.com,Tom Reyes,2026-09-10,,8.50
+Jira,Standard,zara@shopfront.example.com,Zara Ahmed,2024-04-01,,8.50
+Jira,Standard,kai@shopfront.example.com,Kai Nakamura,2024-01-01,2026-02-01,8.50
+BrowserStack,Team,ada@shopfront.example.com,Ada Lovelace,2024-01-15,2026-09-12,42.00
+BrowserStack,Team,mei@shopfront.example.com,Mei Lin,2024-05-01,2026-09-01,42.00
+BrowserStack,Team,sam@shopfront.example.com,Sam Okafor,2024-01-20,2026-01-08,42.00
+BrowserStack,Team,priya@shopfront.example.com,Priya Sharma,2024-07-01,2025-12-20,42.00
+BrowserStack,Team,oliver@shopfront.example.com,Oliver Bennett,2023-09-01,2025-06-15,42.00
+BrowserStack,Team,noor@shopfront.example.com,Noor Hassan,2025-09-01,,42.00
+Confluence,Standard,ada@shopfront.example.com,Ada Lovelace,2024-01-10,2026-09-15,6.00
+Confluence,Standard,raj@shopfront.example.com,Raj Patel,2024-02-01,2026-03-01,6.00
+Confluence,Standard,liam@shopfront.example.com,Liam Fitzgerald,2025-01-20,2026-09-16,6.00
+Confluence,Standard,tom@shopfront.example.com,Tom Reyes,2026-09-10,,6.00
+TestRail,Professional,priya@shopfront.example.com,Priya Sharma,2024-06-01,2026-09-11,34.00
+TestRail,Professional,noor@shopfront.example.com,Noor Hassan,2025-08-10,2025-08-25,34.00
+TestRail,Professional,raj@shopfront.example.com,Raj Patel,2024-02-01,2026-09-02,34.00
+TestRail,Professional,zara@shopfront.example.com,Zara Ahmed,2024-04-01,2026-02-14,34.00
