@@ -1,0 +1,1763 @@
+{
+  "name": "Vendor License Monitor",
+  "description": "Finds unused seats in a tool activity log and reports what they cost.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Vl1Ti",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 320
+        },
+        "data": {
+          "id": "TextInput-Vl1Ti",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent/sample_logs/tool_activity.csv"
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "measured": {
+          "width": 320,
+          "height": 285
+        },
+        "positionAbsolute": {
+          "x": 40,
+          "y": 320
+        }
+      },
+      {
+        "id": "LicenseActivityFilter-Vl2If",
+        "type": "genericNode",
+        "position": {
+          "x": 440,
+          "y": 300
+        },
+        "data": {
+          "id": "LicenseActivityFilter-Vl2If",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Inactivity Filter - a Langflow custom component.\n\nReads a tool-login activity export (CSV or JSON) and works out which seats are\nbeing paid for and not used.\n\nThis is the highest-stakes guard in the repository. Every other agent here is\nwrong in a way that gets skimmed and ignored; this one is wrong in a way that\ncan get a real person's tool access revoked. So the tier that decides whether\nan account is safe to cut - \"revoke now\" versus \"confirm first\" - is computed\nin code from a fixed rule, never left to a model's judgement, and an account\non the exceptions list is never silently dropped: the suppression is reported\nalongside the finding it suppressed, so a QA Lead can see exactly what was\nheld back and why.\n\nMoney follows the same rule. The seat cost is in the log; the saving is\narithmetic on it. The model is handed the totals and never asked to add up a\ncolumn, because a wrong sum here is a wrong budget number in someone's\nplanning meeting.\n\"\"\"\n\nimport csv\nimport io\nimport json\nfrom datetime import date\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_REQUIRED_CSV_COLUMNS = {\"tool\", \"user_email\", \"user_name\", \"account_created\", \"last_login\", \"seat_cost_month\"}\n\n\nclass LicenseActivityFilter(Component):\n    display_name = \"Inactivity Filter\"\n    description = \"Classifies every seat in a tool activity log as active, dormant, or never used.\"\n    documentation = \"https://www.saastr.com/saas-metrics-2-0-a-guide-to-measuring-and-improving-what-matters/\"\n    icon = \"user-x\"\n    name = \"LicenseActivityFilter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"log_path\",\n            display_name=\"Activity log path\",\n            info=\"Path to a CSV or JSON activity export. Leave empty to use the pasted log below.\",\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"default_log_path\",\n            display_name=\"Default log path\",\n            info=\"Used whenever the path above is empty or does not exist.\",\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"pasted_log\",\n            display_name=\"Pasted log\",\n            info=\"Paste a CSV or JSON activity export here to use it instead of reading from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"dormant_after_days\",\n            display_name=\"Dormant after (days)\",\n            info=\"A seat with no login in at least this many days is dormant.\",\n            value=60,\n        ),\n        IntInput(\n            name=\"new_account_grace_days\",\n            display_name=\"New-account grace period (days)\",\n            info=(\n                \"An account created more recently than this that has never logged in is just \"\n                \"new, not dormant - it has not had time to be used yet.\"\n            ),\n            value=14,\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"exceptions\",\n            display_name=\"Exceptions\",\n            info=(\n                \"One account per line that must never be flagged - approved leave, a service \"\n                \"account, whatever the business reason. Each line is an email address, or \"\n                \"'email - reason', or 'email: reason'. Matching is case-insensitive. A \"\n                \"suppressed finding is still reported, just marked as excepted rather than \"\n                \"dropped.\"\n            ),\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"reference_date\",\n            display_name=\"Reference date\",\n            info=\"ISO date (YYYY-MM-DD) to measure inactivity against. Empty means today.\",\n            value=\"\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_listed\",\n            display_name=\"Max rows in the brief\",\n            info=\"Caps how many flagged accounts are listed in the prompt brief, by savings.\",\n            value=15,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where license_findings.json is written. The report writer reads it back from \"\n                \"here, so both nodes must point at the same folder.\"\n            ),\n            value=\"\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Brief\", name=\"brief\", method=\"build_brief\"),\n        Output(display_name=\"Findings\", name=\"findings\", method=\"build_findings\"),\n    ]\n\n    # ------------------------------------------------------------- loading\n\n    def _source(self) -> tuple:\n        \"\"\"(text, origin) - the pasted log if there is one, otherwise the file on disk.\"\"\"\n        pasted = (self.pasted_log or \"\").strip()\n        if pasted:\n            return pasted, \"pasted log\"\n\n        for candidate in (self.log_path, self.default_log_path):\n            cleaned = (candidate or \"\").strip().strip('\"').strip(\"'\")\n            if cleaned and Path(cleaned).is_file():\n                try:\n                    return Path(cleaned).read_text(encoding=\"utf-8-sig\"), cleaned\n                except OSError as exc:\n                    msg = f\"Could not read {cleaned} - {exc}\"\n                    raise ValueError(msg) from exc\n\n        msg = (\n            \"No activity log reached this component, so anything reported from it would be \"\n            \"invented - and an invented revoke list can name a real person. Set 'Default log \"\n            \"path' to a CSV or JSON export, or paste one into 'Pasted log'.\"\n        )\n        raise ValueError(msg)\n\n    # ------------------------------------------------------------- parsing\n\n    @staticmethod\n    def _parse_date(raw: str, context: str):\n        raw = (raw or \"\").strip()\n        if not raw:\n            return None\n        try:\n            return date.fromisoformat(raw)\n        except ValueError as exc:\n            msg = f\"{context}: '{raw}' is not a valid date (expected YYYY-MM-DD).\"\n            raise ValueError(msg) from exc\n\n    @staticmethod\n    def _parse_cost(raw, context: str) -> float:\n        try:\n            cost = float(raw)\n        except (TypeError, ValueError) as exc:\n            msg = f\"{context}: '{raw}' is not a valid seat cost.\"\n            raise ValueError(msg) from exc\n        if cost < 0:\n            msg = f\"{context}: seat cost cannot be negative ({cost}).\"\n            raise ValueError(msg)\n        return cost\n\n    def _parse_csv(self, text: str) -> list:\n        reader = csv.DictReader(io.StringIO(text))\n        header = set(reader.fieldnames or [])\n        missing = _REQUIRED_CSV_COLUMNS - header\n        if missing:\n            msg = f\"CSV log is missing column(s): {', '.join(sorted(missing))}.\"\n            raise ValueError(msg)\n\n        rows = []\n        for i, raw in enumerate(reader, start=2):  # header is line 1\n            tool = (raw.get(\"tool\") or \"\").strip()\n            email = (raw.get(\"user_email\") or \"\").strip()\n            if not tool:\n                msg = f\"CSV line {i}: missing 'tool'.\"\n                raise ValueError(msg)\n            if not email:\n                msg = f\"CSV line {i}: missing 'user_email'.\"\n                raise ValueError(msg)\n            created = self._parse_date(raw.get(\"account_created\"), f\"CSV line {i} ('account_created')\")\n            if created is None:\n                msg = f\"CSV line {i}: missing 'account_created'.\"\n                raise ValueError(msg)\n            rows.append({\n                \"tool\": tool,\n                \"plan\": (raw.get(\"plan\") or \"\").strip(),\n                \"user_email\": email,\n                \"user_name\": (raw.get(\"user_name\") or \"\").strip() or email,\n                \"account_created\": created,\n                \"last_login\": self._parse_date(raw.get(\"last_login\"), f\"CSV line {i} ('last_login')\"),\n                \"seat_cost_month\": self._parse_cost(raw.get(\"seat_cost_month\"), f\"CSV line {i} ('seat_cost_month')\"),\n            })\n        return rows\n\n    def _parse_json(self, text: str) -> list:\n        try:\n            payload = json.loads(text)\n        except json.JSONDecodeError as exc:\n            msg = f\"Log is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n\n        tools = payload.get(\"tools\") if isinstance(payload, dict) else None\n        if not isinstance(tools, list):\n            msg = 'JSON log has no \"tools\" list at the top level.'\n            raise ValueError(msg)\n\n        rows = []\n        for t, tool in enumerate(tools, start=1):\n            name = (tool.get(\"name\") or \"\").strip() if isinstance(tool, dict) else \"\"\n            if not name:\n                msg = f\"JSON tool entry {t}: missing 'name'.\"\n                raise ValueError(msg)\n            cost = self._parse_cost(tool.get(\"seat_cost_month\"), f\"JSON tool '{name}' ('seat_cost_month')\")\n            plan = (tool.get(\"plan\") or \"\").strip()\n            users = tool.get(\"users\")\n            if not isinstance(users, list):\n                msg = f\"JSON tool '{name}': missing a 'users' list.\"\n                raise ValueError(msg)\n            for u, user in enumerate(users, start=1):\n                email = (user.get(\"email\") or \"\").strip() if isinstance(user, dict) else \"\"\n                if not email:\n                    msg = f\"JSON tool '{name}', user {u}: missing 'email'.\"\n                    raise ValueError(msg)\n                created = self._parse_date(user.get(\"account_created\"), f\"JSON tool '{name}' user '{email}' ('account_created')\")\n                if created is None:\n                    msg = f\"JSON tool '{name}', user '{email}': missing 'account_created'.\"\n                    raise ValueError(msg)\n                rows.append({\n                    \"tool\": name,\n                    \"plan\": plan,\n                    \"user_email\": email,\n                    \"user_name\": (user.get(\"name\") or \"\").strip() or email,\n                    \"account_created\": created,\n                    \"last_login\": self._parse_date(user.get(\"last_login\"), f\"JSON tool '{name}' user '{email}' ('last_login')\"),\n                    \"seat_cost_month\": cost,\n                })\n        return rows\n\n    def _rows(self) -> list:\n        text, origin = self._source()\n        # A CSV export never parses as JSON, so \"it parsed\" is the format test. Anything\n        # that parsed but is the wrong shape gets a JSON error, not a confusing CSV one.\n        try:\n            json.loads(text)\n            is_json = True\n        except json.JSONDecodeError:\n            is_json = False\n\n        rows = self._parse_json(text) if is_json else self._parse_csv(text)\n        if not rows:\n            msg = f\"No user rows found in the log ({origin}). Nothing to classify.\"\n            raise ValueError(msg)\n        return rows\n\n    # -------------------------------------------------------- exceptions\n\n    @staticmethod\n    def _exceptions_map(raw: str) -> dict:\n        out = {}\n        for line in (raw or \"\").splitlines():\n            line = line.strip()\n            if not line:\n                continue\n            email, reason = line, \"\"\n            if \":\" in line:\n                email, reason = line.split(\":\", 1)\n            elif \" - \" in line:\n                email, reason = line.split(\" - \", 1)\n            out[email.strip().lower()] = reason.strip()\n        return out\n\n    # ----------------------------------------------------------- classify\n\n    def _reference_date(self) -> date:\n        raw = (self.reference_date or \"\").strip()\n        if not raw:\n            return date.today()\n        try:\n            return date.fromisoformat(raw)\n        except ValueError as exc:\n            msg = f\"Reference date: '{raw}' is not a valid date (expected YYYY-MM-DD).\"\n            raise ValueError(msg) from exc\n\n    def _classify(self, row: dict, today: date, dormant_after: int, grace: int, exceptions: dict) -> dict:\n        created, last_login = row[\"account_created\"], row[\"last_login\"]\n\n        if last_login is None:\n            age = (today - created).days\n            if age <= grace:\n                base_status, tier, days, days_kind = \"too_new\", None, age, \"since_created\"\n            else:\n                base_status, tier, days, days_kind = \"never_activated\", \"revoke_now\", age, \"since_created\"\n        else:\n            inactive = (today - last_login).days\n            if inactive <= dormant_after:\n                base_status, tier, days, days_kind = \"active\", None, inactive, \"since_last_login\"\n            else:\n                tier = \"revoke_now\" if inactive >= dormant_after * 2 else \"confirm_first\"\n                base_status, days, days_kind = \"dormant\", inactive, \"since_last_login\"\n\n        email_lower = row[\"user_email\"].lower()\n        excepted = email_lower in exceptions\n        annual_cost = round(row[\"seat_cost_month\"] * 12, 2)\n\n        return {\n            \"tool\": row[\"tool\"],\n            \"plan\": row[\"plan\"],\n            \"user_name\": row[\"user_name\"],\n            \"user_email\": row[\"user_email\"],\n            \"account_created\": row[\"account_created\"].isoformat(),\n            \"last_login\": row[\"last_login\"].isoformat() if row[\"last_login\"] else None,\n            \"base_status\": base_status,\n            \"tier\": tier,\n            \"days\": days,\n            \"days_kind\": days_kind,\n            \"excepted\": excepted,\n            \"exception_reason\": exceptions.get(email_lower) if excepted else None,\n            \"monthly_cost\": round(row[\"seat_cost_month\"], 2),\n            \"annual_cost\": annual_cost,\n        }\n\n    # ------------------------------------------------------------- results\n\n    def _analysis(self) -> dict:\n        rows = self._rows()\n        today = self._reference_date()\n        dormant_after = max(int(self.dormant_after_days or 60), 1)\n        grace = max(int(self.new_account_grace_days or 14), 0)\n        exceptions = self._exceptions_map(self.exceptions)\n\n        accounts = [self._classify(r, today, dormant_after, grace, exceptions) for r in rows]\n\n        flagged = [a for a in accounts if a[\"tier\"] and not a[\"excepted\"]]\n        revoke_now = sorted((a for a in flagged if a[\"tier\"] == \"revoke_now\"),\n                             key=lambda a: (-a[\"annual_cost\"], a[\"tool\"], a[\"user_email\"]))\n        confirm_first = sorted((a for a in flagged if a[\"tier\"] == \"confirm_first\"),\n                                key=lambda a: (-a[\"annual_cost\"], a[\"tool\"], a[\"user_email\"]))\n        exceptions_applied = sorted(\n            (a for a in accounts if a[\"excepted\"] and a[\"tier\"]),\n            key=lambda a: (a[\"tool\"], a[\"user_email\"]),\n        )\n        too_new = sorted((a for a in accounts if a[\"base_status\"] == \"too_new\"),\n                          key=lambda a: (a[\"tool\"], a[\"user_email\"]))\n\n        by_tool = {}\n        for a in accounts:\n            slot = by_tool.setdefault(a[\"tool\"], {\n                \"tool\": a[\"tool\"], \"seats\": 0, \"evaluated_seats\": 0, \"flagged\": 0,\n                \"monthly_recoverable\": 0.0, \"annual_recoverable\": 0.0,\n            })\n            slot[\"seats\"] += 1\n            if a[\"excepted\"]:\n                continue\n            slot[\"evaluated_seats\"] += 1\n            if a[\"tier\"]:\n                slot[\"flagged\"] += 1\n                slot[\"monthly_recoverable\"] += a[\"monthly_cost\"]\n                slot[\"annual_recoverable\"] += a[\"annual_cost\"]\n\n        per_tool = []\n        for slot in by_tool.values():\n            frac = slot[\"flagged\"] / slot[\"evaluated_seats\"] if slot[\"evaluated_seats\"] else 0.0\n            per_tool.append({\n                **slot,\n                \"monthly_recoverable\": round(slot[\"monthly_recoverable\"], 2),\n                \"annual_recoverable\": round(slot[\"annual_recoverable\"], 2),\n                \"dormant_fraction\": round(frac, 2),\n            })\n        per_tool.sort(key=lambda t: -t[\"annual_recoverable\"])\n\n        return {\n            \"reference_date\": today.isoformat(),\n            \"dormant_after_days\": dormant_after,\n            \"new_account_grace_days\": grace,\n            \"accounts_total\": len(accounts),\n            \"status_counts\": {\n                s: sum(1 for a in accounts if a[\"base_status\"] == s)\n                for s in (\"active\", \"dormant\", \"never_activated\", \"too_new\")\n            },\n            \"exceptions_defined\": len(exceptions),\n            \"revoke_now\": revoke_now,\n            \"confirm_first\": confirm_first,\n            \"exceptions_applied\": exceptions_applied,\n            \"too_new\": too_new,\n            \"per_tool\": per_tool,\n            \"totals\": {\n                \"revoke_now_count\": len(revoke_now),\n                \"revoke_now_monthly\": round(sum(a[\"monthly_cost\"] for a in revoke_now), 2),\n                \"revoke_now_annual\": round(sum(a[\"annual_cost\"] for a in revoke_now), 2),\n                \"confirm_first_count\": len(confirm_first),\n                \"confirm_first_monthly\": round(sum(a[\"monthly_cost\"] for a in confirm_first), 2),\n                \"confirm_first_annual\": round(sum(a[\"annual_cost\"] for a in confirm_first), 2),\n            },\n            \"accounts\": accounts,\n        }\n\n    # -------------------------------------------------------------- disk\n\n    FINDINGS_FILE = \"license_findings.json\"\n\n    def _persist(self, analysis: dict) -> None:\n        \"\"\"Hand the findings to the report writer through a file, not a second edge.\n\n        Langflow lets a component expose only one output on the canvas - a second\n        wired edge is silently dropped the moment the flow is opened in the UI.\n        The file is the hand-off, and it is a deliverable in its own right: a\n        number in a document is a claim, a number in a file someone can\n        re-generate is a fact.\n        \"\"\"\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            return\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n        path = folder / self.FINDINGS_FILE\n        path.write_text(json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n    # ------------------------------------------------------------- outputs\n\n    def build_brief(self) -> Message:\n        a = self._analysis()\n        cap = max(int(self.max_listed or 15), 1)\n        t = a[\"totals\"]\n        sc = a[\"status_counts\"]\n\n        lines = [\n            \"# Vendor license activity\", \"\",\n            f\"Reference date: {a['reference_date']}  \"\n            f\"(dormant after {a['dormant_after_days']} days, \"\n            f\"{a['new_account_grace_days']}-day grace for new accounts)\",\n            f\"Accounts: {a['accounts_total']} \"\n            f\"({sc['active']} active, {sc['dormant']} dormant, \"\n            f\"{sc['never_activated']} never activated, {sc['too_new']} too new)\",\n            f\"Revoke now: {t['revoke_now_count']} seats, \"\n            f\"${t['revoke_now_monthly']:.2f}/mo (${t['revoke_now_annual']:.2f}/yr) recoverable\",\n            f\"Confirm first: {t['confirm_first_count']} seats, \"\n            f\"${t['confirm_first_monthly']:.2f}/mo (${t['confirm_first_annual']:.2f}/yr) at risk\",\n            \"\", \"## Per tool\",\n        ]\n        for tool in a[\"per_tool\"]:\n            lines.append(\n                f\"- {tool['tool']}: {tool['flagged']}/{tool['evaluated_seats']} seats flagged \"\n                f\"(dormant fraction {tool['dormant_fraction']:.2f}), \"\n                f\"${tool['annual_recoverable']:.2f}/yr recoverable\"\n            )\n\n        if a[\"revoke_now\"]:\n            lines.extend([\"\", f\"## Revoke now, top {min(cap, len(a['revoke_now']))} by annual savings\"])\n            for acc in a[\"revoke_now\"][:cap]:\n                lines.append(\n                    f\"- {acc['tool']} / {acc['user_name']} ({acc['user_email']}) - \"\n                    f\"{acc['base_status']}, {acc['days']} days {acc['days_kind'].replace('_', ' ')}, \"\n                    f\"${acc['annual_cost']:.2f}/yr\"\n                )\n            if len(a[\"revoke_now\"]) > cap:\n                lines.append(f\"  ... and {len(a['revoke_now']) - cap} more\")\n\n        # The prompt asks the model to write about this tier by name, so the names have\n        # to be here. Given only a count, a model reports the tier as empty.\n        if a[\"confirm_first\"]:\n            lines.extend([\"\", f\"## Confirm first, all {len(a['confirm_first'])}\"])\n            for acc in a[\"confirm_first\"]:\n                lines.append(\n                    f\"- {acc['tool']} / {acc['user_name']} ({acc['user_email']}) - \"\n                    f\"{acc['days']} days {acc['days_kind'].replace('_', ' ')}, \"\n                    f\"${acc['annual_cost']:.2f}/yr\"\n                )\n\n        if a[\"exceptions_applied\"]:\n            lines.extend([\"\", \"## Exceptions applied\"])\n            for acc in a[\"exceptions_applied\"]:\n                lines.append(f\"- {acc['tool']} / {acc['user_email']} - {acc['exception_reason'] or 'no reason given'}\")\n\n        if a[\"too_new\"]:\n            lines.extend([\"\", \"## Too new to judge\"])\n            for acc in a[\"too_new\"]:\n                lines.append(f\"- {acc['tool']} / {acc['user_email']} - account created {acc['days']} days ago\")\n\n        self._persist(a)\n        self.status = f\"{t['revoke_now_count']} revoke now, {t['confirm_first_count']} confirm first\"\n        return Message(text=\"\\n\".join(lines))\n\n    def build_findings(self) -> Data:\n        a = self._analysis()\n        self._persist(a)\n        t = a[\"totals\"]\n        self.status = f\"{t['revoke_now_count']} revoke now, {t['confirm_first_count']} confirm first\"\n        return Data(data=a)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_log_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_log_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent/sample_logs/tool_activity.csv",
+                "display_name": "Default log path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the path above is empty or does not exist.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "dormant_after_days": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "dormant_after_days",
+                "value": 60,
+                "display_name": "Dormant after (days)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "A seat with no login in at least this many days is dormant.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "exceptions": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "exceptions",
+                "value": "kai@shopfront.example.com - approved leave, back in October",
+                "display_name": "Exceptions",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "One account per line that must never be flagged - approved leave, a service account, whatever the business reason. Each line is an email address, or 'email - reason', or 'email: reason'. Matching is case-insensitive. A suppressed finding is still reported, just marked as excepted rather than dropped.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "log_path": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "log_path",
+                "value": "",
+                "display_name": "Activity log path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Path to a CSV or JSON activity export. Leave empty to use the pasted log below.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "max_listed": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_listed",
+                "value": 15,
+                "display_name": "Max rows in the brief",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Caps how many flagged accounts are listed in the prompt brief, by savings.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "new_account_grace_days": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "new_account_grace_days",
+                "value": 14,
+                "display_name": "New-account grace period (days)",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "An account created more recently than this that has never logged in is just new, not dormant - it has not had time to be used yet.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where license_findings.json is written. The report writer reads it back from here, so both nodes must point at the same folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "pasted_log": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pasted_log",
+                "value": "",
+                "display_name": "Pasted log",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste a CSV or JSON activity export here to use it instead of reading from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "reference_date": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "reference_date",
+                "value": "2026-09-19",
+                "display_name": "Reference date",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "ISO date (YYYY-MM-DD) to measure inactivity against. Empty means today.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Classifies every seat in a tool activity log as active, dormant, or never used.",
+            "icon": "user-x",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Inactivity Filter",
+            "documentation": "https://www.saastr.com/saas-metrics-2-0-a-guide-to-measuring-and-improving-what-matters/",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "brief",
+                "display_name": "Brief",
+                "method": "build_brief",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "findings",
+                "display_name": "Findings",
+                "method": "build_findings",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "log_path",
+              "default_log_path",
+              "pasted_log",
+              "dormant_after_days",
+              "new_account_grace_days",
+              "exceptions",
+              "reference_date",
+              "max_listed",
+              "output_dir"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.inactivity_filter",
+              "code_hash": "6a8d63a3207d",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 440,
+          "y": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Vl3Pt",
+        "type": "genericNode",
+        "position": {
+          "x": 840,
+          "y": 300
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are a QA Lead writing the recommendations section of a vendor licence review.\n\nThe findings below come from a deterministic pass over the tool activity log. Every count, every date and every dollar figure is computed. Do not recalculate anything, do not invent accounts or tools that are not listed, and do not move an account between tiers - the tiers are already decided.\n\nEvery dollar figure you write must be one that already appears in the findings, copied exactly. Do not add anything up yourself, not even a subtotal that looks obvious - if a number is not in the findings, it does not go in the report.\n\nWrite under 300 words, in this order:\n\n1. One short paragraph on where the money is going, naming the single most expensive piece of waste - one account, or one tool.\n2. \"Do this first\" - the two or three actions with the best ratio of money saved to conversations needed, as a numbered list. Name the tool and the account, and say what each one saves a year.\n3. \"Worth renegotiating\" - any tool whose dormant fraction is high enough that the problem is the contract rather than the individual seats. If none qualify, say so in one line.\n4. \"Before you revoke\" - the confirm-first accounts only. Name them, and say what to check before touching them. Do not discuss anything from the revoke-now or exceptions lists here.\n\nClose with the total annual saving if every revoke-now seat is actioned.\n\nThis list names real colleagues, so write as though they will read it: a seat is on it because it went unused, not because anyone did anything wrong.\n\nDo not reproduce the tables - they are already in the report. No preamble.\n\nFINDINGS\n{findings}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "findings": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "findings",
+                "display_name": "findings",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "findings"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Vl3Pt"
+        },
+        "measured": {
+          "width": 320,
+          "height": 347
+        },
+        "positionAbsolute": {
+          "x": 840,
+          "y": 300
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Vl4Gq",
+        "type": "genericNode",
+        "position": {
+          "x": 1240,
+          "y": 260
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "allam-2-7b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "groq/compound-mini"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.2,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "8af1ca34-3b2f-4eae-9c30-8062a0004c30"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-17T20:08:17.131Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Vl4Gq",
+          "selected_output": "text_output"
+        },
+        "measured": {
+          "width": 320,
+          "height": 495
+        },
+        "positionAbsolute": {
+          "x": 1240,
+          "y": 260
+        }
+      },
+      {
+        "id": "LicenseReportWriter-Vl5Rw",
+        "type": "genericNode",
+        "position": {
+          "x": 1660,
+          "y": 300
+        },
+        "data": {
+          "id": "LicenseReportWriter-Vl5Rw",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"License Report Writer - a Langflow custom component.\n\nAssembles the license report and writes it to disk, alongside the raw findings.\n\nThe report is in two halves, and the order matters. The first half is\n**counted**: every account, the date it last saw a login, how many days ago\nthat was, what the seat costs, and which of the two tiers it falls in. None of\nit comes from a model, so a QA Lead taking this into a budget conversation can\ndefend every line - including to the person whose access is on it.\n\nThe second half is the model's: which of these to do first, and whether a tool\nis unused enough to renegotiate rather than trim seat by seat. That is a\njudgement, it is labelled as one, and it sits under the evidence rather than in\nplace of it.\n\nTwo tables exist purely so nothing is hidden. Exceptions are printed with the\nfinding they suppressed, because an exception applied silently is indis-\ntinguishable from a bug. Accounts inside the new-account grace period are\nprinted too, so \"why isn't the new starter on here?\" has an answer on the page.\n\"\"\"\n\nimport json\nimport re\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_FENCE_WHOLE = re.compile(r\"^\\s*```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\\s*$\", re.DOTALL)\n\n\nclass LicenseReportWriter(Component):\n    display_name = \"License Report Writer\"\n    description = \"Writes the license report and the raw findings to disk.\"\n    documentation = \"https://playwright.dev/docs/test-reporters\"\n    icon = \"file-text\"\n    name = \"LicenseReportWriter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"recommendations\",\n            display_name=\"Recommendations\",\n            info=\"The model's write-up. Placed under the counted evidence, not in place of it.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where license_report.md is written, and where license_findings.json is read \"\n                \"from. Point this at the same folder as the Inactivity Filter's Reports folder.\"\n            ),\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"report_name\",\n            display_name=\"Report file name\",\n            value=\"license_report.md\",\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_report\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    # ------------------------------------------------------------- reading\n\n    FINDINGS_FILE = \"license_findings.json\"\n\n    def _findings(self, folder: Path) -> dict:\n        \"\"\"Read the analysis the Inactivity Filter left in the reports folder.\"\"\"\n        path = folder / self.FINDINGS_FILE\n        if not path.is_file():\n            msg = (f\"No {self.FINDINGS_FILE} in {folder}. The Inactivity Filter writes it, so \"\n                   \"set its Reports folder to this same folder and run the filter first.\")\n            raise ValueError(msg)\n        try:\n            data = json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n        if not isinstance(data, dict) or \"accounts\" not in data:\n            msg = f\"{path.name} does not look like an activity analysis; it has no accounts.\"\n            raise ValueError(msg)\n        return data\n\n    @staticmethod\n    def _clean_markdown(text: str) -> str:\n        \"\"\"Models sometimes wrap a whole markdown document in a fence.\"\"\"\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned no recommendations to write.\"\n            raise ValueError(msg)\n        whole = _FENCE_WHOLE.match(raw)\n        return (whole.group(1) if whole else raw).strip()\n\n    # ------------------------------------------------------------ composing\n\n    @staticmethod\n    def _account_rows(accounts: list) -> list:\n        out = []\n        for a in accounts:\n            last_seen = a.get(\"last_login\") or \"never\"\n            days = a.get(\"days\", 0)\n            kind = \"since last login\" if a.get(\"days_kind\") == \"since_last_login\" else \"since created\"\n            out.append(\n                f\"| {a.get('tool', '')} | {a.get('user_name', '')} | `{a.get('user_email', '')}` \"\n                f\"| {last_seen} | {days} ({kind}) | ${a.get('monthly_cost', 0):.2f} \"\n                f\"| **${a.get('annual_cost', 0):.2f}** |\"\n            )\n        return out\n\n    def _compose(self, f: dict, recommendations: str) -> str:\n        t = f.get(\"totals\") or {}\n        sc = f.get(\"status_counts\") or {}\n        per_tool = f.get(\"per_tool\") or []\n        stamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d\")\n\n        out = [\n            \"# Vendor license review\",\n            \"\",\n            f\"*Generated {stamp} by the Vendor License Monitor, measured against \"\n            f\"{f.get('reference_date', '')}. Every count and every dollar below is computed \"\n            \"from the activity log - re-run the filter to reproduce it.*\",\n            \"\",\n            \"## At a glance\",\n            \"\",\n            \"| | |\",\n            \"|---|---|\",\n            f\"| Accounts reviewed | {f.get('accounts_total', 0)} |\",\n            f\"| Active | {sc.get('active', 0)} |\",\n            f\"| Dormant | {sc.get('dormant', 0)} |\",\n            f\"| Never activated | {sc.get('never_activated', 0)} |\",\n            f\"| Inside grace period | {sc.get('too_new', 0)} |\",\n            f\"| **Revoke now** | **{t.get('revoke_now_count', 0)} seats — \"\n            f\"${t.get('revoke_now_monthly', 0):.2f}/mo, \"\n            f\"${t.get('revoke_now_annual', 0):.2f}/yr** |\",\n            f\"| Confirm first | {t.get('confirm_first_count', 0)} seats — \"\n            f\"${t.get('confirm_first_monthly', 0):.2f}/mo, \"\n            f\"${t.get('confirm_first_annual', 0):.2f}/yr |\",\n            \"\",\n            f\"Dormant means no login in {f.get('dormant_after_days', 60)} days. An account is \"\n            f\"**revoke now** when it has never been used at all, or has been idle for at least \"\n            f\"twice that. Anything between the two is **confirm first** — idle enough to cost \"\n            \"money, not idle enough to cut without asking.\",\n            \"\",\n        ]\n\n        if per_tool:\n            out.extend([\n                \"## By tool\",\n                \"\",\n                \"| Tool | Seats | Flagged | Dormant fraction | Monthly | Annual |\",\n                \"|---|---:|---:|---:|---:|---:|\",\n            ])\n            for tool in per_tool:\n                out.append(\n                    f\"| {tool.get('tool', '')} | {tool.get('seats', 0)} | {tool.get('flagged', 0)} \"\n                    f\"| {tool.get('dormant_fraction', 0):.0%} \"\n                    f\"| ${tool.get('monthly_recoverable', 0):.2f} \"\n                    f\"| ${tool.get('annual_recoverable', 0):.2f} |\"\n                )\n            out.append(\"\")\n\n        header = (\"| Tool | Person | Account | Last login | Days | Monthly | Annual |\\n\"\n                  \"|---|---|---|---|---:|---:|---:|\")\n\n        revoke = f.get(\"revoke_now\") or []\n        out.extend([f\"## Revoke now ({len(revoke)})\", \"\"])\n        if revoke:\n            out.append(\"Never used, or idle for at least twice the dormancy threshold.\")\n            out.extend([\"\", header])\n            out.extend(self._account_rows(revoke))\n        else:\n            out.append(\"Nothing in this tier.\")\n        out.append(\"\")\n\n        confirm = f.get(\"confirm_first\") or []\n        out.extend([f\"## Confirm first ({len(confirm)})\", \"\"])\n        if confirm:\n            out.append(\"Dormant, but not long enough to cut without asking the seat holder.\")\n            out.extend([\"\", header])\n            out.extend(self._account_rows(confirm))\n        else:\n            out.append(\"Nothing in this tier.\")\n        out.append(\"\")\n\n        excepted = f.get(\"exceptions_applied\") or []\n        if excepted:\n            out.extend([\n                f\"## Exceptions applied ({len(excepted)})\",\n                \"\",\n                \"These met the criteria above and were held back by the exceptions list.\",\n                \"\",\n                \"| Tool | Account | Would have been | Reason given |\",\n                \"|---|---|---|---|\",\n            ])\n            for a in excepted:\n                out.append(\n                    f\"| {a.get('tool', '')} | `{a.get('user_email', '')}` \"\n                    f\"| {a.get('tier', '').replace('_', ' ')} \"\n                    f\"| {a.get('exception_reason') or '—'} |\"\n                )\n            out.append(\"\")\n\n        too_new = f.get(\"too_new\") or []\n        if too_new:\n            out.extend([\n                f\"## Inside the grace period ({len(too_new)})\",\n                \"\",\n                f\"Created within the last {f.get('new_account_grace_days', 14)} days and not \"\n                \"used yet. New, not dormant.\",\n                \"\",\n            ])\n            for a in too_new:\n                out.append(f\"- {a.get('tool', '')} — `{a.get('user_email', '')}`, \"\n                           f\"created {a.get('days', 0)} days ago\")\n            out.append(\"\")\n\n        out.extend([\n            \"---\",\n            \"\",\n            \"## Recommendations\",\n            \"\",\n            \"*This section is written by a language model from the evidence above. The counts \"\n            \"are not its work; the priorities are.*\",\n            \"\",\n            recommendations,\n            \"\",\n        ])\n        return \"\\n\".join(out)\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set a reports folder on the License Report Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        findings = self._findings(folder)\n        recommendations = self._clean_markdown(self.recommendations)\n\n        name = Path((self.report_name or \"license_report.md\").strip()).name or \"license_report.md\"\n        if not name.endswith(\".md\"):\n            name += \".md\"\n\n        report_path = folder / name\n        report = self._compose(findings, recommendations)\n        report_path.write_text(report if report.endswith(\"\\n\") else report + \"\\n\", encoding=\"utf-8\")\n\n        t = findings.get(\"totals\") or {}\n        return {\n            \"report\": str(report_path),\n            \"report_lines\": len(report.splitlines()),\n            \"findings_json\": str(folder / self.FINDINGS_FILE),\n            \"accounts_total\": findings.get(\"accounts_total\", 0),\n            \"revoke_now_count\": t.get(\"revoke_now_count\", 0),\n            \"revoke_now_annual\": t.get(\"revoke_now_annual\", 0),\n            \"confirm_first_count\": t.get(\"confirm_first_count\", 0),\n            \"confirm_first_annual\": t.get(\"confirm_first_annual\", 0),\n            \"exceptions_applied\": len(findings.get(\"exceptions_applied\") or []),\n        }\n\n    # -------------------------------------------------------------- outputs\n\n    def write_report(self) -> Message:\n        r = self._write()\n        self.status = f\"{r['revoke_now_count']} revoke now -> {Path(r['report']).name}\"\n        lines = [\n            f\"Reviewed {r['accounts_total']} accounts.\",\n            f\"Revoke now: {r['revoke_now_count']} seats, ${r['revoke_now_annual']:.2f}/yr recoverable.\",\n            f\"Confirm first: {r['confirm_first_count']} seats, ${r['confirm_first_annual']:.2f}/yr at risk.\",\n        ]\n        if r[\"exceptions_applied\"]:\n            lines.append(f\"{r['exceptions_applied']} finding(s) held back by the exceptions list.\")\n        lines.extend([\n            \"\",\n            f\"Report:   {r['report']}  ({r['report_lines']} lines)\",\n            f\"Findings: {r['findings_json']}\",\n        ])\n        return Message(text=\"\\n\".join(lines))\n\n    def write_details(self) -> Data:\n        r = self._write()\n        self.status = f\"{r['revoke_now_count']} revoke now -> {Path(r['report']).name}\"\n        return Data(data=r)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where license_report.md is written, and where license_findings.json is read from. Point this at the same folder as the Inactivity Filter's Reports folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "recommendations": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "recommendations",
+                "value": "",
+                "display_name": "Recommendations",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's write-up. Placed under the counted evidence, not in place of it.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "report_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "report_name",
+                "value": "license_report.md",
+                "display_name": "Report file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Writes the license report and the raw findings to disk.",
+            "icon": "file-text",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "License Report Writer",
+            "documentation": "https://playwright.dev/docs/test-reporters",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "recommendations",
+              "output_dir",
+              "report_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.license_report_writer",
+              "code_hash": "43717c7137b1",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "summary"
+        },
+        "measured": {
+          "width": 320,
+          "height": 305
+        },
+        "positionAbsolute": {
+          "x": 1660,
+          "y": 300
+        }
+      },
+      {
+        "id": "ChatOutput-Vl6Co",
+        "type": "genericNode",
+        "position": {
+          "x": 2080,
+          "y": 340
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Vl6Co"
+        },
+        "measured": {
+          "width": 192,
+          "height": 52
+        },
+        "positionAbsolute": {
+          "x": 2080,
+          "y": 340
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Vl1Ti",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Vl1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "LicenseActivityFilter-Vl2If",
+        "targetHandle": "{œfieldNameœ:œlog_pathœ,œidœ:œLicenseActivityFilter-Vl2Ifœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "log_path",
+            "id": "LicenseActivityFilter-Vl2If",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Vl1Ti",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Vl1Ti{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Vl1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-LicenseActivityFilter-Vl2If{œfieldNameœ:œlog_pathœ,œidœ:œLicenseActivityFilter-Vl2Ifœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "LicenseActivityFilter-Vl2If",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œLicenseActivityFilter-Vl2Ifœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Vl3Pt",
+        "targetHandle": "{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Vl3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "findings",
+            "id": "Prompt Template-Vl3Pt",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "LicenseActivityFilter-Vl2If",
+            "name": "brief",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__LicenseActivityFilter-Vl2If{œdataTypeœ:œCustomComponentœ,œidœ:œLicenseActivityFilter-Vl2Ifœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Vl3Pt{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Vl3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Vl3Pt",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Vl3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Vl4Gq",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Vl4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Vl4Gq",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Vl3Pt",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Vl3Pt{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Vl3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Vl4Gq{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Vl4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Vl4Gq",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Vl4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "LicenseReportWriter-Vl5Rw",
+        "targetHandle": "{œfieldNameœ:œrecommendationsœ,œidœ:œLicenseReportWriter-Vl5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "recommendations",
+            "id": "LicenseReportWriter-Vl5Rw",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Vl4Gq",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Vl4Gq{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Vl4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-LicenseReportWriter-Vl5Rw{œfieldNameœ:œrecommendationsœ,œidœ:œLicenseReportWriter-Vl5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "LicenseReportWriter-Vl5Rw",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œLicenseReportWriter-Vl5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Vl6Co",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Vl6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Vl6Co",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "LicenseReportWriter-Vl5Rw",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__LicenseReportWriter-Vl5Rw{œdataTypeœ:œCustomComponentœ,œidœ:œLicenseReportWriter-Vl5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Vl6Co{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Vl6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
