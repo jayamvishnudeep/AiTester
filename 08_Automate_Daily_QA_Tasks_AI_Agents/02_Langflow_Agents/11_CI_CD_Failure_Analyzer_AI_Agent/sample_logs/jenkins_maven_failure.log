@@ -1,0 +1,205 @@
+Started by user Priya Sharma
+Running as SYSTEM
+Building in workspace /var/lib/jenkins/workspace/shopfront-regression
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on build-agent-04 in /var/lib/jenkins/workspace/shopfront-regression
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+The recommended git tool is: git
+using credential github-ci-token
+Cloning the remote Git repository
+Cloning repository https://github.com/shopfront/regression-suite.git
+ > git init /var/lib/jenkins/workspace/shopfront-regression # timeout=10
+Fetching upstream changes from https://github.com/shopfront/regression-suite.git
+ > git --version # timeout=10
+ > git fetch --tags --force --progress -- https://github.com/shopfront/regression-suite.git +refs/heads/*:refs/remotes/origin/*
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 8f2a1c9e4b7d3a6f5e8c2b1d9a4f7e3c6b5d8a2f (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8f2a1c9e4b7d3a6f5e8c2b1d9a4f7e3c6b5d8a2f # timeout=10
+Commit message: "checkout: read the cart total from the summary panel"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
++ mvn -B clean test -Dsuite=regression
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------< com.shopfront:regression-suite >-------------------
+[INFO] Building regression-suite 2.4.0
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-java/4.16.1/selenium-java-4.16.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-java/4.16.1/selenium-java-4.16.1.jar (513 kB at 7.6 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-api/4.16.1/selenium-api-4.16.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-api/4.16.1/selenium-api-4.16.1.jar (239 kB at 23.4 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/4.16.1/selenium-remote-driver-4.16.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/seleniumhq/selenium/selenium-remote-driver/4.16.1/selenium-remote-driver-4.16.1.jar (279 kB at 13.6 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/testng/testng/7.8.0/testng-7.8.0.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/testng/testng/7.8.0/testng-7.8.0.jar (140 kB at 14.4 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/com/beust/jcommander/1.82/jcommander-1.82.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/com/beust/jcommander/1.82/jcommander-1.82.jar (825 kB at 19.0 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar (825 kB at 19.0 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/com/google/guava/guava/32.1.3-jre/guava-32.1.3-jre.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/com/google/guava/guava/32.1.3-jre/guava-32.1.3-jre.jar (258 kB at 22.0 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar (728 kB at 32.1 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/bonigarcia/webdrivermanager/5.6.2/webdrivermanager-5.6.2.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/io/github/bonigarcia/webdrivermanager/5.6.2/webdrivermanager-5.6.2.jar (650 kB at 14.7 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar (846 kB at 10.6 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/httpcomponents/client5/httpclient5/5.2.1/httpclient5-5.2.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/httpcomponents/client5/httpclient5/5.2.1/httpclient5-5.2.1.jar (161 kB at 5.1 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.15.1/commons-io-2.15.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.15.1/commons-io-2.15.1.jar (610 kB at 24.5 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/3.2.2/maven-surefire-plugin-3.2.2.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/3.2.2/maven-surefire-plugin-3.2.2.jar (768 kB at 22.3 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-testng/3.2.2/surefire-testng-3.2.2.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-testng/3.2.2/surefire-testng-3.2.2.jar (161 kB at 5.1 MB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar (414 kB at 28.6 MB/s)
+[INFO]
+[INFO] --- clean:3.2.0:clean (default-clean) @ regression-suite ---
+[INFO] Deleting /var/lib/jenkins/workspace/shopfront-regression/target
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ regression-suite ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO]
+[INFO] --- compiler:3.11.0:compile (default-compile) @ regression-suite ---
+[INFO] Compiling 24 source files with javac [debug target 17] to target/classes
+[INFO]
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ regression-suite ---
+[INFO] Compiling 18 source files with javac [debug target 17] to target/test-classes
+[INFO]
+[INFO] --- surefire:3.2.2:test (default-test) @ regression-suite ---
+[INFO] Using auto detected provider org.apache.maven.surefire.testng.TestNGProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.shopfront.tests.LoginTest
+Starting ChromeDriver 120.0.6099.109 on port 41235
+Only local connections are allowed.
+[INFO] Test loginWithValidCredentials PASSED
+[INFO] Test loginWithWrongPassword PASSED
+[INFO] Test loginWithEmptyEmail PASSED
+[INFO] Test lockoutAfterFiveAttempts PASSED
+[INFO] Test rememberMeKeepsSession PASSED
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 41.2s -- in com.shopfront.tests.LoginTest
+[INFO] Running com.shopfront.tests.CartTest
+[INFO] Test addSingleItem PASSED
+[INFO] Test addMultipleItems PASSED
+[INFO] Test removeItem PASSED
+[INFO] Test updateQuantity PASSED
+[INFO] Test cartPersistsAcrossSessions PASSED
+[INFO] Test emptyCartMessage PASSED
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 58.4 s -- in com.shopfront.tests.CartTest
+[INFO] Running com.shopfront.tests.CheckoutTest
+[ERROR] Test checkoutWithSavedCard FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutWithSavedCard(CheckoutTest.java:42)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutWithNewCard FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutWithNewCard(CheckoutTest.java:49)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutWithGiftCard FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutWithGiftCard(CheckoutTest.java:56)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutAppliesDiscountCode FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutAppliesDiscountCode(CheckoutTest.java:63)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutCalculatesTax FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutCalculatesTax(CheckoutTest.java:70)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutCalculatesShipping FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutCalculatesShipping(CheckoutTest.java:77)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutShowsOrderSummary FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutShowsOrderSummary(CheckoutTest.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutSendsConfirmationEmail FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutSendsConfirmationEmail(CheckoutTest.java:91)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutWithExpressDelivery FAILED
+java.lang.NullPointerException: Cannot invoke "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)" because the return value of "com.shopfront.pages.CheckoutPage.getTotalText()" is null
+	at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)
+	at com.shopfront.tests.CheckoutTest.checkoutWithExpressDelivery(CheckoutTest.java:98)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+	at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)
+[ERROR] Test checkoutRejectsExpiredCard FAILED
+java.lang.AssertionError: expected [Card expired] but found [Payment declined]
+	at org.testng.Assert.fail(Assert.java:110)
+	at org.testng.Assert.assertEquals(Assert.java:141)
+	at com.shopfront.tests.CheckoutTest.checkoutRejectsExpiredCard(CheckoutTest.java:151)
+[ERROR] Test checkoutHandlesOutOfStock FAILED
+java.lang.AssertionError: expected [2 items] but found [3 items]
+	at org.testng.Assert.fail(Assert.java:110)
+	at org.testng.Assert.assertEquals(Assert.java:141)
+	at com.shopfront.tests.CheckoutTest.checkoutHandlesOutOfStock(CheckoutTest.java:168)
+[ERROR] Test checkoutUnderLoad FAILED
+org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: [data-testid='order-confirmation'] (tried for 30 second(s) with 500 milliseconds interval)
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:96)
+	at com.shopfront.tests.CheckoutTest.checkoutUnderLoad(CheckoutTest.java:184)
+[INFO] Tests run: 14, Failures: 3, Errors: 9, Skipped: 2, Time elapsed: 312.7 s <<< FAILURE! -- in com.shopfront.tests.CheckoutTest
+[INFO]
+[INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   CheckoutTest.checkoutRejectsExpiredCard:151 expected [Card expired] but found [Payment declined]
+[ERROR]   CheckoutTest.checkoutHandlesOutOfStock:168 expected [2 items] but found [3 items]
+[ERROR]   CheckoutTest.checkoutUnderLoad:184 Expected condition failed: waiting for visibility of element
+[ERROR] Errors:
+[ERROR]   CheckoutTest.checkoutWithSavedCard:42 NullPointerException
+[ERROR]   CheckoutTest.checkoutWithNewCard:49 NullPointerException
+[ERROR] Tests run: 25, Failures: 3, Errors: 9, Skipped: 2
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  07:32 min
+[INFO] Finished at: 2026-09-18T23:41:07Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.2:test (default-test) on project regression-suite: There are test failures.
+[ERROR] -> [Help 1]
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
