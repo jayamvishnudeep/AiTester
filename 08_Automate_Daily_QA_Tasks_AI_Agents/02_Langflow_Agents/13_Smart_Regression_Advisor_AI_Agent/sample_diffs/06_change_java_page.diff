@@ -1,0 +1,12 @@
+diff --git a/src/main/java/com/shopfront/pages/LoginPage.java b/src/main/java/com/shopfront/pages/LoginPage.java
+index 4b5c6d7..8e9f0a1 100644
+--- a/src/main/java/com/shopfront/pages/LoginPage.java
++++ b/src/main/java/com/shopfront/pages/LoginPage.java
+@@ -14,7 +14,7 @@ public class LoginPage {
+     public void signIn(String email, String password) {
+         driver.findElement(By.id("email")).sendKeys(email);
+         driver.findElement(By.id("password")).sendKeys(password);
+-        driver.findElement(By.id("submit")).click();
++        driver.findElement(By.cssSelector("[data-testid='submit']")).click();
+     }
+ }

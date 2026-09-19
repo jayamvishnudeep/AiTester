@@ -1,0 +1,11 @@
+diff --git a/src/utils/money.ts b/src/utils/money.ts
+index 3a1f9c2..7d4e8b1 100644
+--- a/src/utils/money.ts
++++ b/src/utils/money.ts
+@@ -1,7 +1,7 @@
+ export function formatPrice(pennies: number): string {
+-  return `£${(pennies / 100).toFixed(2)}`;
++  return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(pennies / 100);
+ }
+
+ export function addTax(pennies: number, ratePercent: number): number {

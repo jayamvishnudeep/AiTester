@@ -1,0 +1,8 @@
+diff --git a/src/test/resources/config.properties b/src/test/resources/config.properties
+index aab1c2d..ddc3e4f 100644
+--- a/src/test/resources/config.properties
++++ b/src/test/resources/config.properties
+@@ -1,2 +1,2 @@
+-baseUrl=https://staging.shopfront.example.com
++baseUrl=https://preprod.shopfront.example.com
+ timeoutSeconds=30
