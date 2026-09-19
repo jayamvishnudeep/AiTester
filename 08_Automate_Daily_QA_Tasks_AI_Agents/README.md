@@ -19,6 +19,7 @@ it works.
 | 10 | [Vendor License Monitor](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent) | Combing a seat list by hand to find who stopped using a tool |
 | 11 | [Smart CI/CD Failure Analysis](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent) | Scrolling a CI log for twenty minutes to find one stack trace |
 | 12 | [Auto-Update Selectors (Self-Healing)](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent) | Repointing every broken selector by hand after a restyle |
+| 13 | [Smart Regression Advisor](02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent) | Running the whole suite because nobody can prove what to skip |
 
 The agents live in two folders by the tool that runs them:
 [`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
@@ -277,6 +278,35 @@ than it found it.
 
 See its [README](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent).
 
+## 13 — Smart Regression Advisor
+
+A git diff goes in; the list of tests that can actually reach the changed code
+comes out, each carrying the import path it was reached by — or a flat refusal
+to narrow, when the change is one no graph can model.
+
+Its line between code and model is the folder's starkest, because of what a
+subset claims. **Recommending a subset is a promise that the skipped tests could
+not have caught the change**, and the two ways of being wrong are not
+symmetrical: one test too many costs minutes, one test too few is silent. So the
+set is computed from the repository's own import graph and the model never
+touches it; the model orders the work and weighs the risk of the skip. On the
+sample run it used that freedom to argue *against* its own subset, which is
+exactly the judgement code cannot produce.
+
+**Escalating is the feature, not the failure.** Nothing imports a lockfile; a
+`.properties` file is read by name at runtime; a `tsconfig` change invalidates
+every edge the analysis was about to use. For those the honest answer is "run
+everything", and a tool that always returns a small number is lying some of the
+time.
+
+Its instructive bug is the one that looked like success: an index of unresolved
+paths against import targets of resolved ones meant every reverse lookup
+returned nothing, and the agent cheerfully recommended skipping **100%** of the
+suite. The regression test for it uses a relative repository path, because with
+an absolute one the bug cannot reproduce.
+
+See its [README](02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -351,3 +381,15 @@ model could not determine.
 - **Mutation-test the guarantee you advertise.** A suite that passes first time
   has not been shown to work. Seven deliberate defects found two real holes,
   and one was the single property the whole agent is sold on.
+- **A mutation that survives is not always a missing test.** Sometimes it is an
+  *inert* mutation — the defect it reintroduces cannot bite under the conditions
+  the tests run in. Reproducing a path-resolution bug needed a relative path;
+  every test used an absolute one, and finding that out was worth more than the
+  mutation itself.
+- **Resolve paths once, at the boundary.** An index of unresolved paths against
+  targets of resolved ones compares as different keys, so lookups return empty
+  rather than failing. In an agent that recommends what to skip, that surfaces
+  as a confident "nothing is affected".
+- **Visibility is not dependency.** Java classes in a package need no import to
+  see each other, but giving every pair an edge makes each test depend on its
+  neighbours and selects the whole package.
