@@ -1,0 +1,71 @@
+<!-- The checkout page as it was when the suite last passed, on the old
+     design system. The selectors in broken_selectors.txt all resolved
+     against this markup. -->
+<main class="checkout-page">
+  <h1 class="page-title">Checkout</h1>
+
+  <section class="panel panel--shipping" id="shipping">
+    <h2 class="panel__title">Shipping address</h2>
+    <div class="form-row">
+      <label for="ship-name">Full name</label>
+      <input id="ship-name" name="shippingName" type="text" class="input input--text" value="Ada Lovelace">
+    </div>
+    <div class="form-row">
+      <label for="ship-post">Postcode</label>
+      <input id="ship-post" name="shippingPostcode" type="text" class="input input--text" value="SW1A 1AA">
+    </div>
+  </section>
+
+  <section class="panel panel--payment" id="payment">
+    <h2 class="panel__title">Payment</h2>
+    <div class="form-row">
+      <label for="card-number">Card number</label>
+      <input id="card-number" name="cardNumber" type="text" class="input input--text" autocomplete="cc-number">
+    </div>
+    <div class="form-row">
+      <a href="/gift-card" class="link link--muted js-apply-gift">Apply a gift card</a>
+    </div>
+  </section>
+
+  <section class="panel panel--basket" id="basket">
+    <h2 class="panel__title">Your basket</h2>
+    <ul class="basket-list">
+      <li class="basket-item">
+        <span class="basket-item__name">Mechanical keyboard</span>
+        <span class="basket-item__price">£89.00</span>
+        <button class="btn btn--link basket-item__remove">Remove</button>
+      </li>
+      <li class="basket-item">
+        <span class="basket-item__name">USB-C cable</span>
+        <span class="basket-item__price">£12.50</span>
+        <button class="btn btn--link basket-item__remove">Remove</button>
+      </li>
+      <li class="basket-item">
+        <span class="basket-item__name">Laptop stand</span>
+        <span class="basket-item__price">£23.00</span>
+        <button class="btn btn--link basket-item__remove">Remove</button>
+      </li>
+    </ul>
+  </section>
+
+  <section class="panel panel--summary" id="summary">
+    <h2 class="panel__title">Order summary</h2>
+    <div class="summary-row">
+      <span class="summary-row__label">Subtotal</span>
+      <span class="summary-row__value">£124.50</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-row__label">Delivery</span>
+      <span class="summary-row__value">£3.99</span>
+    </div>
+    <div class="summary-row summary-row--total">
+      <span class="summary-row__label">Total</span>
+      <span class="summary-row__value">£128.49</span>
+    </div>
+  </section>
+
+  <div class="checkout-actions">
+    <button class="btn btn-primary checkout-submit" type="submit">Place order</button>
+    <button class="btn btn--secondary checkout-cancel" type="button">Cancel</button>
+  </div>
+</main>

@@ -1,0 +1,82 @@
+<!-- The same checkout page after a design-system upgrade. Nothing about
+     the feature changed except one removal, but almost every selector in
+     the suite broke:
+       - BEM class names were replaced with utility classes
+       - a wrapper <div class="stack"> was added inside every panel
+       - test ids were added to the actions and the total
+       - "Place order" was reworded to "Pay now"
+       - the gift-card link was removed from the product entirely
+-->
+<main class="mx-auto max-w-3xl px-6 py-10">
+  <h1 class="text-2xl font-semibold tracking-tight">Checkout</h1>
+
+  <section class="rounded-lg border border-slate-200 p-5" id="shipping">
+    <h2 class="text-lg font-medium">Shipping address</h2>
+    <div class="stack">
+      <div class="flex flex-col gap-1">
+        <label for="ship-name">Full name</label>
+        <input id="ship-name" name="shippingName" type="text" class="rounded border px-3 py-2" value="Ada Lovelace">
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="ship-post">Postcode</label>
+        <input id="ship-post" name="shippingPostcode" type="text" class="rounded border px-3 py-2" value="SW1A 1AA">
+      </div>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-5" id="payment">
+    <h2 class="text-lg font-medium">Payment</h2>
+    <div class="stack">
+      <div class="flex flex-col gap-1">
+        <label for="card-number">Card number</label>
+        <input id="card-number" name="cardNumber" type="text" class="rounded border px-3 py-2" autocomplete="cc-number">
+      </div>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-5" id="basket">
+    <h2 class="text-lg font-medium">Your basket</h2>
+    <div class="stack">
+      <ul class="divide-y divide-slate-100">
+        <li class="flex items-center gap-4 py-3" data-item-id="kbd-87">
+          <span class="grow text-sm">Mechanical keyboard</span>
+          <span class="tabular-nums text-sm">£89.00</span>
+          <button class="text-sm text-sky-600 underline" aria-label="Remove Mechanical keyboard">Remove</button>
+        </li>
+        <li class="flex items-center gap-4 py-3" data-item-id="cbl-12">
+          <span class="grow text-sm">USB-C cable</span>
+          <span class="tabular-nums text-sm">£12.50</span>
+          <button class="text-sm text-sky-600 underline" aria-label="Remove USB-C cable">Remove</button>
+        </li>
+        <li class="flex items-center gap-4 py-3" data-item-id="std-40">
+          <span class="grow text-sm">Laptop stand</span>
+          <span class="tabular-nums text-sm">£23.00</span>
+          <button class="text-sm text-sky-600 underline" aria-label="Remove Laptop stand">Remove</button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-5" id="summary">
+    <h2 class="text-lg font-medium">Order summary</h2>
+    <div class="stack">
+      <div class="flex justify-between py-1">
+        <span class="text-slate-500">Subtotal</span>
+        <span class="tabular-nums">£124.50</span>
+      </div>
+      <div class="flex justify-between py-1">
+        <span class="text-slate-500">Delivery</span>
+        <span class="tabular-nums">£3.99</span>
+      </div>
+      <div class="flex justify-between py-1 font-semibold">
+        <span class="text-slate-500">Total</span>
+        <span class="tabular-nums" data-testid="order-total">£128.49</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="mt-6 flex gap-3">
+    <button class="rounded bg-sky-600 px-4 py-2 text-white" type="submit" data-testid="place-order">Pay now</button>
+    <button class="rounded border px-4 py-2" type="button" data-testid="cancel-order">Cancel</button>
+  </div>
+</main>
