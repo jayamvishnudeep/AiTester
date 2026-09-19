@@ -745,6 +745,34 @@ class SelectorHealer(Component):
 
     _SKIP_TAGS = {"html", "body", "head", "script", "style", "meta", "link", "title", "noscript"}
 
+    @staticmethod
+    def _is_hidden(el) -> bool:
+        """Elements a test cannot interact with are not healing targets.
+
+        The case this exists for is a component rendered twice - a desktop copy
+        and a mobile one, or a form duplicated behind an open modal - where one
+        copy is hidden. Both match equally well on every signal, and healing
+        onto the hidden one produces a selector that resolves, passes
+        verification, and then times out for ever. A hidden input is the same
+        trap wearing a different hat: it holds the value while a custom widget
+        holds the interaction, so filling it silently does nothing.
+        """
+        if el.name == "input" and _norm(str(el.get("type") or "")).lower() == "hidden":
+            return True
+        # hidden, aria-hidden and display:none all apply to the whole subtree, so
+        # a visible-looking button inside a hidden wrapper is still unreachable.
+        node = el
+        while node is not None and getattr(node, "name", None) not in (None, "[document]"):
+            if node.has_attr("hidden"):
+                return True
+            if _norm(str(node.get("aria-hidden") or "")).lower() == "true":
+                return True
+            style = _norm(str(node.get("style") or "")).replace(" ", "").lower()
+            if "display:none" in style or "visibility:hidden" in style:
+                return True
+            node = node.parent
+        return False
+
     def _heal_one(self, selector, before, after, elements, threshold, margin) -> dict:
         still, how = self._resolve(after, selector)
         result = {"selector": selector, "kind": "xpath" if _looks_like_xpath(selector) else "css",
@@ -801,7 +829,7 @@ class SelectorHealer(Component):
             tied = [{"score": s, "why": r, "preview": _norm(e.get_text())[:60] or f"<{e.name}>",
                      "candidates": self._verified(e, after, selector)[:1]}
                     for s, r, e in scored[:3] if best - s < margin]
-            return {**result, "outcome": "ambiguous", "competing": tied,
+            return {**result, "outcome": "ambiguous", "reason": "tied", "competing": tied,
                     "why": (f"{len(tied)} elements match about equally well ({best:.0f} against "
                             f"{runner_up:.0f}). Choosing between them would be a guess, and a "
                             "selector pointed at the wrong element fails silently.")}
@@ -809,10 +837,17 @@ class SelectorHealer(Component):
         score, reasons, winner = scored[0]
         verified = self._verified(winner, after, selector)
         if not verified:
-            return {**result, "outcome": "ambiguous",
-                    "why": ("The matching element was found, but no selector for it resolves to "
-                            "exactly one element on this page - every candidate is shared with "
-                            "another element. It needs a test id."),
+            # Identification succeeded and addressing failed. Those are different
+            # problems with different fixes, so they are not reported as the same
+            # thing: nothing here is ambiguous, the element is simply not
+            # addressable without someone adding a hook to the markup.
+            return {**result, "outcome": "ambiguous", "reason": "unaddressable",
+                    "score": score, "evidence": reasons,
+                    "why": ("The element was identified confidently, but no selector for it "
+                            "resolves to exactly one element - every candidate it has is shared "
+                            "with a sibling. This is not an ambiguous match; it is an element "
+                            "with nothing to address it by, and the fix is a test id in the "
+                            "markup rather than a cleverer selector."),
                     "competing": [{"score": score, "why": reasons,
                                    "preview": _norm(winner.get_text())[:60]}]}
         return {**result, "outcome": "healed", "score": score, "evidence": reasons,
@@ -842,7 +877,8 @@ class SelectorHealer(Component):
 
         threshold = min(max(int(self.heal_threshold or 45), 0), 100)
         margin = max(int(self.ambiguity_margin or 12), 0)
-        elements = [e for e in after.find_all(True) if e.name not in self._SKIP_TAGS]
+        elements = [e for e in after.find_all(True)
+                    if e.name not in self._SKIP_TAGS and not self._is_hidden(e)]
 
         results = [self._heal_one(s, before, after, elements, threshold, margin)
                    for s in self._selector_list()]
