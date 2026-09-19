@@ -1,0 +1,28 @@
+# Selectors from the checkout suite, as they were written against
+# checkout_before.html. One per line; blank lines and # comments ignored.
+#
+# Between them they cover the three things the healer has to be able to do:
+# heal, refuse, and notice that nothing was broken in the first place.
+
+# Styling classes, and the button's text changed too ("Place order" -> "Pay now"),
+# so matching on the visible text alone would miss it.
+.btn-primary.checkout-submit
+
+# Positional and BEM, pointing at the order total. Note nth-child(4), not (3):
+# the <h2> is the first child, so the third summary row is the fourth child.
+# Getting that wrong by one is the entire case against positional selectors.
+#summary > div:nth-child(4) > span.summary-row__value
+
+# XPath onto a link that was removed from the product entirely. There is no
+# right answer here, and inventing one would be worse than the broken test.
+//a[@class='link link--muted js-apply-gift']
+
+# The second basket row's Remove button. Three identical "Remove" buttons exist
+# in the new markup, so this is the case where healing to the wrong one is silent.
+.basket-item:nth-child(2) .basket-item__remove
+
+# This one never broke - the id is untouched. The honest answer is "nothing to do".
+#ship-post
+
+# Styling classes on the card-number field.
+.panel--payment .input--text
