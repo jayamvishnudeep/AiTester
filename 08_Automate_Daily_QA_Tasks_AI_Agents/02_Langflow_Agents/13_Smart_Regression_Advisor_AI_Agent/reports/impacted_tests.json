@@ -1,0 +1,54 @@
+{
+  "diff_source": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/sample_diffs/01_change_money_util.diff",
+  "repository": "E:\\Visual Studio Code\\AiTester\\08_Automate_Daily_QA_Tasks_AI_Agents\\02_Langflow_Agents\\13_Smart_Regression_Advisor_AI_Agent\\sample_repo",
+  "files_changed": 1,
+  "changed_files": [
+    {
+      "path": "src/utils/money.ts",
+      "old_path": "src/utils/money.ts",
+      "change": "modified",
+      "lines_changed": 2,
+      "comment_or_whitespace_only": false
+    }
+  ],
+  "skipped_changes": [],
+  "source_files_indexed": 13,
+  "tests_total": 5,
+  "tests_selected": 1,
+  "percent_skipped": 80.0,
+  "full_suite": false,
+  "escalations": [],
+  "counts": {
+    "must_run": 1,
+    "should_run": 0,
+    "full_suite": 0
+  },
+  "selected": [
+    {
+      "test": "tests/checkout.spec.ts",
+      "tier": "must_run",
+      "distance": 1,
+      "because": [
+        {
+          "changed": "src/utils/money.ts",
+          "hops": 1
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "ecosystem": "typescript",
+      "command": "npx playwright test tests/checkout.spec.ts"
+    }
+  ],
+  "blind_spots": [
+    "A selector or test id matching markup the test never imports. Changing an id in a component breaks the page object that looks for it, with no edge between them - which is the coupling agent 12 in this section exists to repair.",
+    "Anything across an HTTP or process boundary. A test calling an endpoint implemented elsewhere has no import path to it.",
+    "Database migrations, seed data and stored procedures, which reach tests through the data rather than through code.",
+    "Values read by name at runtime - environment variables, feature flags, system properties.",
+    "Cucumber and other BDD glue, which binds steps to features by regular expression rather than by import.",
+    "Shared state between tests: a seeded account, a tenant, a port, a browser profile. A change that makes one test leave dirt behind breaks another that imports nothing from it.",
+    "Timing. A change that makes a page slower can trip a timeout in a test with no structural relationship to it."
+  ]
+}
