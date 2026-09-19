@@ -29,6 +29,11 @@ ENV/
 # a year from now. The workflow and flow exports are the artefacts worth keeping.
 *.log
 
+# Except agent 11's sample CI logs, which are fixtures rather than runtime
+# output - the agent reads them, and a CI log named anything but .log would be
+# a worse example of the thing it is meant to be an example of.
+!08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent/sample_logs/*.log
+
 .idea/
 *.iml
 .claude/
