@@ -1,0 +1,27 @@
+Started by GitHub push by raj-patel
+Building in workspace /var/lib/jenkins/workspace/shopfront-smoke
+[Pipeline] Start of Pipeline
+[Pipeline] stage
+[Pipeline] { (Checkout)
+Checking out Revision 1d4e7a2b9c3f6e8a5b2d7c1f4a9e3b6d8c5a2f7e (refs/remotes/origin/main)
+[Pipeline] }
+[Pipeline] stage
+[Pipeline] { (Test)
++ mvn -B clean test -Dsuite=smoke
+[INFO] Scanning for projects...
+[INFO] Building regression-suite 2.4.0
+[INFO] --- surefire:3.2.2:test (default-test) @ regression-suite ---
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.shopfront.tests.SmokeTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 96.2 s -- in com.shopfront.tests.SmokeTest
+[INFO] Results:
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:48 min
+[Pipeline] }
+[Pipeline] End of Pipeline
+Finished: SUCCESS
