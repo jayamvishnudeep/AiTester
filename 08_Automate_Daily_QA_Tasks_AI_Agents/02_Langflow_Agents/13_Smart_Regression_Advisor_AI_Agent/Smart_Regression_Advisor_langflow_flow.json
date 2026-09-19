@@ -1,0 +1,1710 @@
+{
+  "name": "Smart Regression Advisor",
+  "description": "Works out which tests a git diff can reach, and says when it cannot narrow safely.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Rg1Ti",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 340
+        },
+        "data": {
+          "id": "TextInput-Rg1Ti",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/sample_diffs/01_change_money_util.diff"
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "measured": {
+          "width": 320,
+          "height": 285
+        },
+        "positionAbsolute": {
+          "x": 40,
+          "y": 340
+        }
+      },
+      {
+        "id": "RegressionImpactAnalyzer-Rg2An",
+        "type": "genericNode",
+        "position": {
+          "x": 440,
+          "y": 300
+        },
+        "data": {
+          "id": "RegressionImpactAnalyzer-Rg2An",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Regression Impact Analyzer - a Langflow custom component.\n\nReads a git diff, works out which tests can reach the changed code, and\nrecommends running those instead of everything.\n\nThe whole value of this agent is a *subset*, and a subset is a promise: the\ntests left out would not have caught this change. That promise is the dangerous\npart. Recommending one test too many wastes a few minutes; recommending one test\ntoo few is silent - the suite goes green, the regression ships, and nothing in\nthe output ever looked wrong.\n\nSo the set is computed, never judged. Code parses the diff, builds an import\ngraph over the repository, and walks it backwards from each changed file to the\ntests that reach it. A language model is handed the finished set and asked to\nexplain and order it; it is never asked which tests to run, because a model that\nis approximately right about that is worse than useless.\n\nAnd because a static import graph cannot see every real dependency - a selector\nmatching markup it never imports, a config value read by name, an HTTP boundary\nbetween two services - the agent escalates to \"run everything\" whenever the diff\ntouches something whose blast radius it cannot model, and prints its own blind\nspots next to every recommendation rather than at the bottom of a footnote.\n\"\"\"\n\nimport json\nimport re\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_SKIP_DIRS = {\n    \"node_modules\", \"target\", \"build\", \"dist\", \"out\", \".git\", \".idea\", \".vscode\",\n    \"__pycache__\", \".pytest_cache\", \".venv\", \"venv\", \"env\", \".gradle\", \"bin\",\n    \"test-results\", \"playwright-report\", \"allure-results\", \".next\", \"coverage\", \".mvn\",\n}\n\n_TS_EXT = (\".ts\", \".tsx\", \".mts\", \".cts\", \".js\", \".jsx\", \".mjs\", \".cjs\")\n_INDEX_FILES = tuple(f\"index{ext}\" for ext in _TS_EXT)\n\n# import x from 'y' / export * from 'y' / require('y') / import('y')\n_TS_IMPORT = re.compile(\n    r\"\"\"(?:^|\\s)(?:import|export)\\s+(?:[^'\"]*?\\sfrom\\s+)?['\"]([^'\"]+)['\"]\"\"\"\n    r\"\"\"|require\\s*\\(\\s*['\"]([^'\"]+)['\"]\\s*\\)\"\"\"\n    r\"\"\"|import\\s*\\(\\s*['\"]([^'\"]+)['\"]\\s*\\)\"\"\",\n    re.MULTILINE,\n)\n_JAVA_IMPORT = re.compile(r\"^\\s*import\\s+(?:static\\s+)?([\\w.]+)\\s*;\", re.MULTILINE)\n_JAVA_PACKAGE = re.compile(r\"^\\s*package\\s+([\\w.]+)\\s*;\", re.MULTILINE)\n\n_DIFF_FILE = re.compile(r\"^diff --git a/(.+?) b/(.+?)$\", re.MULTILINE)\n_DIFF_HUNK = re.compile(r\"^@@ .*? @@\", re.MULTILINE)\n_COMMENT_LINE = re.compile(r\"^\\s*(?://|/\\*|\\*|#|<!--)\")\n\n# A change to one of these cannot be modelled as a graph edge, so the honest\n# answer is the whole suite. Each entry is (id, pattern, why).\n_ESCALATIONS = [\n    (\"lockfile\", r\"(?:^|/)(?:package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock)$\",\n     \"A dependency version changed. Nothing imports a lockfile, so no edge exists to follow, \"\n     \"and the new version can alter behaviour anywhere it is used.\"),\n    (\"dependency_manifest\", r\"(?:^|/)(?:package\\.json|pom\\.xml|build\\.gradle(?:\\.kts)?)$\",\n     \"The dependency set or the scripts that run the suite changed.\"),\n    (\"resolution_config\", r\"(?:^|/)(?:tsconfig.*\\.json|jsconfig.*\\.json|vite\\.config\\.[jt]s|\"\n     r\"webpack\\.config\\.[jt]s|babel\\.config\\.[jt]s|\\.babelrc)$\",\n     \"This file decides how module specifiers resolve, so every edge in the graph was computed \"\n     \"under rules that have now changed.\"),\n    (\"test_runner_config\", r\"(?:^|/)(?:playwright\\.config\\.[jt]s|jest\\.config\\.[jt]s|\"\n     r\"vitest\\.config\\.[jt]s|cypress\\.config\\.[jt]s|testng.*\\.xml|karma\\.conf\\.js)$\",\n     \"This file decides which tests run and how, so any subset chosen under the old rules is \"\n     \"not trustworthy.\"),\n    (\"global_setup\", r\"(?:^|/)(?:global-?setup|global-?teardown|setup-?tests?|jest\\.setup|\"\n     r\"conftest|TestBase|BaseTest|BasePage)\\.[\\w.]+$\",\n     \"Global setup runs for every test, including tests that never import it.\"),\n    (\"ci_config\", r\"(?:^|/)(?:\\.github/workflows/.+\\.ya?ml|\\.circleci/.+|Jenkinsfile|\"\n     r\"azure-pipelines\\.ya?ml|\\.gitlab-ci\\.ya?ml)$\",\n     \"How the suite is built and invoked changed.\"),\n    (\"runtime_resource\", r\"\\.(?:properties|env|ini|toml|feature|sql)$|(?:^|/)\\.env(?:\\..+)?$\",\n     \"This is read at runtime by name rather than imported, so no import edge to it can exist. \"\n     \"Any test that reads it is invisible to the graph.\"),\n    (\"test_fixture_data\", r\"(?:^|/)(?:fixtures?|testdata|test-data|__snapshots__|\"\n     r\"src/test/resources)/.+$\",\n     \"Fixture and snapshot files are loaded by path at runtime, not imported.\"),\n]\n_ESCALATION_RULES = [(rid, re.compile(pat), why) for rid, pat, why in _ESCALATIONS]\n\n# What this agent structurally cannot see. Printed with every recommendation.\n_BLIND_SPOTS = [\n    \"A selector or test id matching markup the test never imports. Changing an id in a \"\n    \"component breaks the page object that looks for it, with no edge between them - which is \"\n    \"the coupling agent 12 in this section exists to repair.\",\n    \"Anything across an HTTP or process boundary. A test calling an endpoint implemented \"\n    \"elsewhere has no import path to it.\",\n    \"Database migrations, seed data and stored procedures, which reach tests through the data \"\n    \"rather than through code.\",\n    \"Values read by name at runtime - environment variables, feature flags, system properties.\",\n    \"Cucumber and other BDD glue, which binds steps to features by regular expression rather \"\n    \"than by import.\",\n    \"Shared state between tests: a seeded account, a tenant, a port, a browser profile. A \"\n    \"change that makes one test leave dirt behind breaks another that imports nothing from it.\",\n    \"Timing. A change that makes a page slower can trip a timeout in a test with no structural \"\n    \"relationship to it.\",\n]\n\n\nclass RegressionImpactAnalyzer(Component):\n    display_name = \"Regression Impact Analyzer\"\n    description = \"Works out which tests can reach the code a diff changed.\"\n    documentation = \"https://martinfowler.com/articles/rise-test-impact-analysis.html\"\n    icon = \"git-compare\"\n    name = \"RegressionImpactAnalyzer\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"diff\",\n            display_name=\"Git diff\",\n            info=\"A path to a .diff or .patch file, or the diff text itself.\",\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"default_diff\",\n            display_name=\"Default git diff\",\n            info=\"Used whenever the field above is empty.\",\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"pasted_diff\",\n            display_name=\"Pasted diff\",\n            info=\"Paste a diff here instead of reading one from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"repo_path\",\n            display_name=\"Repository path\",\n            info=\"The repository the diff applies to. The import graph is built from it.\",\n            value=\"\",\n        ),\n        IntInput(\n            name=\"max_depth\",\n            display_name=\"Maximum walk depth\",\n            info=\"How far to follow imports backwards from a changed file.\",\n            value=8,\n            advanced=True,\n        ),\n        IntInput(\n            name=\"large_diff_files\",\n            display_name=\"Large-diff threshold\",\n            info=\"A diff touching more files than this escalates to the whole suite.\",\n            value=40,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where impacted_tests.json is written. The plan writer reads it back from here, \"\n                \"so both nodes must point at the same folder.\"\n            ),\n            value=\"\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Brief\", name=\"brief\", method=\"build_brief\"),\n        Output(display_name=\"Findings\", name=\"findings\", method=\"build_findings\"),\n    ]\n\n    # ------------------------------------------------------------- loading\n\n    def _diff_text(self) -> tuple:\n        pasted = (self.pasted_diff or \"\").strip()\n        if pasted:\n            return pasted, \"pasted diff\"\n        for candidate in (self.diff, self.default_diff):\n            raw = (candidate or \"\").strip().strip('\"').strip(\"'\")\n            if not raw:\n                continue\n            if Path(raw).is_file():\n                try:\n                    return Path(raw).read_text(encoding=\"utf-8\", errors=\"replace\"), raw\n                except OSError as exc:\n                    msg = f\"Could not read the diff from {raw} - {exc}\"\n                    raise ValueError(msg) from exc\n            if \"diff --git\" in raw or raw.lstrip().startswith((\"--- \", \"@@\")):\n                return raw, \"inline diff\"\n        msg = (\n            \"No diff reached this component. Without one there is nothing to compute an \"\n            \"impacted set from, and a model asked which tests to run with no diff in front of \"\n            \"it will produce a confident list of test names that mean nothing. Set 'Default \"\n            \"git diff' to a file, or paste a diff.\"\n        )\n        raise ValueError(msg)\n\n    def _root(self) -> Path:\n        raw = (self.repo_path or \"\").strip().strip('\"').strip(\"'\")\n        if raw and Path(raw).is_dir():\n            return Path(raw).resolve()\n        msg = (\n            \"No readable repository path. The impacted set is computed from the repository's \"\n            \"own import graph, so the diff alone is not enough. Set 'Repository path' to the \"\n            \"checkout the diff applies to.\"\n        )\n        raise ValueError(msg)\n\n    # ------------------------------------------------------------- the diff\n\n    @staticmethod\n    def _parse_diff(text: str) -> dict:\n        files, unreadable = {}, []\n        if \"diff --cc\" in text or re.search(r\"^@@@ \", text, re.MULTILINE):\n            unreadable.append(\"a combined (merge) diff, which this parser does not read\")\n\n        blocks = list(_DIFF_FILE.finditer(text))\n        for i, match in enumerate(blocks):\n            old_path, new_path = match.group(1).strip(), match.group(2).strip()\n            body = text[match.end():blocks[i + 1].start() if i + 1 < len(blocks) else len(text)]\n\n            if \"GIT binary patch\" in body:\n                unreadable.append(f\"{new_path} is a binary patch\")\n                continue\n            if \"Subproject commit\" in body:\n                unreadable.append(f\"{new_path} is a submodule pointer change\")\n                continue\n\n            kind = \"modified\"\n            if re.search(r\"^new file mode\", body, re.MULTILINE):\n                kind = \"added\"\n            elif re.search(r\"^deleted file mode\", body, re.MULTILINE):\n                kind = \"deleted\"\n            elif old_path != new_path:\n                kind = \"renamed\"\n            elif not _DIFF_HUNK.search(body) and re.search(r\"^old mode\", body, re.MULTILINE):\n                kind = \"mode-only\"\n\n            changed, substantive = [], False\n            for line in body.splitlines():\n                if line.startswith((\"+++\", \"---\")):\n                    continue\n                if line.startswith((\"+\", \"-\")) and len(line) > 1:\n                    content = line[1:]\n                    changed.append(content)\n                    if content.strip() and not _COMMENT_LINE.match(content):\n                        substantive = True\n\n            files[new_path] = {\n                \"path\": new_path,\n                \"old_path\": old_path,\n                \"change\": kind,\n                \"lines_changed\": len(changed),\n                \"comment_or_whitespace_only\": bool(changed) and not substantive,\n            }\n        return {\"files\": list(files.values()), \"unreadable\": unreadable}\n\n    # ------------------------------------------------------------- the repo\n\n    def _index(self, root: Path) -> list:\n        \"\"\"Every source file, as a RESOLVED path.\n\n        Resolved consistently and everywhere on purpose. Import targets have to\n        be resolved to be compared, and mixing the two forms means a lookup\n        quietly returns nothing rather than failing - which for this agent\n        shows up as an empty impacted set, the exact false negative the whole\n        design is meant to prevent.\n        \"\"\"\n        found = []\n        for path in root.rglob(\"*\"):\n            if not path.is_file():\n                continue\n            if any(part in _SKIP_DIRS for part in path.parts):\n                continue\n            if path.suffix.lower() in (*_TS_EXT, \".java\"):\n                found.append(path.resolve())\n        return sorted(found)\n\n    @staticmethod\n    def _rel(root: Path, path: Path) -> str:\n        try:\n            return path.relative_to(root).as_posix()\n        except ValueError:\n            return path.as_posix()\n\n    @staticmethod\n    def _ts_aliases(root: Path) -> dict:\n        \"\"\"tsconfig paths, so '@utils/money' resolves like the bundler resolves it.\"\"\"\n        aliases = {}\n        for name in (\"tsconfig.json\", \"jsconfig.json\"):\n            config = root / name\n            if not config.is_file():\n                continue\n            try:\n                text = re.sub(r\"//.*?$|/\\*.*?\\*/\", \"\", config.read_text(encoding=\"utf-8\"),\n                              flags=re.MULTILINE | re.DOTALL)\n                data = json.loads(text)\n            except (OSError, json.JSONDecodeError):\n                continue\n            options = data.get(\"compilerOptions\") or {}\n            base = options.get(\"baseUrl\") or \".\"\n            for pattern, targets in (options.get(\"paths\") or {}).items():\n                if targets:\n                    aliases[pattern] = (base, targets[0])\n        return aliases\n\n    def _resolve_ts(self, specifier: str, from_file: Path, root: Path, index: set, aliases: dict):\n        if specifier.startswith(\".\"):\n            base = (from_file.parent / specifier).resolve()\n        else:\n            base = None\n            for pattern, (alias_base, target) in aliases.items():\n                prefix = pattern.rstrip(\"*\")\n                if pattern.endswith(\"*\") and specifier.startswith(prefix):\n                    rest = specifier[len(prefix):]\n                    base = (root / alias_base / target.rstrip(\"*\")).resolve() / rest\n                    break\n                if pattern == specifier:\n                    base = (root / alias_base / target).resolve()\n                    break\n            if base is None:\n                return None  # a package, not a file in this repo\n\n        candidates = [base]\n        stem = base.with_suffix(\"\")\n        # './money' -> money.ts ; './money.js' -> money.ts (TS writes .js on purpose)\n        candidates += [Path(str(base) + ext) for ext in _TS_EXT]\n        candidates += [Path(str(stem) + ext) for ext in _TS_EXT]\n        candidates += [base / name for name in _INDEX_FILES]\n        for candidate in candidates:\n            resolved = candidate.resolve()\n            if resolved in index:\n                return resolved\n        return None\n\n    def _graph(self, root: Path, files: list) -> tuple:\n        index = {p.resolve() for p in files}\n        aliases = self._ts_aliases(root)\n        java_by_fqn = {}\n        text_of = {}\n\n        for path in files:\n            try:\n                text = path.read_text(encoding=\"utf-8\", errors=\"replace\")\n            except OSError:\n                continue\n            text_of[path] = text\n            if path.suffix == \".java\":\n                package = _JAVA_PACKAGE.search(text)\n                fqn = f\"{package.group(1)}.{path.stem}\" if package else path.stem\n                java_by_fqn[fqn] = path\n\n        imports = {}\n        for path, text in text_of.items():\n            targets = set()\n            if path.suffix == \".java\":\n                own_package = _JAVA_PACKAGE.search(text)\n                own_package = own_package.group(1) if own_package else \"\"\n                for fqn in _JAVA_IMPORT.findall(text):\n                    hit = java_by_fqn.get(fqn)\n                    if hit is None and fqn.endswith(\".*\"):\n                        prefix = fqn[:-2] + \".\"\n                        for known, known_path in java_by_fqn.items():\n                            if known.startswith(prefix):\n                                targets.add(known_path)\n                        continue\n                    if hit is not None:\n                        targets.add(hit)\n                # Same-package classes need no import statement, but visibility\n                # is not dependency: adding an edge for every class in the\n                # package makes each test class depend on its neighbours and\n                # selects the lot. The class has to actually be named.\n                for known, known_path in java_by_fqn.items():\n                    if known_path == path or not own_package:\n                        continue\n                    if known.rsplit(\".\", 1)[0] != own_package:\n                        continue\n                    simple = known.rsplit(\".\", 1)[-1]\n                    if re.search(rf\"\\b{re.escape(simple)}\\b\", text):\n                        targets.add(known_path)\n            else:\n                for groups in _TS_IMPORT.findall(text):\n                    specifier = next((g for g in groups if g), \"\")\n                    if not specifier:\n                        continue\n                    hit = self._resolve_ts(specifier, path, root, index, aliases)\n                    if hit is not None:\n                        targets.add(hit)\n            imports[path] = targets\n\n        importers = {path: set() for path in text_of}\n        for path, targets in imports.items():\n            for target in targets:\n                importers.setdefault(target, set()).add(path)\n        return imports, importers\n\n    @staticmethod\n    def _is_test(root: Path, path: Path) -> bool:\n        rel = path.relative_to(root).as_posix() if path.is_relative_to(root) else path.as_posix()\n        name = path.name\n        if path.suffix == \".java\":\n            return name.endswith((\"Test.java\", \"Tests.java\", \"IT.java\")) or \"/src/test/\" in f\"/{rel}\"\n        return (\".spec.\" in name or \".test.\" in name\n                or rel.startswith(\"tests/\") or \"/tests/\" in f\"/{rel}\"\n                or rel.startswith(\"e2e/\") or \"/__tests__/\" in f\"/{rel}\")\n\n    # ----------------------------------------------------------- analysing\n\n    def _analyse(self) -> dict:\n        diff_text, diff_origin = self._diff_text()\n        root = self._root()\n        parsed = self._parse_diff(diff_text)\n        if not parsed[\"files\"] and not parsed[\"unreadable\"]:\n            msg = (f\"No changed files were found in the diff ({diff_origin}). Check it is a \"\n                   \"unified diff produced by git.\")\n            raise ValueError(msg)\n\n        files = self._index(root)\n        if not files:\n            msg = (f\"No TypeScript or Java source files under {root}. Point the analyzer at the \"\n                   \"root of the repository the diff applies to.\")\n            raise ValueError(msg)\n\n        imports, importers = self._graph(root, files)\n        tests = sorted(p for p in files if self._is_test(root, p))\n        by_rel = {self._rel(root, p): p for p in files}\n\n        escalations, unmapped, skipped = [], [], []\n        seeds = []\n        for entry in parsed[\"files\"]:\n            path_str = entry[\"path\"]\n            for rule_id, pattern, why in _ESCALATION_RULES:\n                if pattern.search(path_str):\n                    escalations.append({\"rule\": rule_id, \"file\": path_str, \"why\": why})\n                    break\n            else:\n                if entry[\"comment_or_whitespace_only\"]:\n                    skipped.append({**entry, \"reason\": \"only comments or whitespace changed\"})\n                    continue\n                if entry[\"change\"] == \"mode-only\":\n                    skipped.append({**entry, \"reason\": \"file mode changed, content did not\"})\n                    continue\n                hit = by_rel.get(path_str)\n                if hit is None and entry[\"change\"] != \"deleted\":\n                    unmapped.append(entry)\n                elif hit is not None:\n                    seeds.append((hit, entry))\n\n        if len(parsed[\"files\"]) > max(int(self.large_diff_files or 40), 1):\n            escalations.append({\n                \"rule\": \"large_diff\", \"file\": f\"{len(parsed['files'])} files\",\n                \"why\": \"A diff this wide is not usefully narrowed; the subset would be most of \"\n                       \"the suite with the risk of missing the one test that mattered.\",\n            })\n        for note in parsed[\"unreadable\"]:\n            escalations.append({\"rule\": \"unreadable_diff\", \"file\": note,\n                                \"why\": \"Part of the diff could not be read, so the changed-file \"\n                                       \"list is incomplete and any subset from it is partial.\"})\n        for entry in unmapped:\n            escalations.append({\n                \"rule\": \"file_not_in_repo\", \"file\": entry[\"path\"],\n                \"why\": \"This path is not in the repository being analysed, so nothing can be \"\n                       \"walked from it. Either the repository path is wrong or the file is \"\n                       \"generated.\",\n            })\n\n        depth_limit = max(int(self.max_depth or 8), 1)\n        impact = {}\n        for seed, entry in seeds:\n            seen = {seed: 0}\n            frontier = [seed]\n            depth = 0\n            while frontier and depth < depth_limit:\n                depth += 1\n                nxt = []\n                for node in frontier:\n                    for importer in importers.get(node, ()):\n                        if importer not in seen:\n                            seen[importer] = depth\n                            nxt.append(importer)\n                frontier = nxt\n            for node, distance in seen.items():\n                if not self._is_test(root, node):\n                    continue\n                rel = self._rel(root, node)\n                record = impact.setdefault(rel, {\"test\": rel, \"distance\": distance, \"because\": []})\n                record[\"distance\"] = min(record[\"distance\"], distance)\n                record[\"because\"].append({\"changed\": self._rel(root, seed), \"hops\": distance})\n\n        full_suite = bool(escalations)\n        if full_suite:\n            selected = [{\"test\": self._rel(root, t), \"tier\": \"full_suite\",\n                         \"distance\": None, \"because\": []} for t in tests]\n        else:\n            selected = []\n            for rel, record in sorted(impact.items()):\n                tier = \"must_run\" if record[\"distance\"] <= 1 else \"should_run\"\n                selected.append({\"test\": rel, \"tier\": tier,\n                                 \"distance\": record[\"distance\"],\n                                 \"because\": record[\"because\"][:4]})\n            selected.sort(key=lambda r: (r[\"tier\"] != \"must_run\", r[\"test\"]))\n\n        counts = {\n            \"must_run\": sum(1 for r in selected if r[\"tier\"] == \"must_run\"),\n            \"should_run\": sum(1 for r in selected if r[\"tier\"] == \"should_run\"),\n            \"full_suite\": sum(1 for r in selected if r[\"tier\"] == \"full_suite\"),\n        }\n        total_tests = len(tests)\n        selected_count = len(selected)\n        return {\n            \"diff_source\": diff_origin,\n            \"repository\": str(root),\n            \"files_changed\": len(parsed[\"files\"]),\n            \"changed_files\": parsed[\"files\"],\n            \"skipped_changes\": skipped,\n            \"source_files_indexed\": len(files),\n            \"tests_total\": total_tests,\n            \"tests_selected\": selected_count,\n            \"percent_skipped\": round(100.0 * (total_tests - selected_count) / total_tests, 1)\n            if total_tests else 0.0,\n            \"full_suite\": full_suite,\n            \"escalations\": escalations,\n            \"counts\": counts,\n            \"selected\": selected,\n            \"commands\": self._commands(root, selected),\n            \"blind_spots\": _BLIND_SPOTS,\n        }\n\n    @staticmethod\n    def _commands(root: Path, selected: list) -> list:\n        ts = [r[\"test\"] for r in selected if r[\"test\"].endswith(_TS_EXT)]\n        java = [Path(r[\"test\"]).stem for r in selected if r[\"test\"].endswith(\".java\")]\n        out = []\n        if ts:\n            out.append({\"ecosystem\": \"typescript\", \"command\": \"npx playwright test \" + \" \".join(ts)})\n        if java:\n            out.append({\"ecosystem\": \"java\", \"command\": f\"mvn test -Dtest={','.join(sorted(set(java)))}\"})\n        return out\n\n    # -------------------------------------------------------------- disk\n\n    FINDINGS_FILE = \"impacted_tests.json\"\n\n    def _persist(self, analysis: dict) -> None:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            return\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n        (folder / self.FINDINGS_FILE).write_text(\n            json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n    # ------------------------------------------------------------ outputs\n\n    def _brief_text(self, a: dict) -> str:\n        lines = [\n            \"# Regression impact\", \"\",\n            f\"Diff: {a['files_changed']} file(s) changed\",\n            f\"Repository: {a['repository']} ({a['source_files_indexed']} source files indexed)\",\n            f\"Tests in the suite: {a['tests_total']}\",\n        ]\n        if a[\"full_suite\"]:\n            lines.append(\"VERDICT: run the whole suite. A subset would not be honest here.\")\n        else:\n            lines.append(f\"Selected: {a['tests_selected']} of {a['tests_total']} \"\n                         f\"({a['percent_skipped']:.0f}% of the suite skipped) - \"\n                         f\"{a['counts']['must_run']} must-run, {a['counts']['should_run']} should-run\")\n\n        if a[\"escalations\"]:\n            lines.extend([\"\", \"## Why the whole suite\"])\n            for e in a[\"escalations\"]:\n                lines.append(f\"- {e['file']} [{e['rule']}]: {e['why']}\")\n\n        lines.extend([\"\", \"## Changed files\"])\n        for f in a[\"changed_files\"]:\n            lines.append(f\"- {f['path']} ({f['change']}, {f['lines_changed']} lines changed)\")\n        for s in a[\"skipped_changes\"]:\n            lines.append(f\"- {s['path']}: ignored - {s['reason']}\")\n\n        if not a[\"full_suite\"] and a[\"selected\"]:\n            lines.extend([\"\", \"## Selected tests\"])\n            for r in a[\"selected\"]:\n                trail = \", \".join(f\"{b['changed']} ({b['hops']} hop(s))\" for b in r[\"because\"][:2])\n                lines.append(f\"- [{r['tier']}] {r['test']} <- {trail}\")\n\n        lines.extend([\"\", \"## What this analysis cannot see\"])\n        for spot in a[\"blind_spots\"]:\n            lines.append(f\"- {spot}\")\n        return \"\\n\".join(lines)\n\n    def build_brief(self) -> Message:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Message(text=self._brief_text(a))\n\n    def build_findings(self) -> Data:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Data(data=a)\n\n    @staticmethod\n    def _status(a: dict) -> str:\n        if a[\"full_suite\"]:\n            return f\"full suite ({a['tests_total']} tests)\"\n        return f\"{a['tests_selected']}/{a['tests_total']} tests, {a['percent_skipped']:.0f}% skipped\"\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_diff": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_diff",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/sample_diffs/01_change_money_util.diff",
+                "display_name": "Default git diff",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the field above is empty.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "diff": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "diff",
+                "value": "",
+                "display_name": "Git diff",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "A path to a .diff or .patch file, or the diff text itself.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "large_diff_files": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "large_diff_files",
+                "value": 40,
+                "display_name": "Large-diff threshold",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "A diff touching more files than this escalates to the whole suite.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "max_depth": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_depth",
+                "value": 8,
+                "display_name": "Maximum walk depth",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "How far to follow imports backwards from a changed file.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where impacted_tests.json is written. The plan writer reads it back from here, so both nodes must point at the same folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "pasted_diff": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pasted_diff",
+                "value": "",
+                "display_name": "Pasted diff",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste a diff here instead of reading one from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "repo_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "repo_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/sample_repo",
+                "display_name": "Repository path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The repository the diff applies to. The import graph is built from it.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Works out which tests can reach the code a diff changed.",
+            "icon": "git-compare",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Regression Impact Analyzer",
+            "documentation": "https://martinfowler.com/articles/rise-test-impact-analysis.html",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "brief",
+                "display_name": "Brief",
+                "method": "build_brief",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "findings",
+                "display_name": "Findings",
+                "method": "build_findings",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "diff",
+              "default_diff",
+              "pasted_diff",
+              "repo_path",
+              "max_depth",
+              "large_diff_files",
+              "output_dir"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.regression_impact_analyzer",
+              "code_hash": "4871a397330e",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 440,
+          "y": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Rg3Pt",
+        "type": "genericNode",
+        "position": {
+          "x": 880,
+          "y": 300
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are an SDET advising the team on a regression run.\n\nThe set of tests below was computed from the repository's own import graph, and every test in it carries the path by which it was reached. Do not add tests, do not remove tests, and do not recompute anything - which tests run is already decided.\n\nWrite under 300 words, in this order:\n\n1. \"What changed\" - one short paragraph on what this diff actually does and where its risk sits.\n2. \"Run these first\" - order the selected tests, highest risk first, one line each with the reason. If the whole suite is being run, name the handful to run first for the fastest useful signal instead.\n3. \"What could still bite\" - choose the two or three blind spots from the list that are genuinely relevant to THIS diff and say what each would mean here. Do not restate the whole list.\n\nKeep the trade honestly in view. The value of a subset is the tests it skips; the cost is that a skipped test cannot fail. Say which of those is larger for this particular change.\n\nNo preamble, and do not reproduce the tables.\n\nFINDINGS\n{findings}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "findings": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "findings",
+                "display_name": "findings",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "findings"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Rg3Pt"
+        },
+        "measured": {
+          "width": 320,
+          "height": 347
+        },
+        "positionAbsolute": {
+          "x": 880,
+          "y": 300
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Rg4Gq",
+        "type": "genericNode",
+        "position": {
+          "x": 1300,
+          "y": 260
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "allam-2-7b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "groq/compound-mini"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.2,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "8af1ca34-3b2f-4eae-9c30-8062a0004c30"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-17T20:08:17.131Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Rg4Gq",
+          "selected_output": "text_output"
+        },
+        "measured": {
+          "width": 320,
+          "height": 495
+        },
+        "positionAbsolute": {
+          "x": 1300,
+          "y": 260
+        }
+      },
+      {
+        "id": "RegressionPlanWriter-Rg5Rw",
+        "type": "genericNode",
+        "position": {
+          "x": 1720,
+          "y": 300
+        },
+        "data": {
+          "id": "RegressionPlanWriter-Rg5Rw",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "advice": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "advice",
+                "value": "",
+                "display_name": "Advice",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's write-up. Placed under the computed evidence, not in place of it.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Regression Plan Writer - a Langflow custom component.\n\nWrites the regression plan and the machine-readable impacted-test list to disk.\n\nThe report is in two halves. The first is **computed**: which files changed,\nwhich tests reach them, through how many hops, and the command to run them. An\nSDET who does not believe the subset can follow the chain from any selected test\nback to the diff, because each one carries the path it was reached by.\n\nThe second is the model's: what to run first and what the risk of the subset is.\nIt is labelled as the model's and sits under the evidence.\n\nEvery plan ends with what the analysis could not see. That section is not a\ndisclaimer, it is the most important part of a subset recommendation - the tests\nbeing skipped are skipped on the strength of a static import graph, and the\nreader has to know what that graph is blind to before they trust it.\n\"\"\"\n\nimport json\nimport re\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_FENCE_WHOLE = re.compile(r\"^\\s*```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\\s*$\", re.DOTALL)\n\n\nclass RegressionPlanWriter(Component):\n    display_name = \"Regression Plan Writer\"\n    description = \"Writes the regression plan and the impacted-test list to disk.\"\n    documentation = \"https://martinfowler.com/articles/rise-test-impact-analysis.html\"\n    icon = \"file-text\"\n    name = \"RegressionPlanWriter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"advice\",\n            display_name=\"Advice\",\n            info=\"The model's write-up. Placed under the computed evidence, not in place of it.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where regression_plan.md is written, and where impacted_tests.json is read \"\n                \"from. Point this at the same folder as the analyzer's Reports folder.\"\n            ),\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"report_name\",\n            display_name=\"Report file name\",\n            value=\"regression_plan.md\",\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_report\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    FINDINGS_FILE = \"impacted_tests.json\"\n\n    def _findings(self, folder: Path) -> dict:\n        path = folder / self.FINDINGS_FILE\n        if not path.is_file():\n            msg = (f\"No {self.FINDINGS_FILE} in {folder}. The Regression Impact Analyzer writes \"\n                   \"it, so set its Reports folder to this same folder and run the analysis first.\")\n            raise ValueError(msg)\n        try:\n            data = json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n        if not isinstance(data, dict) or \"selected\" not in data:\n            msg = f\"{path.name} does not look like an impact analysis; it has no selected tests.\"\n            raise ValueError(msg)\n        return data\n\n    @staticmethod\n    def _clean_markdown(text: str) -> str:\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned no advice to write.\"\n            raise ValueError(msg)\n        whole = _FENCE_WHOLE.match(raw)\n        return (whole.group(1) if whole else raw).strip()\n\n    # ------------------------------------------------------------ composing\n\n    def _compose(self, f: dict, advice: str) -> str:\n        stamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d\")\n        selected = f.get(\"selected\") or []\n        counts = f.get(\"counts\") or {}\n        full = f.get(\"full_suite\")\n\n        out = [\n            \"# Regression plan\",\n            \"\",\n            f\"*Generated {stamp} by the Smart Regression Advisor. The selected set is computed \"\n            \"from the repository's import graph — every test below carries the path it was \"\n            \"reached by.*\",\n            \"\",\n            \"## At a glance\",\n            \"\",\n            \"| | |\",\n            \"|---|---|\",\n            f\"| Files changed | {f.get('files_changed', 0)} |\",\n            f\"| Source files indexed | {f.get('source_files_indexed', 0)} |\",\n            f\"| Tests in the suite | {f.get('tests_total', 0)} |\",\n        ]\n        if full:\n            out.append(\"| **Verdict** | **Run the whole suite** |\")\n        else:\n            out.append(f\"| **Tests selected** | **{f.get('tests_selected', 0)} of \"\n                       f\"{f.get('tests_total', 0)}** — {f.get('percent_skipped', 0):.0f}% skipped |\")\n            out.append(f\"| Must run | {counts.get('must_run', 0)} |\")\n            out.append(f\"| Should run | {counts.get('should_run', 0)} |\")\n        out.append(\"\")\n\n        if f.get(\"escalations\"):\n            out.extend([\n                \"## Why the whole suite\",\n                \"\",\n                \"These changes cannot be modelled as edges in an import graph, so narrowing \"\n                \"would be a guess dressed as arithmetic.\",\n                \"\",\n                \"| File | Rule | Why |\",\n                \"|---|---|---|\",\n            ])\n            for e in f[\"escalations\"]:\n                out.append(f\"| `{e.get('file', '')}` | {e.get('rule', '')} | {e.get('why', '')} |\")\n            out.append(\"\")\n\n        changed = f.get(\"changed_files\") or []\n        if changed:\n            out.extend([\"## What changed\", \"\", \"| File | Change | Lines |\", \"|---|---|---:|\"])\n            for c in changed:\n                out.append(f\"| `{c.get('path', '')}` | {c.get('change', '')} \"\n                           f\"| {c.get('lines_changed', 0)} |\")\n            out.append(\"\")\n        for s in f.get(\"skipped_changes\") or []:\n            out.append(f\"- `{s.get('path', '')}` was ignored — {s.get('reason', '')}\")\n        if f.get(\"skipped_changes\"):\n            out.append(\"\")\n\n        if selected and not full:\n            out.extend([\n                \"## Tests to run\",\n                \"\",\n                \"| Tier | Test | Reached from | Hops |\",\n                \"|---|---|---|---:|\",\n            ])\n            for r in selected:\n                because = (r.get(\"because\") or [{}])[0]\n                out.append(f\"| {r.get('tier', '')} | `{r.get('test', '')}` \"\n                           f\"| `{because.get('changed', '')}` | {r.get('distance', '')} |\")\n            out.append(\"\")\n        elif full:\n            out.extend([f\"## Tests to run ({len(selected)})\", \"\",\n                        \"The whole suite, for the reasons above.\", \"\"])\n        elif not selected:\n            out.extend([\"## Tests to run\", \"\",\n                        \"**None.** Nothing in the diff reaches any test in this repository. \"\n                        \"Read the blind spots below before taking that as permission to skip \"\n                        \"the regression run.\", \"\"])\n\n        if f.get(\"commands\"):\n            out.extend([\"## Run it\", \"\", \"```bash\"])\n            for c in f[\"commands\"]:\n                out.append(f\"# {c.get('ecosystem', '')}\")\n                out.append(c.get(\"command\", \"\"))\n            out.extend([\"```\", \"\"])\n\n        out.extend([\n            \"---\",\n            \"\",\n            \"## Advice\",\n            \"\",\n            \"*This section is written by a language model from the evidence above. The selected \"\n            \"set is not its work; the ordering and the risk assessment are.*\",\n            \"\",\n            advice,\n            \"\",\n            \"---\",\n            \"\",\n            \"## What this analysis cannot see\",\n            \"\",\n            \"The tests left out are left out on the strength of a static import graph. These \"\n            \"couplings are real and invisible to it, and any of them can mean a skipped test \"\n            \"would have caught the change:\",\n            \"\",\n        ])\n        for spot in f.get(\"blind_spots\") or []:\n            out.append(f\"- {spot}\")\n        out.append(\"\")\n        return \"\\n\".join(out)\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set a reports folder on the Regression Plan Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        findings = self._findings(folder)\n        advice = self._clean_markdown(self.advice)\n\n        name = Path((self.report_name or \"regression_plan.md\").strip()).name or \"regression_plan.md\"\n        if not name.endswith(\".md\"):\n            name += \".md\"\n\n        report_path = folder / name\n        report = self._compose(findings, advice)\n        report_path.write_text(report if report.endswith(\"\\n\") else report + \"\\n\", encoding=\"utf-8\")\n\n        return {\n            \"report\": str(report_path),\n            \"report_lines\": len(report.splitlines()),\n            \"findings_json\": str(folder / self.FINDINGS_FILE),\n            \"files_changed\": findings.get(\"files_changed\", 0),\n            \"tests_total\": findings.get(\"tests_total\", 0),\n            \"tests_selected\": findings.get(\"tests_selected\", 0),\n            \"percent_skipped\": findings.get(\"percent_skipped\", 0),\n            \"full_suite\": findings.get(\"full_suite\", False),\n            \"escalations\": len(findings.get(\"escalations\") or []),\n        }\n\n    def write_report(self) -> Message:\n        r = self._write()\n        self.status = (\"full suite\" if r[\"full_suite\"]\n                       else f\"{r['tests_selected']}/{r['tests_total']} tests\")\n        if r[\"full_suite\"]:\n            headline = (f\"Run the whole suite ({r['tests_total']} tests) - \"\n                        f\"{r['escalations']} change(s) cannot be narrowed safely.\")\n        else:\n            headline = (f\"Run {r['tests_selected']} of {r['tests_total']} tests, \"\n                        f\"skipping {r['percent_skipped']:.0f}% of the suite.\")\n        return Message(text=\"\\n\".join([\n            headline,\n            f\"{r['files_changed']} file(s) changed.\",\n            \"\",\n            f\"Plan:     {r['report']}  ({r['report_lines']} lines)\",\n            f\"Impacted: {r['findings_json']}\",\n        ]))\n\n    def write_details(self) -> Data:\n        r = self._write()\n        self.status = (\"full suite\" if r[\"full_suite\"]\n                       else f\"{r['tests_selected']}/{r['tests_total']} tests\")\n        return Data(data=r)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where regression_plan.md is written, and where impacted_tests.json is read from. Point this at the same folder as the analyzer's Reports folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "report_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "report_name",
+                "value": "regression_plan.md",
+                "display_name": "Report file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Writes the regression plan and the impacted-test list to disk.",
+            "icon": "file-text",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Regression Plan Writer",
+            "documentation": "https://martinfowler.com/articles/rise-test-impact-analysis.html",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "advice",
+              "output_dir",
+              "report_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.regression_plan_writer",
+              "code_hash": "3159da0c3f3a",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 1720,
+          "y": 300
+        }
+      },
+      {
+        "id": "ChatOutput-Rg6Co",
+        "type": "genericNode",
+        "position": {
+          "x": 2140,
+          "y": 340
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Rg6Co"
+        },
+        "measured": {
+          "width": 192,
+          "height": 52
+        },
+        "positionAbsolute": {
+          "x": 2140,
+          "y": 340
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Rg1Ti",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Rg1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "RegressionImpactAnalyzer-Rg2An",
+        "targetHandle": "{œfieldNameœ:œdiffœ,œidœ:œRegressionImpactAnalyzer-Rg2Anœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "diff",
+            "id": "RegressionImpactAnalyzer-Rg2An",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Rg1Ti",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Rg1Ti{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Rg1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-RegressionImpactAnalyzer-Rg2An{œfieldNameœ:œdiffœ,œidœ:œRegressionImpactAnalyzer-Rg2Anœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "RegressionImpactAnalyzer-Rg2An",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œRegressionImpactAnalyzer-Rg2Anœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Rg3Pt",
+        "targetHandle": "{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Rg3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "findings",
+            "id": "Prompt Template-Rg3Pt",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "RegressionImpactAnalyzer-Rg2An",
+            "name": "brief",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__RegressionImpactAnalyzer-Rg2An{œdataTypeœ:œCustomComponentœ,œidœ:œRegressionImpactAnalyzer-Rg2Anœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Rg3Pt{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Rg3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Rg3Pt",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Rg3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Rg4Gq",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Rg4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Rg4Gq",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Rg3Pt",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Rg3Pt{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Rg3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Rg4Gq{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Rg4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Rg4Gq",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Rg4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "RegressionPlanWriter-Rg5Rw",
+        "targetHandle": "{œfieldNameœ:œadviceœ,œidœ:œRegressionPlanWriter-Rg5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "advice",
+            "id": "RegressionPlanWriter-Rg5Rw",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Rg4Gq",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Rg4Gq{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Rg4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-RegressionPlanWriter-Rg5Rw{œfieldNameœ:œadviceœ,œidœ:œRegressionPlanWriter-Rg5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "RegressionPlanWriter-Rg5Rw",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œRegressionPlanWriter-Rg5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Rg6Co",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Rg6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Rg6Co",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "RegressionPlanWriter-Rg5Rw",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__RegressionPlanWriter-Rg5Rw{œdataTypeœ:œCustomComponentœ,œidœ:œRegressionPlanWriter-Rg5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Rg6Co{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Rg6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
