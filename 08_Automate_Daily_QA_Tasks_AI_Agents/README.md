@@ -18,6 +18,7 @@ it works.
 | 09 | [Framework Auditor](02_Langflow_Agents/09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
 | 10 | [Vendor License Monitor](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent) | Combing a seat list by hand to find who stopped using a tool |
 | 11 | [Smart CI/CD Failure Analysis](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent) | Scrolling a CI log for twenty minutes to find one stack trace |
+| 12 | [Auto-Update Selectors (Self-Healing)](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent) | Repointing every broken selector by hand after a restyle |
 
 The agents live in two folders by the tool that runs them:
 [`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
@@ -248,6 +249,34 @@ holds no recognisable error.
 
 See its [README](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent).
 
+## 12 — Auto-Update Selectors (Self-Healing)
+
+Selectors that stopped finding their elements go in; replacements come out, each
+one already run against the page and confirmed to resolve to exactly one element.
+
+Its line between code and model is drawn by asking which half is checkable.
+**Code parses the DOM, reads the old element's identity, builds candidates,
+evaluates them and scores them; the model is asked only whether the element
+found is the element the test meant** — a question about intent that no amount
+of parsing answers. Handing the whole job to a model produces something that
+looks right every time and is verifiable never, which for this task is the worst
+available property.
+
+Its failure mode is the sharpest in the folder because of how quiet it is. A
+selector that resolves to *nothing* fails loudly next run and gets fixed; a
+selector that resolves to the *wrong element* passes, and the suite goes on
+reporting green about something it is no longer testing. So nothing is proposed
+that has not been evaluated, ties are reported rather than broken, and an element
+that is genuinely gone gets a refusal instead of a guess.
+
+It also has to obey a constraint set by its neighbours: **agent 09 flags absolute
+XPath, positional and styling-class selectors as anti-patterns**, so a healer
+emitting them would manufacture debt another agent here reports. Healing climbs a
+ladder toward test ids and accessible names, and leaves the suite more durable
+than it found it.
+
+See its [README](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -310,3 +339,15 @@ model could not determine.
   a `Results:` block at the end, so counting it too reported twenty-four
   failures in a run that had twelve. Whatever parses a log has to know which
   regions are recaps.
+- **Two parsers means two incompatible notions of "this element".** Using lxml
+  for XPath and BeautifulSoup for CSS looks like using each library for its
+  strength; in fact an element found by one cannot be recognised by the other.
+  One engine, and translate into it — declining what will not translate, since a
+  half-translated selector resolves to the wrong thing rather than failing.
+- **Read identity from the selector's subject, not from the whole string.** In
+  `#summary > div:nth-child(4) > span.value` the element addressed is the span.
+  Reading the id from anywhere in the string finds `summary` and heals
+  confidently onto the wrong element.
+- **Mutation-test the guarantee you advertise.** A suite that passes first time
+  has not been shown to work. Seven deliberate defects found two real holes,
+  and one was the single property the whole agent is sold on.
