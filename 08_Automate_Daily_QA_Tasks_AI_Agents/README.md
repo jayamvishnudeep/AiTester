@@ -17,6 +17,7 @@ it works.
 | 08 | [Page Object Generator](02_Langflow_Agents/08_Page_Object_Generator_AI_Agent) | Writing Page Object boilerplate from the markup by hand |
 | 09 | [Framework Auditor](02_Langflow_Agents/09_Framework_Auditor_AI_Agent) | Reading a whole framework by eye to find what has rotted |
 | 10 | [Vendor License Monitor](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent) | Combing a seat list by hand to find who stopped using a tool |
+| 11 | [Smart CI/CD Failure Analysis](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent) | Scrolling a CI log for twenty minutes to find one stack trace |
 
 The agents live in two folders by the tool that runs them:
 [`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
@@ -219,6 +220,34 @@ touched them.
 
 See its [README](02_Langflow_Agents/10_Vendor_License_Monitor_AI_Agent).
 
+## 11 — Smart CI/CD Failure Analysis
+
+A Jenkins, GitHub Actions or CircleCI log goes in; a root cause analysis comes
+out — which step failed, what broke, and which of the failures are actually the
+same failure.
+
+Its line between code and model is about **selection**, and it is the reason the
+implementation departs from the obvious design. Chunking a CI log and
+summarising the chunks spends the budget on noise: the Jenkins sample here is
+205 lines and 17 of them say anything about the failure. So code finds the
+failure region and the model never sees the log. The splitter stays, but as a
+ceiling rather than as the way in.
+
+Grouping is what it actually sells. **Twelve tests went red and they are not
+twelve problems** — nine are the same `NullPointerException` in one page object,
+two are unrelated assertions, one is a timeout. An engineer told that fixes one
+method; an engineer not told reads twelve stack traces. The grouping is counting,
+so the model never does it, and the count is checkable: the extractor reports 12
+failures for a run whose own summary says `Failures: 3, Errors: 9`.
+
+Its failure mode is the sharpest restatement of this folder's oldest lesson. Give
+a model a log from a build that **passed** and ask why it failed, and it does not
+answer "it didn't" — it writes a convincing analysis of a failure that never
+happened. So a passing log is refused outright, as is a failed run whose log
+holds no recognisable error.
+
+See its [README](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -273,3 +302,11 @@ model could not determine.
   absent.** A brief that carried only a *count* for one group produced a
   confident "there are none", contradicting the table printed directly above it.
   If the prompt asks for something by name, the brief has to carry the names.
+- **How much belongs to a finding and how much of it to show are different
+  questions.** Capping both at the same number split one twenty-line npm error
+  block into four separate "failures". Consume to the end of the block; quote
+  the first few lines.
+- **A tool's own summary is not more findings.** Maven reprints every failure in
+  a `Results:` block at the end, so counting it too reported twenty-four
+  failures in a run that had twelve. Whatever parses a log has to know which
+  regions are recaps.
