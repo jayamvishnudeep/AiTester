@@ -1,0 +1,114 @@
+{
+  "source": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent/sample_logs/jenkins_maven_failure.log",
+  "ci_system": "jenkins",
+  "ci_system_name": "Jenkins",
+  "exit_code": 1,
+  "failed_step": "Build",
+  "lines_total": 205,
+  "lines_quoted": 17,
+  "noise_ratio": 0.9171,
+  "failures_total": 12,
+  "group_count": 4,
+  "category_counts": {
+    "timeout": 1,
+    "assertion": 2,
+    "exception": 9
+  },
+  "tests": {
+    "total": 25,
+    "failed": 12,
+    "skipped": 2,
+    "passed": 11
+  },
+  "groups": [
+    {
+      "category": "exception",
+      "category_name": "Unhandled exception",
+      "severity": "high",
+      "signature": "java.lang.NullPointerException: Cannot invoke \"java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)\" because the return value of \"com.shopfront.pages.CheckoutPage.getTotalText()\" i",
+      "occurrences": 9,
+      "first_line": 102,
+      "quote": [
+        "java.lang.NullPointerException: Cannot invoke \"java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)\" because the return value of \"com.shopfront.pages.CheckoutPage.getTotalText()\" is null",
+        "at com.shopfront.pages.CheckoutPage.getTotal(CheckoutPage.java:88)",
+        "at com.shopfront.tests.CheckoutTest.checkoutWithSavedCard(CheckoutTest.java:42)",
+        "at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)",
+        "at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)",
+        "at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:677)"
+      ],
+      "examples": [
+        {
+          "line": 102,
+          "text": "java.lang.NullPointerException: Cannot invoke \"java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)\" because the return value of \"com.shopfront.pages.CheckoutPage.getTotalText()\" is null"
+        },
+        {
+          "line": 109,
+          "text": "java.lang.NullPointerException: Cannot invoke \"java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)\" because the return value of \"com.shopfront.pages.CheckoutPage.getTotalText()\" is null"
+        },
+        {
+          "line": 116,
+          "text": "java.lang.NullPointerException: Cannot invoke \"java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)\" because the return value of \"com.shopfront.pages.CheckoutPage.getTotalText()\" is null"
+        }
+      ]
+    },
+    {
+      "category": "assertion",
+      "category_name": "Assertion failure",
+      "severity": "medium",
+      "signature": "java.lang.AssertionError: expected [Card expired] but found [Payment declined]",
+      "occurrences": 1,
+      "first_line": 165,
+      "quote": [
+        "java.lang.AssertionError: expected [Card expired] but found [Payment declined]",
+        "at org.testng.Assert.fail(Assert.java:110)",
+        "at org.testng.Assert.assertEquals(Assert.java:141)",
+        "at com.shopfront.tests.CheckoutTest.checkoutRejectsExpiredCard(CheckoutTest.java:151)"
+      ],
+      "examples": [
+        {
+          "line": 165,
+          "text": "java.lang.AssertionError: expected [Card expired] but found [Payment declined]"
+        }
+      ]
+    },
+    {
+      "category": "assertion",
+      "category_name": "Assertion failure",
+      "severity": "medium",
+      "signature": "java.lang.AssertionError: expected [# items] but found [# items]",
+      "occurrences": 1,
+      "first_line": 170,
+      "quote": [
+        "java.lang.AssertionError: expected [2 items] but found [3 items]",
+        "at org.testng.Assert.fail(Assert.java:110)",
+        "at org.testng.Assert.assertEquals(Assert.java:141)",
+        "at com.shopfront.tests.CheckoutTest.checkoutHandlesOutOfStock(CheckoutTest.java:168)"
+      ],
+      "examples": [
+        {
+          "line": 170,
+          "text": "java.lang.AssertionError: expected [2 items] but found [3 items]"
+        }
+      ]
+    },
+    {
+      "category": "timeout",
+      "category_name": "Timeout",
+      "severity": "medium",
+      "signature": "org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: [data-testid='order-confirmation'] (tried for # second(s) with # milliseco",
+      "occurrences": 1,
+      "first_line": 175,
+      "quote": [
+        "org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: [data-testid='order-confirmation'] (tried for 30 second(s) with 500 milliseconds interval)",
+        "at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:96)",
+        "at com.shopfront.tests.CheckoutTest.checkoutUnderLoad(CheckoutTest.java:184)"
+      ],
+      "examples": [
+        {
+          "line": 175,
+          "text": "org.openqa.selenium.TimeoutException: Expected condition failed: waiting for visibility of element located by By.cssSelector: [data-testid='order-confirmation'] (tried for 30 second(s) with 500 milliseconds interval)"
+        }
+      ]
+    }
+  ]
+}
