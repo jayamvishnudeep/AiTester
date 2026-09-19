@@ -1,0 +1,211 @@
+{
+  "selectors_total": 6,
+  "counts": {
+    "healed": 4,
+    "ambiguous": 0,
+    "gone": 1,
+    "not_broken": 1
+  },
+  "had_previous_dom": true,
+  "heal_threshold": 45,
+  "ambiguity_margin": 12,
+  "elements_searched": 48,
+  "results": [
+    {
+      "selector": ".btn-primary.checkout-submit",
+      "kind": "css",
+      "resolution": "css",
+      "matches_now": 0,
+      "identity_source": "previous DOM",
+      "target": {
+        "tag": "button",
+        "id": "",
+        "testid": "",
+        "role": "button",
+        "accessible_name": "Place order",
+        "text": "Place order",
+        "section": "Checkout"
+      },
+      "best_score": 48.9,
+      "runner_up_score": 28.4,
+      "outcome": "healed",
+      "score": 48.9,
+      "evidence": [
+        "sits beside the same content",
+        "still a button",
+        "under the 'Checkout' heading"
+      ],
+      "healed": {
+        "rung": "test id",
+        "css": "[data-testid=\"place-order\"]",
+        "playwright": "page.getByTestId('place-order')"
+      },
+      "alternatives": [
+        {
+          "rung": "role and name",
+          "css": "",
+          "role": "button",
+          "name": "Pay now",
+          "playwright": "page.getByRole('button', name='Pay now')"
+        },
+        {
+          "rung": "text",
+          "css": "",
+          "text": "Pay now",
+          "playwright": "page.getByText('Pay now', exact=True)"
+        }
+      ],
+      "why": "Matched at 49 out of 100."
+    },
+    {
+      "selector": "#summary > div:nth-child(4) > span.summary-row__value",
+      "kind": "css",
+      "resolution": "css",
+      "matches_now": 0,
+      "identity_source": "previous DOM",
+      "target": {
+        "tag": "span",
+        "id": "",
+        "testid": "",
+        "role": "",
+        "accessible_name": "£128.49",
+        "text": "£128.49",
+        "section": "Order summary"
+      },
+      "best_score": 90.7,
+      "runner_up_score": 49.1,
+      "outcome": "healed",
+      "score": 90.7,
+      "evidence": [
+        "accessible name '£128.49'",
+        "text '£128.49'",
+        "sits beside the same content",
+        "inside the same identified region"
+      ],
+      "healed": {
+        "rung": "test id",
+        "css": "[data-testid=\"order-total\"]",
+        "playwright": "page.getByTestId('order-total')"
+      },
+      "alternatives": [
+        {
+          "rung": "text",
+          "css": "",
+          "text": "£128.49",
+          "playwright": "page.getByText('£128.49', exact=True)"
+        }
+      ],
+      "why": "Matched at 91 out of 100."
+    },
+    {
+      "selector": "//a[@class='link link--muted js-apply-gift']",
+      "kind": "xpath",
+      "resolution": "xpath-translated",
+      "matches_now": 0,
+      "identity_source": "previous DOM",
+      "target": {
+        "tag": "a",
+        "id": "",
+        "testid": "",
+        "role": "link",
+        "accessible_name": "Apply a gift card",
+        "text": "Apply a gift card",
+        "section": "Payment"
+      },
+      "best_score": 20.2,
+      "runner_up_score": 19.6,
+      "outcome": "gone",
+      "why": "Nothing in the current page resembles this element closely enough (best match scored 20 against a threshold of 45). It looks removed rather than restyled, so the test needs rewriting rather than a new selector."
+    },
+    {
+      "selector": ".basket-item:nth-child(2) .basket-item__remove",
+      "kind": "css",
+      "resolution": "css",
+      "matches_now": 0,
+      "identity_source": "previous DOM",
+      "target": {
+        "tag": "button",
+        "id": "",
+        "testid": "",
+        "role": "button",
+        "accessible_name": "Remove",
+        "text": "Remove",
+        "section": "Your basket"
+      },
+      "best_score": 81.9,
+      "runner_up_score": 68.6,
+      "outcome": "healed",
+      "score": 81.9,
+      "evidence": [
+        "accessible name 'Remove USB-C cable'",
+        "text 'Remove'",
+        "sits beside the same content",
+        "still a button"
+      ],
+      "healed": {
+        "rung": "role and name",
+        "css": "",
+        "role": "button",
+        "name": "Remove USB-C cable",
+        "playwright": "page.getByRole('button', name='Remove USB-C cable')"
+      },
+      "alternatives": [],
+      "why": "Matched at 82 out of 100."
+    },
+    {
+      "selector": "#ship-post",
+      "kind": "css",
+      "resolution": "css",
+      "matches_now": 1,
+      "outcome": "not_broken",
+      "why": "This selector still resolves to exactly one element. Nothing to heal."
+    },
+    {
+      "selector": ".panel--payment .input--text",
+      "kind": "css",
+      "resolution": "css",
+      "matches_now": 0,
+      "identity_source": "previous DOM",
+      "target": {
+        "tag": "input",
+        "id": "card-number",
+        "testid": "",
+        "role": "textbox",
+        "accessible_name": "Card number",
+        "text": "",
+        "section": "Payment"
+      },
+      "best_score": 93.8,
+      "runner_up_score": 32.5,
+      "outcome": "healed",
+      "score": 93.8,
+      "evidence": [
+        "same id 'card-number'",
+        "accessible name 'Card number'",
+        "same name attribute 'cardNumber'",
+        "sits beside the same content"
+      ],
+      "healed": {
+        "rung": "id",
+        "css": "#card-number",
+        "playwright": "page.locator('#card-number')"
+      },
+      "alternatives": [
+        {
+          "rung": "role and name",
+          "css": "",
+          "role": "textbox",
+          "name": "Card number",
+          "playwright": "page.getByRole('textbox', name='Card number')"
+        },
+        {
+          "rung": "label",
+          "css": "",
+          "label": "Card number",
+          "playwright": "page.getByLabel('Card number')"
+        }
+      ],
+      "why": "Matched at 94 out of 100."
+    }
+  ]
+}
