@@ -4,9 +4,10 @@ playwright-report/
 test-results/
 *.class
 *.jar
-# Root README and notes only. A bare "README.md" would match at every level and
-# hide the per-project READMEs too; the leading slash pins it to the repo root.
-/README.md
+# Personal course notes only. The root README is tracked on purpose - it is the
+# first thing anyone cloning this sees, and an untracked front page cannot
+# introduce the repository to anybody. A bare "Notes.md" would match at every
+# level, so the leading slash pins it to the repo root.
 /Notes.md
 .env
 *.env
