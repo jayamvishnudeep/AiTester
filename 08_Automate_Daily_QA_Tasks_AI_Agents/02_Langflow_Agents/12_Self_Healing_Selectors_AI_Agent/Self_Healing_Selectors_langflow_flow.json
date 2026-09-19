@@ -1,0 +1,1772 @@
+{
+  "name": "Self Healing Selectors",
+  "description": "Proposes verified replacements for selectors that broke when the UI changed.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Sh1Ti",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 340
+        },
+        "data": {
+          "id": "TextInput-Sh1Ti",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/sample_dom/broken_selectors.txt"
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "measured": {
+          "width": 320,
+          "height": 285
+        },
+        "positionAbsolute": {
+          "x": 40,
+          "y": 340
+        }
+      },
+      {
+        "id": "SelectorHealer-Sh2He",
+        "type": "genericNode",
+        "position": {
+          "x": 440,
+          "y": 300
+        },
+        "data": {
+          "id": "SelectorHealer-Sh2He",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "ambiguity_margin": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ambiguity_margin",
+                "value": 12,
+                "display_name": "Ambiguity margin",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "If the best candidate beats the runner-up by less than this, the result is reported as ambiguous rather than picking between them.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "broken_selectors": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "broken_selectors",
+                "value": "",
+                "display_name": "Broken selectors",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "A path to a file of selectors, one per line, or the selectors themselves. Blank lines and # comments are ignored.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Selector Healer - a Langflow custom component.\n\nTakes a selector that no longer finds its element and proposes one that does.\n\nThe rule that makes this safe to use is that **nothing is proposed that has not\nbeen run against the page first**. Candidates are generated from the new DOM,\neach is evaluated, and any that matches zero elements or several is thrown away\nbefore scoring. A healed selector that resolves to nothing is worse than the\nbroken one it replaces, because the test now fails somewhere further along; a\nhealed selector that resolves to the wrong element is worse still, because the\ntest passes.\n\nSo the division of labour is: code reads the old element's identity, builds\ncandidates, evaluates them against the markup and scores them; the model is\nasked only the question code cannot answer, which is whether the surviving\ncandidate is really the same thing the test meant.\n\nThree outcomes other than a heal are first-class results, not errors:\n\n- **not_broken** - the selector still resolves. Nothing to do, and saying so is\n  more useful than quietly proposing a replacement nobody needed.\n- **ambiguous** - several candidates are equally good. Picking one would be a\n  coin flip that looks like an answer.\n- **gone** - nothing in the new page plausibly corresponds to the old element.\n  The feature was removed and the test needs rewriting, not a new selector.\n\nNo browser is involved. CSS is evaluated with soupsieve, which is a real\nselector engine rather than a lookalike. XPath, which is what most Selenium\nsuites break on, is translated into CSS over a documented subset and evaluated\nthe same way; an XPath outside that subset degrades to a thin identity read from\nthe selector text and says so, which is better than a second parser whose\nelements the first one cannot recognise. Nothing emitted is ever XPath.\n\"\"\"\n\nimport json\nimport re\nfrom pathlib import Path\n\nfrom bs4 import BeautifulSoup, Tag\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nPARSER = \"html.parser\"\n\n# Attributes a team puts on an element specifically so tests can find it.\n_TESTID_ATTRS = (\"data-testid\", \"data-test-id\", \"data-test\", \"data-qa\", \"data-cy\", \"data-automation-id\")\n\n# An id that looks generated rather than authored. Healing onto one of these\n# produces a selector that breaks on the next render, which is a worse outcome\n# than the break being fixed, because it looks fixed.\n_GENERATED_ID = re.compile(\n    r\"^(?::r[0-9a-z]+:|[0-9a-f]{8}-[0-9a-f]{4}|mui-\\d+|radix-|headlessui-|ember\\d+|react-aria-\\d+|:\\w+:)\"\n    r\"|^[a-z]+[-_]?\\d{6,}$|^[0-9a-f]{16,}$\",\n    re.IGNORECASE,\n)\n\n# Class names that describe how a thing looks, not what it is. These are the\n# classes that changed in the first place, so they are never used to heal.\n_STYLING_CLASS = re.compile(\n    r\"^(?:[a-z]+:)?(?:text|bg|border|p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|w|h|min|max|flex|grid|gap|\"\n    r\"items|justify|self|order|rounded|shadow|opacity|z|top|left|right|bottom|col|row|space|divide|\"\n    r\"font|leading|tracking|uppercase|lowercase|truncate|overflow|absolute|relative|fixed|sticky|block|\"\n    r\"inline|hidden|table|transition|duration|ease|transform|scale|rotate|translate|cursor|select|\"\n    r\"pointer|ring|outline|underline|tabular|grow|shrink|basis|container|mx|antialiased)\"\n    r\"(?:-|$)\",\n    re.IGNORECASE,\n)\n\n_WS = re.compile(r\"\\s+\")\n\n# tag -> implicit ARIA role, for the role+name rung of the ladder.\n_IMPLICIT_ROLE = {\n    \"button\": \"button\", \"a\": \"link\", \"select\": \"combobox\", \"textarea\": \"textbox\",\n    \"h1\": \"heading\", \"h2\": \"heading\", \"h3\": \"heading\", \"h4\": \"heading\",\n    \"h5\": \"heading\", \"h6\": \"heading\", \"img\": \"img\", \"nav\": \"navigation\",\n    \"main\": \"main\", \"table\": \"table\", \"ul\": \"list\", \"ol\": \"list\", \"li\": \"listitem\",\n    \"form\": \"form\", \"header\": \"banner\", \"footer\": \"contentinfo\", \"aside\": \"complementary\",\n    \"section\": \"region\", \"dialog\": \"dialog\", \"progress\": \"progressbar\",\n}\n_INPUT_ROLE = {\n    \"text\": \"textbox\", \"email\": \"textbox\", \"tel\": \"textbox\", \"url\": \"textbox\",\n    \"password\": \"textbox\", \"search\": \"searchbox\", \"number\": \"spinbutton\",\n    \"checkbox\": \"checkbox\", \"radio\": \"radio\", \"range\": \"slider\",\n    \"submit\": \"button\", \"button\": \"button\", \"reset\": \"button\", \"image\": \"button\",\n}\n\n# Attributes that say what an element IS rather than how it looks.\n_STABLE_ATTRS = (\"name\", \"type\", \"href\", \"placeholder\", \"alt\", \"title\", \"value\", \"for\", \"autocomplete\")\n\n\ndef _norm(text: str) -> str:\n    return _WS.sub(\" \", (text or \"\").strip())\n\n\ndef _looks_like_xpath(selector: str) -> bool:\n    s = (selector or \"\").strip()\n    return s.startswith((\"/\", \"(\", \"./\")) or s.startswith(\"xpath=\") or \"//\" in s\n\n\nclass SelectorHealer(Component):\n    display_name = \"Selector Healer\"\n    description = \"Proposes a verified replacement for a selector that no longer finds its element.\"\n    documentation = \"https://playwright.dev/docs/locators\"\n    icon = \"wrench\"\n    name = \"SelectorHealer\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"broken_selectors\",\n            display_name=\"Broken selectors\",\n            info=(\n                \"A path to a file of selectors, one per line, or the selectors themselves. \"\n                \"Blank lines and # comments are ignored.\"\n            ),\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"default_selectors\",\n            display_name=\"Default broken selectors\",\n            info=\"Used whenever the field above is empty. A path, or the selectors themselves.\",\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"dom_after_path\",\n            display_name=\"Current DOM path\",\n            info=\"Path to an HTML snapshot of the page as it is now.\",\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"dom_after\",\n            display_name=\"Current DOM\",\n            info=\"Paste the current HTML here instead of reading it from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"dom_before_path\",\n            display_name=\"Previous DOM path\",\n            info=(\n                \"Optional. A snapshot from when the selector still worked. With it the healer \"\n                \"knows what the element actually was; without it, it can only infer the \"\n                \"element's identity from the selector text.\"\n            ),\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"dom_before\",\n            display_name=\"Previous DOM\",\n            info=\"Paste the previous HTML here instead of reading it from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"heal_threshold\",\n            display_name=\"Heal threshold (0-100)\",\n            info=\"Below this score the element is reported as gone rather than healed.\",\n            value=45,\n            advanced=True,\n        ),\n        IntInput(\n            name=\"ambiguity_margin\",\n            display_name=\"Ambiguity margin\",\n            info=(\n                \"If the best candidate beats the runner-up by less than this, the result is \"\n                \"reported as ambiguous rather than picking between them.\"\n            ),\n            value=12,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where healed_selectors.json is written. The report writer reads it back from \"\n                \"here, so both nodes must point at the same folder.\"\n            ),\n            value=\"\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Brief\", name=\"brief\", method=\"build_brief\"),\n        Output(display_name=\"Findings\", name=\"findings\", method=\"build_findings\"),\n    ]\n\n    # ------------------------------------------------------------- loading\n\n    @staticmethod\n    def _read(path_field: str, pasted: str, label: str, required: bool) -> str:\n        pasted = (pasted or \"\").strip()\n        if pasted:\n            return pasted\n        cleaned = (path_field or \"\").strip().strip('\"').strip(\"'\")\n        if cleaned and Path(cleaned).is_file():\n            try:\n                return Path(cleaned).read_text(encoding=\"utf-8\", errors=\"replace\")\n            except OSError as exc:\n                msg = f\"Could not read {label} from {cleaned} - {exc}\"\n                raise ValueError(msg) from exc\n        if required:\n            msg = (\n                f\"No {label} reached this component. Without the page markup there is nothing \"\n                \"to verify a healed selector against, and a selector that has not been run \"\n                \"against the page is a guess. Set the path field or paste the HTML.\"\n            )\n            raise ValueError(msg)\n        return \"\"\n\n    def _selector_list(self) -> list:\n        raw = (self.broken_selectors or \"\").strip().strip('\"').strip(\"'\")\n        if not raw:\n            raw = (self.default_selectors or \"\").strip().strip('\"').strip(\"'\")\n        if not raw:\n            msg = (\"No broken selectors were given. Put a selector, or a path to a file of them, \"\n                   \"in the input node, or set 'Default broken selectors' on the Selector Healer.\")\n            raise ValueError(msg)\n        if Path(raw).is_file():\n            try:\n                raw = Path(raw).read_text(encoding=\"utf-8\", errors=\"replace\")\n            except OSError as exc:\n                msg = f\"Could not read the selector list from {raw} - {exc}\"\n                raise ValueError(msg) from exc\n        out = []\n        for line in raw.splitlines():\n            line = line.strip()\n            # \"# note\" is a comment; \"#submit\" is an id selector. Requiring the\n            # space is the difference between reading six selectors and silently\n            # reading four.\n            is_comment = line.startswith(\"#\") and (len(line) == 1 or line[1] in \" \\t\")\n            if line and not is_comment:\n                out.append(line)\n        if not out:\n            msg = \"The selector list contained no selectors, only blank lines or comments.\"\n            raise ValueError(msg)\n        return out\n\n    # ------------------------------------------------------------ matching\n\n    @staticmethod\n    def _select(soup: BeautifulSoup, css: str) -> list:\n        try:\n            return soup.select(css)\n        except Exception:  # noqa: BLE001 - an unparseable selector is a result, not a crash\n            return []\n\n    @staticmethod\n    def _xpath_to_css(xpath: str):\n        \"\"\"Translate the XPath a test suite actually contains into CSS.\n\n        Returns (css, text_equals, text_contains) or None when the expression is\n        outside the subset. The subset is: absolute and descendant steps, tag or\n        *, [@attr='v'], [contains(@attr,'v')], [text()='v'],\n        [contains(text(),'v')] and positional [n]. Anything with axes, functions\n        or boolean logic is declined rather than half-translated, because a\n        half-translated selector silently resolves to the wrong element.\n        \"\"\"\n        expr = (xpath or \"\").strip()\n        if expr.startswith(\"xpath=\"):\n            expr = expr[len(\"xpath=\"):].strip()\n        if not expr or not expr.startswith((\"/\", \"(\", \"./\")):\n            return None\n        if re.search(r\"\\b(?:following|preceding|ancestor|descendant|parent|sibling|self)\\s*::\", expr):\n            return None\n        if re.search(r\"\\b(?:last|position|count|not|starts-with|normalize-space|concat)\\s*\\(\", expr):\n            return None\n        if \" and \" in expr or \" or \" in expr or \"|\" in expr:\n            return None\n        expr = expr.strip(\"()\")\n\n        text_equals = text_contains = \"\"\n        parts, buffer, depth = [], \"\", 0\n        for ch in expr:\n            if ch == \"[\":\n                depth += 1\n            elif ch == \"]\":\n                depth -= 1\n            if ch == \"/\" and depth == 0:\n                parts.append(buffer)\n                buffer = \"\"\n            else:\n                buffer += ch\n        parts.append(buffer)\n\n        css_steps, descendant = [], False\n        for raw in parts:\n            if raw == \"\":\n                descendant = True\n                continue\n            step = raw.strip()\n            tag_match = re.match(r\"^([A-Za-z][\\w-]*|\\*)\", step)\n            if not tag_match:\n                return None\n            tag = tag_match.group(1)\n            rest = step[tag_match.end():]\n            css = \"\" if tag == \"*\" else tag\n            for predicate in re.findall(r\"\\[([^\\]]*)\\]\", rest):\n                predicate = predicate.strip()\n                m = re.fullmatch(r\"@([\\w:-]+)\\s*=\\s*['\\\"]([^'\\\"]*)['\\\"]\", predicate)\n                if m:\n                    attr, value = m.group(1), m.group(2)\n                    if attr == \"id\":\n                        css += f\"#{value}\"\n                    elif attr == \"class\":\n                        css += \"\".join(f\".{c}\" for c in value.split())\n                    else:\n                        css += f'[{attr}=\"{value}\"]'\n                    continue\n                m = re.fullmatch(r\"contains\\s*\\(\\s*@([\\w:-]+)\\s*,\\s*['\\\"]([^'\\\"]*)['\\\"]\\s*\\)\", predicate)\n                if m:\n                    css += f'[{m.group(1)}*=\"{m.group(2)}\"]'\n                    continue\n                m = re.fullmatch(r\"text\\s*\\(\\s*\\)\\s*=\\s*['\\\"]([^'\\\"]*)['\\\"]\", predicate)\n                if m:\n                    text_equals = m.group(1)\n                    continue\n                m = re.fullmatch(r\"contains\\s*\\(\\s*text\\s*\\(\\s*\\)\\s*,\\s*['\\\"]([^'\\\"]*)['\\\"]\\s*\\)\", predicate)\n                if m:\n                    text_contains = m.group(1)\n                    continue\n                m = re.fullmatch(r\"(\\d+)\", predicate)\n                if m:\n                    css += f\":nth-of-type({m.group(1)})\"\n                    continue\n                return None\n            if not css:\n                css = \"*\"\n            css_steps.append((\" \" if descendant else \" > \", css))\n            descendant = False\n\n        if not css_steps:\n            return None\n        selector = css_steps[0][1]\n        for combinator, step in css_steps[1:]:\n            selector += combinator + step\n        return selector.strip(), text_equals, text_contains\n\n    @classmethod\n    def _resolve(cls, soup: BeautifulSoup, selector: str) -> tuple:\n        \"\"\"(elements, how) - how is 'css', 'xpath-translated' or 'untranslatable'.\"\"\"\n        if not _looks_like_xpath(selector):\n            return cls._select(soup, selector), \"css\"\n        translated = cls._xpath_to_css(selector)\n        if translated is None:\n            return [], \"untranslatable\"\n        css, text_equals, text_contains = translated\n        found = cls._select(soup, css)\n        if text_equals:\n            found = [e for e in found if _norm(e.get_text()) == text_equals]\n        if text_contains:\n            found = [e for e in found if text_contains in _norm(e.get_text())]\n        return found, \"xpath-translated\"\n\n    # --------------------------------------------------------- fingerprint\n\n    @classmethod\n    def _accessible_name(cls, el, soup) -> str:\n        \"\"\"A deliberately small subset of the accessible-name algorithm.\"\"\"\n        labelled_by = el.get(\"aria-labelledby\")\n        if labelled_by:\n            parts = []\n            for ref in str(labelled_by).split():\n                target = soup.find(id=ref) if soup is not None else None\n                if target is not None:\n                    parts.append(_norm(target.get_text()))\n            if any(parts):\n                return _norm(\" \".join(parts))\n        for attr in (\"aria-label\", \"alt\", \"title\"):\n            value = _norm(str(el.get(attr) or \"\"))\n            if value:\n                return value\n        el_id = el.get(\"id\")\n        if el_id and soup is not None:\n            label = soup.select_one(f'label[for=\"{el_id}\"]')\n            if label is not None:\n                return _norm(label.get_text())\n        if el.name in (\"input\", \"textarea\", \"select\"):\n            parent = el.parent\n            while parent is not None and getattr(parent, \"name\", None) not in (None, \"[document]\"):\n                if parent.name == \"label\":\n                    return _norm(parent.get_text())\n                parent = parent.parent\n            placeholder = _norm(str(el.get(\"placeholder\") or \"\"))\n            if placeholder:\n                return placeholder\n            return \"\"\n        return _norm(el.get_text())\n\n    @classmethod\n    def _role(cls, el) -> str:\n        explicit = _norm(str(el.get(\"role\") or \"\"))\n        if explicit:\n            return explicit.split()[0]\n        if el.name == \"input\":\n            return _INPUT_ROLE.get(_norm(str(el.get(\"type\") or \"text\")).lower(), \"textbox\")\n        if el.name == \"a\":\n            return \"link\" if el.get(\"href\") is not None else \"\"\n        return _IMPLICIT_ROLE.get(el.name, \"\")\n\n    @classmethod\n    def _testid(cls, el) -> tuple:\n        for attr in _TESTID_ATTRS:\n            value = _norm(str(el.get(attr) or \"\"))\n            if value:\n                return attr, value\n        return \"\", \"\"\n\n    @classmethod\n    def _meaningful_classes(cls, el) -> list:\n        classes = el.get(\"class\") or []\n        if isinstance(classes, str):\n            classes = classes.split()\n        return [c for c in classes if c and not _STYLING_CLASS.match(c)]\n\n    @classmethod\n    def _fingerprint(cls, el, soup) -> dict:\n        testid_attr, testid = cls._testid(el)\n        ancestors, section = [], \"\"\n        parent = el.parent\n        while parent is not None and getattr(parent, \"name\", None) not in (None, \"[document]\"):\n            entry = {\"tag\": parent.name, \"id\": parent.get(\"id\") or \"\",\n                     \"classes\": cls._meaningful_classes(parent)}\n            ancestors.append(entry)\n            if not section:\n                heading = parent.find([\"h1\", \"h2\", \"h3\", \"h4\", \"h5\", \"h6\"], recursive=True) \\\n                    if isinstance(parent, Tag) else None\n                if heading is not None:\n                    section = _norm(heading.get_text())\n            parent = parent.parent\n\n        siblings = []\n        if el.parent is not None:\n            for sib in el.parent.find_all(recursive=False):\n                if sib is el:\n                    continue\n                text = _norm(sib.get_text())\n                if text:\n                    siblings.append(text[:80])\n\n        attrs = {}\n        for attr in _STABLE_ATTRS:\n            value = _norm(str(el.get(attr) or \"\"))\n            if value:\n                attrs[attr] = value\n\n        element_id = _norm(str(el.get(\"id\") or \"\"))\n        return {\n            \"tag\": el.name,\n            \"id\": element_id,\n            \"id_generated\": bool(element_id and _GENERATED_ID.search(element_id)),\n            \"testid_attr\": testid_attr,\n            \"testid\": testid,\n            \"classes\": cls._meaningful_classes(el),\n            \"text\": _norm(el.get_text())[:200],\n            \"own_text\": _norm(\"\".join(el.find_all(string=True, recursive=False)))[:200],\n            \"accessible_name\": cls._accessible_name(el, soup),\n            \"role\": cls._role(el),\n            \"attrs\": attrs,\n            \"ancestors\": ancestors[:6],\n            \"ancestor_ids\": [a[\"id\"] for a in ancestors if a[\"id\"]],\n            \"section\": section,\n            \"siblings\": siblings[:6],\n            \"depth\": len(ancestors),\n        }\n\n    @staticmethod\n    def _split_compounds(selector: str) -> list:\n        \"\"\"A selector's steps, outermost first, split on top-level combinators.\n\n        Brackets and parentheses are tracked so a combinator inside\n        [href=\"a > b\"] or :not(a > b) does not split the selector.\n        \"\"\"\n        s = (selector or \"\").strip()\n        if s.startswith(\"xpath=\"):\n            s = s[len(\"xpath=\"):].strip()\n        if _looks_like_xpath(s):\n            return [p.strip() for p in re.split(r\"/+\", s) if p.strip()]\n        parts, buffer, square, round_ = [], \"\", 0, 0\n        for ch in s:\n            if ch == \"[\":\n                square += 1\n            elif ch == \"]\":\n                square -= 1\n            elif ch == \"(\":\n                round_ += 1\n            elif ch == \")\":\n                round_ -= 1\n            if square == 0 and round_ == 0 and (ch.isspace() or ch in \">+~\"):\n                if buffer.strip():\n                    parts.append(buffer.strip())\n                buffer = \"\"\n                continue\n            buffer += ch\n        if buffer.strip():\n            parts.append(buffer.strip())\n        return parts\n\n    @classmethod\n    def _fingerprint_from_selector(cls, selector: str) -> dict:\n        \"\"\"When there is no previous DOM, the selector string is all there is.\n\n        This is deliberately thin. It reads the literals a selector carries -\n        an id, a test id, a name, quoted text - and nothing else, because\n        anything more would be inventing an element's identity out of its\n        address.\n\n        Only the SUBJECT of the selector is read for identity. In\n        \"#summary > div:nth-child(4) > span.value\" the element being addressed\n        is the span; reading the id off \"#summary\" would fingerprint the\n        section and heal confidently onto the wrong element. Ancestor ids are\n        kept, but as context rather than as the element's own identity.\n        \"\"\"\n        compounds = cls._split_compounds(selector)\n        subject = compounds[-1] if compounds else (selector or \"\")\n        ancestors = compounds[:-1]\n\n        fp = {\n            \"tag\": \"\", \"id\": \"\", \"id_generated\": False, \"testid_attr\": \"\", \"testid\": \"\",\n            \"classes\": [], \"text\": \"\", \"own_text\": \"\", \"accessible_name\": \"\", \"role\": \"\",\n            \"attrs\": {}, \"ancestors\": [], \"ancestor_ids\": [], \"section\": \"\", \"siblings\": [],\n            \"depth\": 0, \"inferred_from_selector\": True,\n        }\n        tag = re.match(r\"^\\s*([a-zA-Z][\\w-]*)\", subject)\n        if tag and tag.group(1).lower() not in (\"html\", \"body\", \"div\", \"span\"):\n            fp[\"tag\"] = tag.group(1).lower()\n        found_id = re.search(r\"#([\\w-]+)|@id\\s*=\\s*['\\\"]([^'\\\"]+)\", subject)\n        if found_id:\n            fp[\"id\"] = found_id.group(1) or found_id.group(2) or \"\"\n        for attr in _TESTID_ATTRS:\n            m = re.search(rf\"{re.escape(attr)}\\s*=\\s*['\\\"]?([\\w .:-]+)\", subject)\n            if m:\n                fp[\"testid_attr\"], fp[\"testid\"] = attr, m.group(1).strip(\"'\\\"\")\n                break\n        name = re.search(r\"\\[\\s*name\\s*=\\s*['\\\"]([^'\\\"]+)|@name\\s*=\\s*['\\\"]([^'\\\"]+)\", subject)\n        if name:\n            fp[\"attrs\"][\"name\"] = name.group(1) or name.group(2) or \"\"\n        text = re.search(r\"text\\(\\)\\s*=\\s*['\\\"]([^'\\\"]+)|:has-text\\(['\\\"]([^'\\\"]+)\", subject)\n        if text:\n            fp[\"text\"] = (text.group(1) or text.group(2) or \"\").strip()\n        for cls_name in re.findall(r\"\\.([A-Za-z][\\w-]*)\", subject):\n            if not _STYLING_CLASS.match(cls_name):\n                fp[\"classes\"].append(cls_name)\n\n        for step in ancestors:\n            ancestor_id = re.search(r\"#([\\w-]+)|@id\\s*=\\s*['\\\"]([^'\\\"]+)\", step)\n            if ancestor_id:\n                fp[\"ancestor_ids\"].append(ancestor_id.group(1) or ancestor_id.group(2) or \"\")\n        return fp\n\n    # ---------------------------------------------------------- candidates\n\n    @classmethod\n    def _candidates(cls, el, soup) -> list:\n        \"\"\"Every way of addressing this element, best rung of the ladder first.\n\n        Each entry carries the CSS actually used to verify it and a\n        framework-agnostic rendering for a Playwright suite. Absolute XPath,\n        nth-child and styling classes never appear: healing onto one of those\n        buys a green run now and the same break next sprint.\n        \"\"\"\n        out = []\n        testid_attr, testid = cls._testid(el)\n        if testid:\n            out.append({\n                \"rung\": \"test id\", \"rank\": 1,\n                \"css\": f'[{testid_attr}=\"{testid}\"]',\n                \"playwright\": f'page.getByTestId({testid!r})' if testid_attr == \"data-testid\"\n                              else f'page.locator(\\'[{testid_attr}=\"{testid}\"]\\')',\n            })\n\n        element_id = _norm(str(el.get(\"id\") or \"\"))\n        if element_id and not _GENERATED_ID.search(element_id):\n            out.append({\"rung\": \"id\", \"rank\": 2, \"css\": f\"#{element_id}\",\n                        \"playwright\": f\"page.locator({'#' + element_id!r})\"})\n\n        role, name = cls._role(el), cls._accessible_name(el, soup)\n        if role and name:\n            out.append({\"rung\": \"role and name\", \"rank\": 3, \"css\": \"\", \"role\": role, \"name\": name,\n                        \"playwright\": f\"page.getByRole({role!r}, name={name!r})\"})\n\n        element_id = element_id or \"\"\n        if el.name in (\"input\", \"textarea\", \"select\") and name:\n            out.append({\"rung\": \"label\", \"rank\": 4, \"css\": \"\", \"label\": name,\n                        \"playwright\": f\"page.getByLabel({name!r})\"})\n\n        text = _norm(el.get_text())\n        if text and len(text) <= 60 and el.name not in (\"html\", \"body\", \"main\", \"section\", \"div\"):\n            out.append({\"rung\": \"text\", \"rank\": 5, \"css\": \"\", \"text\": text,\n                        \"playwright\": f\"page.getByText({text!r}, exact=True)\"})\n\n        for attr in (\"name\", \"href\", \"placeholder\", \"alt\", \"autocomplete\"):\n            value = _norm(str(el.get(attr) or \"\"))\n            if value:\n                attr_css = '{}[{}=\"{}\"]'.format(el.name, attr, value)\n                out.append({\"rung\": f\"{attr} attribute\", \"rank\": 6, \"css\": attr_css,\n                            \"playwright\": f\"page.locator({attr_css!r})\"})\n\n        scoped = cls._scoped_css(el)\n        if scoped:\n            out.append({\"rung\": \"scoped CSS\", \"rank\": 7, \"css\": scoped,\n                        \"playwright\": f\"page.locator({scoped!r})\"})\n        return out\n\n    @classmethod\n    def _scoped_css(cls, el) -> str:\n        \"\"\"A short path anchored on the nearest authored id, never on position.\"\"\"\n        bits = []\n        own = cls._meaningful_classes(el)\n        if own:\n            bits.append(f\"{el.name}.{'.'.join(own[:2])}\")\n        else:\n            attr_bits = [f'[{a}=\"{_norm(str(el.get(a)))}\"]'\n                         for a in (\"type\", \"name\") if _norm(str(el.get(a) or \"\"))]\n            if not attr_bits:\n                return \"\"\n            bits.append(el.name + \"\".join(attr_bits))\n\n        parent = el.parent\n        while parent is not None and getattr(parent, \"name\", None) not in (None, \"[document]\"):\n            pid = _norm(str(parent.get(\"id\") or \"\"))\n            if pid and not _GENERATED_ID.search(pid):\n                return f\"#{pid} {bits[0]}\"\n            parent = parent.parent\n        return bits[0]\n\n    # -------------------------------------------------------- verification\n\n    @classmethod\n    def _matches(cls, candidate: dict, soup: BeautifulSoup) -> list:\n        \"\"\"Run the candidate against the page. This is the whole safety story.\"\"\"\n        if candidate.get(\"css\"):\n            return cls._select(soup, candidate[\"css\"])\n        if candidate[\"rung\"] == \"role and name\":\n            return [e for e in soup.find_all(True)\n                    if cls._role(e) == candidate[\"role\"]\n                    and cls._accessible_name(e, soup) == candidate[\"name\"]]\n        if candidate[\"rung\"] == \"label\":\n            return [e for e in soup.find_all([\"input\", \"textarea\", \"select\"])\n                    if cls._accessible_name(e, soup) == candidate[\"label\"]]\n        if candidate[\"rung\"] == \"text\":\n            return [e for e in soup.find_all(True)\n                    if _norm(e.get_text()) == candidate[\"text\"]\n                    and not any(_norm(c.get_text()) == candidate[\"text\"]\n                                for c in e.find_all(True, recursive=False))]\n        return []\n\n    # ------------------------------------------------------------- scoring\n    # Only signals the old element actually HAD count towards the denominator.\n    # Scoring an element out of a signal it never carried would mean an element\n    # with no test id could never score well, which is most elements on most\n    # pages.\n    _WEIGHTS = {\n        \"testid\": 34, \"id\": 26, \"accessible_name\": 22, \"text\": 16, \"name_attr\": 14,\n        \"siblings\": 12, \"role\": 9, \"ancestor_id\": 8, \"tag\": 7, \"classes\": 7,\n        \"attrs\": 6, \"section\": 6, \"depth\": 3,\n    }\n\n    @staticmethod\n    def _text_similarity(a: str, b: str) -> float:\n        a, b = (a or \"\").strip().lower(), (b or \"\").strip().lower()\n        if not a or not b:\n            return 0.0\n        if a == b:\n            return 1.0\n        if a in b or b in a:\n            return 0.6\n        ta, tb = set(a.split()), set(b.split())\n        if not ta or not tb:\n            return 0.0\n        overlap = len(ta & tb) / len(ta | tb)\n        return overlap if overlap >= 0.34 else 0.0\n\n    @staticmethod\n    def _overlap(a: list, b: list) -> float:\n        sa, sb = {str(x).strip().lower() for x in a if str(x).strip()}, \\\n                 {str(x).strip().lower() for x in b if str(x).strip()}\n        if not sa or not sb:\n            return 0.0\n        return len(sa & sb) / len(sa | sb)\n\n    @classmethod\n    def _score(cls, target: dict, fp: dict) -> tuple:\n        earned = possible = 0.0\n        reasons = []\n\n        def award(key, fraction, why):\n            nonlocal earned, possible\n            weight = cls._WEIGHTS[key]\n            possible += weight\n            if fraction > 0:\n                earned += weight * fraction\n                if fraction >= 0.5 and why:\n                    reasons.append(why)\n\n        if target.get(\"testid\"):\n            same = target[\"testid\"] == fp.get(\"testid\")\n            award(\"testid\", 1.0 if same else 0.0, f\"same test id {target['testid']!r}\" if same else \"\")\n        if target.get(\"id\") and not target.get(\"id_generated\"):\n            same = target[\"id\"] == fp.get(\"id\")\n            award(\"id\", 1.0 if same else 0.0, f\"same id {target['id']!r}\" if same else \"\")\n        if target.get(\"accessible_name\"):\n            sim = cls._text_similarity(target[\"accessible_name\"], fp.get(\"accessible_name\", \"\"))\n            award(\"accessible_name\", sim, f\"accessible name {fp.get('accessible_name')!r}\" if sim else \"\")\n        if target.get(\"text\"):\n            sim = cls._text_similarity(target[\"text\"], fp.get(\"text\", \"\"))\n            award(\"text\", sim, f\"text {fp.get('text')!r}\" if sim >= 1.0 else \"\")\n        if target.get(\"attrs\", {}).get(\"name\"):\n            same = target[\"attrs\"][\"name\"] == fp.get(\"attrs\", {}).get(\"name\")\n            award(\"name_attr\", 1.0 if same else 0.0,\n                  f\"same name attribute {target['attrs']['name']!r}\" if same else \"\")\n        if target.get(\"siblings\"):\n            sim = cls._overlap(target[\"siblings\"], fp.get(\"siblings\", []))\n            award(\"siblings\", sim, \"sits beside the same content\" if sim >= 0.5 else \"\")\n        if target.get(\"role\"):\n            same = target[\"role\"] == fp.get(\"role\")\n            award(\"role\", 1.0 if same else 0.0, f\"still a {target['role']}\" if same else \"\")\n        if target.get(\"ancestor_ids\"):\n            sim = cls._overlap(target[\"ancestor_ids\"], fp.get(\"ancestor_ids\", []))\n            award(\"ancestor_id\", sim, \"inside the same identified region\" if sim >= 0.5 else \"\")\n        if target.get(\"tag\"):\n            same = target[\"tag\"] == fp.get(\"tag\")\n            award(\"tag\", 1.0 if same else 0.0, \"\")\n        if target.get(\"classes\"):\n            award(\"classes\", cls._overlap(target[\"classes\"], fp.get(\"classes\", [])), \"\")\n        other = {k: v for k, v in (target.get(\"attrs\") or {}).items() if k != \"name\"}\n        if other:\n            matched = sum(1 for k, v in other.items() if fp.get(\"attrs\", {}).get(k) == v)\n            award(\"attrs\", matched / len(other), \"\")\n        if target.get(\"section\"):\n            sim = cls._text_similarity(target[\"section\"], fp.get(\"section\", \"\"))\n            award(\"section\", sim, f\"under the {fp.get('section')!r} heading\" if sim >= 1.0 else \"\")\n\n        if not target.get(\"inferred_from_selector\"):\n            gap = abs(int(target.get(\"depth\", 0)) - int(fp.get(\"depth\", 0)))\n            award(\"depth\", max(0.0, 1.0 - gap / 6.0), \"\")\n\n        if possible <= 0:\n            return 0.0, []\n        return round(100.0 * earned / possible, 1), reasons[:4]\n\n    # ----------------------------------------------------------- analysing\n\n    _SKIP_TAGS = {\"html\", \"body\", \"head\", \"script\", \"style\", \"meta\", \"link\", \"title\", \"noscript\"}\n\n    def _heal_one(self, selector, before, after, elements, threshold, margin) -> dict:\n        still, how = self._resolve(after, selector)\n        result = {\"selector\": selector, \"kind\": \"xpath\" if _looks_like_xpath(selector) else \"css\",\n                  \"resolution\": how, \"matches_now\": len(still)}\n\n        if how == \"untranslatable\":\n            result[\"note\"] = (\n                \"This XPath uses axes or functions the translator does not cover, so the element's \"\n                \"identity was read from the selector text alone. Supply a previous DOM, or a CSS \"\n                \"selector, for a stronger match.\"\n            )\n\n        if len(still) == 1:\n            return {**result, \"outcome\": \"not_broken\",\n                    \"why\": \"This selector still resolves to exactly one element. Nothing to heal.\"}\n\n        target, source = None, \"\"\n        if before is not None:\n            found, _ = self._resolve(before, selector)\n            if len(found) == 1:\n                target, source = self._fingerprint(found[0], before), \"previous DOM\"\n            elif len(found) > 1:\n                source = f\"selector matched {len(found)} elements in the previous DOM\"\n            else:\n                source = \"selector did not resolve in the previous DOM either\"\n        if target is None:\n            target = self._fingerprint_from_selector(selector)\n            source = source or \"no previous DOM supplied\"\n            source = f\"selector text ({source})\"\n        result[\"identity_source\"] = source\n        result[\"target\"] = {k: target.get(k) for k in\n                            (\"tag\", \"id\", \"testid\", \"role\", \"accessible_name\", \"text\", \"section\")}\n\n        scored = []\n        for el in elements:\n            score, reasons = self._score(target, self._fingerprint(el, after))\n            if score > 0:\n                scored.append((score, reasons, el))\n        scored.sort(key=lambda row: -row[0])\n\n        best = scored[0][0] if scored else 0.0\n        runner_up = scored[1][0] if len(scored) > 1 else 0.0\n        result[\"best_score\"] = best\n        result[\"runner_up_score\"] = runner_up\n\n        if not scored or best < threshold:\n            return {**result, \"outcome\": \"gone\",\n                    \"why\": (f\"Nothing in the current page resembles this element closely enough \"\n                            f\"(best match scored {best:.0f} against a threshold of {threshold}). \"\n                            \"It looks removed rather than restyled, so the test needs rewriting \"\n                            \"rather than a new selector.\")}\n\n        if best - runner_up < margin and runner_up >= threshold:\n            tied = [{\"score\": s, \"why\": r, \"preview\": _norm(e.get_text())[:60] or f\"<{e.name}>\",\n                     \"candidates\": self._verified(e, after, selector)[:1]}\n                    for s, r, e in scored[:3] if best - s < margin]\n            return {**result, \"outcome\": \"ambiguous\", \"competing\": tied,\n                    \"why\": (f\"{len(tied)} elements match about equally well ({best:.0f} against \"\n                            f\"{runner_up:.0f}). Choosing between them would be a guess, and a \"\n                            \"selector pointed at the wrong element fails silently.\")}\n\n        score, reasons, winner = scored[0]\n        verified = self._verified(winner, after, selector)\n        if not verified:\n            return {**result, \"outcome\": \"ambiguous\",\n                    \"why\": (\"The matching element was found, but no selector for it resolves to \"\n                            \"exactly one element on this page - every candidate is shared with \"\n                            \"another element. It needs a test id.\"),\n                    \"competing\": [{\"score\": score, \"why\": reasons,\n                                   \"preview\": _norm(winner.get_text())[:60]}]}\n        return {**result, \"outcome\": \"healed\", \"score\": score, \"evidence\": reasons,\n                \"healed\": verified[0], \"alternatives\": verified[1:3],\n                \"why\": f\"Matched at {score:.0f} out of 100.\"}\n\n    def _verified(self, el, soup, original: str) -> list:\n        \"\"\"Candidates for this element that resolve to exactly one element.\"\"\"\n        out = []\n        for candidate in sorted(self._candidates(el, soup), key=lambda c: c[\"rank\"]):\n            if candidate.get(\"css\") and candidate[\"css\"].strip() == (original or \"\").strip():\n                continue\n            matched = self._matches(candidate, soup)\n            if len(matched) == 1 and matched[0] is el:\n                out.append({k: v for k, v in candidate.items() if k != \"rank\"})\n        return out\n\n    def _analyse(self) -> dict:\n        after_html = self._read(self.dom_after_path, self.dom_after, \"current DOM\", required=True)\n        before_html = self._read(self.dom_before_path, self.dom_before, \"previous DOM\", required=False)\n\n        after = BeautifulSoup(after_html, PARSER)\n        before = BeautifulSoup(before_html, PARSER) if before_html.strip() else None\n        if not after.find_all(True):\n            msg = \"The current DOM contains no elements. Check the snapshot is real HTML.\"\n            raise ValueError(msg)\n\n        threshold = min(max(int(self.heal_threshold or 45), 0), 100)\n        margin = max(int(self.ambiguity_margin or 12), 0)\n        elements = [e for e in after.find_all(True) if e.name not in self._SKIP_TAGS]\n\n        results = [self._heal_one(s, before, after, elements, threshold, margin)\n                   for s in self._selector_list()]\n\n        counts = {k: sum(1 for r in results if r[\"outcome\"] == k)\n                  for k in (\"healed\", \"ambiguous\", \"gone\", \"not_broken\")}\n        return {\n            \"selectors_total\": len(results),\n            \"counts\": counts,\n            \"had_previous_dom\": before is not None,\n            \"heal_threshold\": threshold,\n            \"ambiguity_margin\": margin,\n            \"elements_searched\": len(elements),\n            \"results\": results,\n        }\n\n    # -------------------------------------------------------------- brief\n\n    def _brief_text(self, a: dict) -> str:\n        c = a[\"counts\"]\n        lines = [\n            \"# Selector healing\", \"\",\n            f\"Selectors checked: {a['selectors_total']}\",\n            f\"Healed: {c['healed']}  Ambiguous: {c['ambiguous']}  \"\n            f\"Gone: {c['gone']}  Still fine: {c['not_broken']}\",\n            f\"Previous DOM supplied: {'yes' if a['had_previous_dom'] else 'no'}\",\n            f\"Elements searched in the current page: {a['elements_searched']}\",\n            \"\",\n            \"Every proposal below was run against the current page and resolves to exactly \"\n            \"one element. Scores are similarity to the original element, out of 100.\",\n            \"\",\n        ]\n        for r in a[\"results\"]:\n            lines.append(f\"## {r['selector']}\")\n            lines.append(f\"- outcome: {r['outcome']}\")\n            lines.append(f\"- {r['why']}\")\n            if r.get(\"identity_source\"):\n                lines.append(f\"- identity read from: {r['identity_source']}\")\n            if r[\"outcome\"] == \"healed\":\n                lines.append(f\"- proposed: {r['healed']['playwright']}  \"\n                             f\"(via {r['healed']['rung']}, score {r['score']:.0f})\")\n                if r.get(\"evidence\"):\n                    lines.append(f\"- evidence: {'; '.join(r['evidence'])}\")\n                for alt in r.get(\"alternatives\", []):\n                    lines.append(f\"- alternative: {alt['playwright']} (via {alt['rung']})\")\n            if r[\"outcome\"] == \"ambiguous\":\n                for tie in r.get(\"competing\", []):\n                    first = (tie.get(\"candidates\") or [{}])[0].get(\"playwright\", \"\")\n                    lines.append(f\"- competing at {tie['score']:.0f}: {tie.get('preview', '')!r}\"\n                                 + (f\" -> {first}\" if first else \"\"))\n            lines.append(\"\")\n        return \"\\n\".join(lines)\n\n    # -------------------------------------------------------------- outputs\n\n    FINDINGS_FILE = \"healed_selectors.json\"\n\n    def _persist(self, analysis: dict) -> None:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            return\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n        (folder / self.FINDINGS_FILE).write_text(\n            json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n    def build_brief(self) -> Message:\n        analysis = self._analyse()\n        self._persist(analysis)\n        self.status = self._status(analysis)\n        return Message(text=self._brief_text(analysis))\n\n    def build_findings(self) -> Data:\n        analysis = self._analyse()\n        self._persist(analysis)\n        self.status = self._status(analysis)\n        return Data(data=analysis)\n\n    @staticmethod\n    def _status(analysis: dict) -> str:\n        c = analysis[\"counts\"]\n        return (f\"{c['healed']} healed, {c['ambiguous']} ambiguous, \"\n                f\"{c['gone']} gone, {c['not_broken']} fine\")\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_selectors": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_selectors",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/sample_dom/broken_selectors.txt",
+                "display_name": "Default broken selectors",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the field above is empty. A path, or the selectors themselves.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "dom_after": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "dom_after",
+                "value": "",
+                "display_name": "Current DOM",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste the current HTML here instead of reading it from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "dom_after_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "dom_after_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/sample_dom/checkout_after.html",
+                "display_name": "Current DOM path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Path to an HTML snapshot of the page as it is now.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "dom_before": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "dom_before",
+                "value": "",
+                "display_name": "Previous DOM",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste the previous HTML here instead of reading it from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "dom_before_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "dom_before_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/sample_dom/checkout_before.html",
+                "display_name": "Previous DOM path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Optional. A snapshot from when the selector still worked. With it the healer knows what the element actually was; without it, it can only infer the element's identity from the selector text.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "heal_threshold": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "heal_threshold",
+                "value": 45,
+                "display_name": "Heal threshold (0-100)",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Below this score the element is reported as gone rather than healed.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where healed_selectors.json is written. The report writer reads it back from here, so both nodes must point at the same folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Proposes a verified replacement for a selector that no longer finds its element.",
+            "icon": "wrench",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Selector Healer",
+            "documentation": "https://playwright.dev/docs/locators",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "brief",
+                "display_name": "Brief",
+                "method": "build_brief",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "findings",
+                "display_name": "Findings",
+                "method": "build_findings",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "broken_selectors",
+              "default_selectors",
+              "dom_after_path",
+              "dom_after",
+              "dom_before_path",
+              "dom_before",
+              "heal_threshold",
+              "ambiguity_margin",
+              "output_dir"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.selector_healer",
+              "code_hash": "28e221b1a0d1",
+              "dependencies": {
+                "total_dependencies": 2,
+                "dependencies": [
+                  {
+                    "name": "bs4",
+                    "version": "4.15.0"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 440,
+          "y": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Sh3Pt",
+        "type": "genericNode",
+        "position": {
+          "x": 880,
+          "y": 300
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are reviewing proposed replacements for selectors that broke when the UI changed.\n\nEvery proposal below has already been run against the current page and resolves to exactly one element. That part is settled in code. Do not re-verify it, do not write selectors of your own, and do not mention elements that are not in the findings.\n\nYour job is the one question code cannot answer: is the element that was found the element the test actually meant?\n\nWrite under 300 words, in this order:\n\n1. \"Safe to apply\" - the healed selectors you find convincing, one line each, naming the selector and the evidence that convinces you.\n2. \"Check before applying\" - any healed selector whose evidence is thin enough that a person should look first, and what specifically to check. If there are none, say so in one line.\n3. \"Needs a person\" - the ambiguous and gone results, one line each, on what to do instead. For an element reported gone, say plainly that the test likely needs rewriting rather than re-pointing.\n\nKeep in mind which way this fails. A selector that resolves to nothing fails loudly and gets fixed. A selector that resolves to the wrong element passes, and the suite quietly stops testing what it claims to. Treat a thin match as worth flagging rather than worth applying.\n\nNo preamble, and do not reproduce the tables.\n\nFINDINGS\n{findings}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "findings": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "findings",
+                "display_name": "findings",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "findings"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Sh3Pt"
+        },
+        "measured": {
+          "width": 320,
+          "height": 347
+        },
+        "positionAbsolute": {
+          "x": 880,
+          "y": 300
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Sh4Gq",
+        "type": "genericNode",
+        "position": {
+          "x": 1300,
+          "y": 260
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "allam-2-7b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "groq/compound-mini"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.2,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "8af1ca34-3b2f-4eae-9c30-8062a0004c30"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-17T20:08:17.131Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Sh4Gq",
+          "selected_output": "text_output"
+        },
+        "measured": {
+          "width": 320,
+          "height": 495
+        },
+        "positionAbsolute": {
+          "x": 1300,
+          "y": 260
+        }
+      },
+      {
+        "id": "HealingReportWriter-Sh5Rw",
+        "type": "genericNode",
+        "position": {
+          "x": 1720,
+          "y": 300
+        },
+        "data": {
+          "id": "HealingReportWriter-Sh5Rw",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Healing Report Writer - a Langflow custom component.\n\nWrites the healing report and the structured replacements to disk.\n\nThe report is in two halves. The first is **checked**: for every selector, what\nit was, what it resolves to now, what is proposed instead, and the score the\nproposal earned. Every proposed selector in it has been run against the page and\nresolves to exactly one element - that is a property of the pipeline, not a\nclaim the model is making.\n\nThe second half is the model's, and is labelled as the model's: whether the\nelement it found is really the element the test meant. That is a judgement about\nintent, which is the one thing here that cannot be computed.\n\nThe JSON beside the report is the part a script can use. A human reads the\nmarkdown; a codemod reads `healed_selectors.json` and rewrites the suite.\n\"\"\"\n\nimport json\nimport re\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_FENCE_WHOLE = re.compile(r\"^\\s*```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\\s*$\", re.DOTALL)\n\n\nclass HealingReportWriter(Component):\n    display_name = \"Healing Report Writer\"\n    description = \"Writes the healed selectors and the healing report to disk.\"\n    documentation = \"https://playwright.dev/docs/locators\"\n    icon = \"file-text\"\n    name = \"HealingReportWriter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"review\",\n            display_name=\"Review\",\n            info=\"The model's judgement. Placed under the checked evidence, not in place of it.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where healing_report.md is written, and where healed_selectors.json is read \"\n                \"from. Point this at the same folder as the Selector Healer's Reports folder.\"\n            ),\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"report_name\",\n            display_name=\"Report file name\",\n            value=\"healing_report.md\",\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_report\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    # ------------------------------------------------------------- reading\n\n    FINDINGS_FILE = \"healed_selectors.json\"\n\n    def _findings(self, folder: Path) -> dict:\n        path = folder / self.FINDINGS_FILE\n        if not path.is_file():\n            msg = (f\"No {self.FINDINGS_FILE} in {folder}. The Selector Healer writes it, so set \"\n                   \"its Reports folder to this same folder and run the healer first.\")\n            raise ValueError(msg)\n        try:\n            data = json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n        if not isinstance(data, dict) or \"results\" not in data:\n            msg = f\"{path.name} does not look like a healing run; it has no results.\"\n            raise ValueError(msg)\n        return data\n\n    @staticmethod\n    def _clean_markdown(text: str) -> str:\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned no review to write.\"\n            raise ValueError(msg)\n        whole = _FENCE_WHOLE.match(raw)\n        return (whole.group(1) if whole else raw).strip()\n\n    # ------------------------------------------------------------ composing\n\n    def _compose(self, f: dict, review: str) -> str:\n        results = f.get(\"results\") or []\n        counts = f.get(\"counts\") or {}\n        stamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d\")\n        by = {k: [r for r in results if r.get(\"outcome\") == k]\n              for k in (\"healed\", \"ambiguous\", \"gone\", \"not_broken\")}\n\n        out = [\n            \"# Selector healing report\",\n            \"\",\n            f\"*Generated {stamp} by the Self-Healing Selectors agent. Every selector proposed \"\n            \"below was run against the current page and resolves to exactly one element.*\",\n            \"\",\n            \"## At a glance\",\n            \"\",\n            \"| | |\",\n            \"|---|---|\",\n            f\"| Selectors checked | {f.get('selectors_total', 0)} |\",\n            f\"| **Healed** | **{counts.get('healed', 0)}** |\",\n            f\"| Need a decision | {counts.get('ambiguous', 0)} |\",\n            f\"| Element gone | {counts.get('gone', 0)} |\",\n            f\"| Were never broken | {counts.get('not_broken', 0)} |\",\n            f\"| Previous DOM supplied | {'yes' if f.get('had_previous_dom') else 'no'} |\",\n            f\"| Elements searched | {f.get('elements_searched', 0)} |\",\n            \"\",\n        ]\n        if not f.get(\"had_previous_dom\"):\n            out.extend([\n                \"> No previous DOM was supplied, so each element's identity was inferred from \"\n                \"the selector text alone. That is thin evidence, and the healer refuses more \"\n                \"often because of it. Supplying a snapshot from when the suite passed is the \"\n                \"single biggest improvement available here.\",\n                \"\",\n            ])\n\n        if by[\"healed\"]:\n            out.extend([\n                f\"## Healed ({len(by['healed'])})\",\n                \"\",\n                \"| Was | Now | Via | Score |\",\n                \"|---|---|---|---:|\",\n            ])\n            for r in by[\"healed\"]:\n                healed = r.get(\"healed\") or {}\n                out.append(f\"| `{r.get('selector', '')}` | `{healed.get('playwright', '')}` \"\n                           f\"| {healed.get('rung', '')} | {r.get('score', 0):.0f} |\")\n            out.append(\"\")\n            out.extend([\"Why each one matched:\", \"\"])\n            for r in by[\"healed\"]:\n                evidence = \"; \".join(r.get(\"evidence\") or []) or \"structural similarity only\"\n                out.append(f\"- `{r.get('selector', '')}` — {evidence}\")\n                for alt in r.get(\"alternatives\") or []:\n                    out.append(f\"    - or `{alt.get('playwright', '')}` (via {alt.get('rung', '')})\")\n            out.append(\"\")\n\n        if by[\"ambiguous\"]:\n            out.extend([\n                f\"## Need a decision ({len(by['ambiguous'])})\",\n                \"\",\n                \"Several elements matched about equally well. Picking one would be a guess, and \"\n                \"a selector pointed at the wrong element fails silently rather than loudly.\",\n                \"\",\n            ])\n            for r in by[\"ambiguous\"]:\n                out.append(f\"**`{r.get('selector', '')}`** — {r.get('why', '')}\")\n                out.append(\"\")\n                for tie in r.get(\"competing\") or []:\n                    candidate = (tie.get(\"candidates\") or [{}])\n                    proposed = candidate[0].get(\"playwright\", \"\") if candidate else \"\"\n                    out.append(f\"- scored {tie.get('score', 0):.0f}: {tie.get('preview', '')!r}\"\n                               + (f\" → `{proposed}`\" if proposed else \"\"))\n                out.append(\"\")\n\n        if by[\"gone\"]:\n            out.extend([\n                f\"## Element gone ({len(by['gone'])})\",\n                \"\",\n                \"Nothing in the current page corresponds to these. A test pointing at a removed \"\n                \"feature needs rewriting, not a new selector.\",\n                \"\",\n            ])\n            for r in by[\"gone\"]:\n                out.append(f\"- `{r.get('selector', '')}` — best match scored \"\n                           f\"{r.get('best_score', 0):.0f}, below the threshold of \"\n                           f\"{f.get('heal_threshold', 0)}\")\n            out.append(\"\")\n\n        if by[\"not_broken\"]:\n            out.extend([f\"## Were never broken ({len(by['not_broken'])})\", \"\"])\n            for r in by[\"not_broken\"]:\n                out.append(f\"- `{r.get('selector', '')}` — still resolves to exactly one element\")\n            out.append(\"\")\n\n        if by[\"healed\"]:\n            out.extend([\"## Replacements\", \"\",\n                        \"Ready to apply. The JSON beside this report carries the same pairs for \"\n                        \"a codemod.\", \"\", \"```text\"])\n            for r in by[\"healed\"]:\n                out.append(f\"{r.get('selector', '')}\")\n                out.append(f\"  -> {(r.get('healed') or {}).get('playwright', '')}\")\n            out.extend([\"```\", \"\"])\n\n        out.extend([\n            \"---\",\n            \"\",\n            \"## Review\",\n            \"\",\n            \"*This section is written by a language model from the evidence above. That each \"\n            \"selector resolves uniquely is checked in code; whether it is the element the test \"\n            \"meant is the judgement below.*\",\n            \"\",\n            review,\n            \"\",\n        ])\n        return \"\\n\".join(out)\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set a reports folder on the Healing Report Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        findings = self._findings(folder)\n        review = self._clean_markdown(self.review)\n\n        name = Path((self.report_name or \"healing_report.md\").strip()).name or \"healing_report.md\"\n        if not name.endswith(\".md\"):\n            name += \".md\"\n\n        report_path = folder / name\n        report = self._compose(findings, review)\n        report_path.write_text(report if report.endswith(\"\\n\") else report + \"\\n\", encoding=\"utf-8\")\n\n        counts = findings.get(\"counts\") or {}\n        return {\n            \"report\": str(report_path),\n            \"report_lines\": len(report.splitlines()),\n            \"findings_json\": str(folder / self.FINDINGS_FILE),\n            \"selectors_total\": findings.get(\"selectors_total\", 0),\n            \"healed\": counts.get(\"healed\", 0),\n            \"ambiguous\": counts.get(\"ambiguous\", 0),\n            \"gone\": counts.get(\"gone\", 0),\n            \"not_broken\": counts.get(\"not_broken\", 0),\n            \"had_previous_dom\": findings.get(\"had_previous_dom\", False),\n        }\n\n    # -------------------------------------------------------------- outputs\n\n    def write_report(self) -> Message:\n        r = self._write()\n        self.status = f\"{r['healed']} healed -> {Path(r['report']).name}\"\n        lines = [\n            f\"Checked {r['selectors_total']} selectors: {r['healed']} healed, \"\n            f\"{r['ambiguous']} need a decision, {r['gone']} gone, \"\n            f\"{r['not_broken']} were never broken.\",\n            \"Every proposed selector resolves to exactly one element on the current page.\",\n            \"\",\n            f\"Report:   {r['report']}  ({r['report_lines']} lines)\",\n            f\"Findings: {r['findings_json']}\",\n        ]\n        return Message(text=\"\\n\".join(lines))\n\n    def write_details(self) -> Data:\n        r = self._write()\n        self.status = f\"{r['healed']} healed -> {Path(r['report']).name}\"\n        return Data(data=r)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where healing_report.md is written, and where healed_selectors.json is read from. Point this at the same folder as the Selector Healer's Reports folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "report_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "report_name",
+                "value": "healing_report.md",
+                "display_name": "Report file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "review": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "review",
+                "value": "",
+                "display_name": "Review",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's judgement. Placed under the checked evidence, not in place of it.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Writes the healed selectors and the healing report to disk.",
+            "icon": "file-text",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Healing Report Writer",
+            "documentation": "https://playwright.dev/docs/locators",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "review",
+              "output_dir",
+              "report_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.healing_report_writer",
+              "code_hash": "72caffd61974",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 1720,
+          "y": 300
+        }
+      },
+      {
+        "id": "ChatOutput-Sh6Co",
+        "type": "genericNode",
+        "position": {
+          "x": 2140,
+          "y": 340
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Sh6Co"
+        },
+        "measured": {
+          "width": 192,
+          "height": 52
+        },
+        "positionAbsolute": {
+          "x": 2140,
+          "y": 340
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Sh1Ti",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Sh1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "SelectorHealer-Sh2He",
+        "targetHandle": "{œfieldNameœ:œbroken_selectorsœ,œidœ:œSelectorHealer-Sh2Heœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "broken_selectors",
+            "id": "SelectorHealer-Sh2He",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Sh1Ti",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Sh1Ti{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Sh1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-SelectorHealer-Sh2He{œfieldNameœ:œbroken_selectorsœ,œidœ:œSelectorHealer-Sh2Heœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "SelectorHealer-Sh2He",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œSelectorHealer-Sh2Heœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Sh3Pt",
+        "targetHandle": "{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Sh3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "findings",
+            "id": "Prompt Template-Sh3Pt",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "SelectorHealer-Sh2He",
+            "name": "brief",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__SelectorHealer-Sh2He{œdataTypeœ:œCustomComponentœ,œidœ:œSelectorHealer-Sh2Heœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Sh3Pt{œfieldNameœ:œfindingsœ,œidœ:œPrompt Template-Sh3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Sh3Pt",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Sh3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Sh4Gq",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Sh4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Sh4Gq",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Sh3Pt",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Sh3Pt{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Sh3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Sh4Gq{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Sh4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Sh4Gq",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Sh4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "HealingReportWriter-Sh5Rw",
+        "targetHandle": "{œfieldNameœ:œreviewœ,œidœ:œHealingReportWriter-Sh5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "review",
+            "id": "HealingReportWriter-Sh5Rw",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Sh4Gq",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Sh4Gq{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Sh4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-HealingReportWriter-Sh5Rw{œfieldNameœ:œreviewœ,œidœ:œHealingReportWriter-Sh5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "HealingReportWriter-Sh5Rw",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œHealingReportWriter-Sh5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Sh6Co",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Sh6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Sh6Co",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "HealingReportWriter-Sh5Rw",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__HealingReportWriter-Sh5Rw{œdataTypeœ:œCustomComponentœ,œidœ:œHealingReportWriter-Sh5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Sh6Co{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Sh6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
