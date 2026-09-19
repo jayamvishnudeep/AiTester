@@ -182,6 +182,5 @@ NOTES:
 
 ## See Also
 
-- [Test Case Prompts](ch_02_test_case_prompts.md)
-- [Chain-of-Thought](../techniques/ch_02_chain_of_thought.md)
-- [Anti-Hallucination Rules](../../chapter_01_foundation_model/rules_checklists/ch_01_anti_hallucination.md)
+- [Test Case Prompts](test_case_prompts.md)
+- [Anti-Hallucination Rules](../../01_LLM_Basics/ANTI-HALLUCINATION.rules.md)

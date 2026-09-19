@@ -206,6 +206,5 @@ Using the context from the attached files, generate...
 
 ## See Also
 
-- [RICE POT Framework](../core_concepts/ch_02_rice_pot_framework.md)
-- [Test Case Prompts](ch_02_test_case_prompts.md)
-- [Steps for Effective Prompting](../core_concepts/ch_02_steps_effective_prompting.md)
+- [RICE POT Framework](../01_RICE_POT_Template.md)
+- [Test Case Prompts](test_case_prompts.md)

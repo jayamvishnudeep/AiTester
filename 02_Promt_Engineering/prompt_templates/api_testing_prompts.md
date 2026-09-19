@@ -209,5 +209,4 @@ ERROR SPEC:
 
 ## See Also
 
-- [Test Case Prompts](ch_02_test_case_prompts.md)
-- [Few-Shot Prompting](../techniques/ch_02_few_shot_prompting.md)
+- [Test Case Prompts](test_case_prompts.md)

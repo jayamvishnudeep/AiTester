@@ -186,6 +186,5 @@ MODULE DOCUMENTATION:
 
 ## See Also
 
-- [Bug Report Prompts](ch_02_bug_report_prompts.md)
-- [API Testing Prompts](ch_02_api_testing_prompts.md)
-- [Few-Shot Prompting](../techniques/ch_02_few_shot_prompting.md)
+- [Bug Report Prompts](_bug_report_prompts.md)
+- [API Testing Prompts](api_testing_prompts.md)

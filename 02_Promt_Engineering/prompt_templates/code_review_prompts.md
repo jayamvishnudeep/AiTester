@@ -210,5 +210,4 @@ CODE:
 
 ## See Also
 
-- [Test Case Prompts](ch_02_test_case_prompts.md)
-- [Chain-of-Thought](../techniques/ch_02_chain_of_thought.md)
+- [Test Case Prompts](test_case_prompts.md)
