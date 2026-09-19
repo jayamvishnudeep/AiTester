@@ -1,0 +1,63 @@
+====>> Spin up environment
+Build-agent version 1.0.231108-4a2f1b (2026-09-01T09:14:22+0000)
+Docker Engine Version: 24.0.7
+Kernel Version: Linux 5.15.0-1051-aws
+Starting container cimg/node:20.11
+  image cache not found on this host, downloading cimg/node:20.11
+20.11: Pulling from cimg/node
+a1b2c3d4e5f6: Pulling fs layer
+b2c3d4e5f6a1: Pulling fs layer
+c3d4e5f6a1b2: Pulling fs layer
+d4e5f6a1b2c3: Pulling fs layer
+e5f6a1b2c3d4: Pulling fs layer
+a1b2c3d4e5f6: Download complete
+b2c3d4e5f6a1: Download complete
+c3d4e5f6a1b2: Download complete
+d4e5f6a1b2c3: Download complete
+e5f6a1b2c3d4: Download complete
+Digest: sha256:7f3c1a9d2e8b4f6a5c0d3e7b1a9f2c8d4e6b0a3f5c7d9e1b3a5f7c9d1e3b5a7f
+Status: Downloaded newer image for cimg/node:20.11
+====>> Preparing environment variables
+====>> Checkout code
+#!/bin/bash -eo pipefail
+mkdir -p ~/.ssh
+Cloning git repository
+HEAD is now at 3c9f1a2 build: bump the design-system package to 4.0.0
+====>> Restoring cache
+Found a cache from build 1841 at v1-deps-{{ checksum "package-lock.json" }}
+Size: 148 MiB
+Cached paths:
+  * /home/circleci/project/node_modules
+Downloading cache archive...
+Validating cache...
+Unarchiving cache...
+====>> npm ci
+#!/bin/bash -eo pipefail
+npm ci
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: '@shopfront/design-system@4.0.0',
+npm WARN EBADENGINE   required: { node: '>=22.0.0' },
+npm WARN EBADENGINE   current: { node: 'v20.11.0', npm: '10.2.4' }
+npm WARN EBADENGINE }
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: @shopfront/design-system@4.0.0
+npm error Found: react@18.2.0
+npm error node_modules/react
+npm error   react@"^18.2.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"^19.0.0" from @shopfront/design-system@4.0.0
+npm error node_modules/@shopfront/design-system
+npm error   @shopfront/design-system@"^4.0.0" from the root project
+npm error
+npm error Conflicting peer dependency: react@19.0.0
+npm error node_modules/react
+npm error   peer react@"^19.0.0" from @shopfront/design-system@4.0.0
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error A complete log of this run can be found in: /home/circleci/.npm/_logs/2026-09-18T21_44_10_221Z-debug-0.log
+Exited with code exit status 1
+CircleCI received exit code 1
