@@ -1,0 +1,107 @@
+{
+  "meeting": "Checkout release sync",
+  "source": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt",
+  "issues": [
+    {
+      "project": "QA",
+      "issuetype": "Story",
+      "summary": "The guest checkout feature flag must default to off in production until legal sign-off.",
+      "labels": [
+        "from-meeting",
+        "requirement"
+      ],
+      "description": "The guest checkout feature flag must default to off in production until legal sign-off.\n\nSaid by Priya Sharma at 00:00:33.000 (T7):\n\"the flag has to default to off in production until legal sign off\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "Mei Lin will raise a ticket to change the guest checkout flag default to off in production.",
+      "labels": [
+        "from-meeting",
+        "action-item"
+      ],
+      "description": "Mei Lin will raise a ticket to change the guest checkout flag default to off in production.\n\nSaid by Mei Lin at 00:00:57.000 (T10):\n\"I'll raise a ticket to flip it\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Story",
+      "summary": "The order total on the confirmation page must display tax as a separate line item.",
+      "labels": [
+        "from-meeting",
+        "requirement"
+      ],
+      "description": "The order total on the confirmation page must display tax as a separate line item.\n\nSaid by Priya Sharma at 00:01:05.000 (T12):\n\"The order total on the confirmation page needs to include tax as a separate line item\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "Raj Patel will implement the separate tax line item on the confirmation page.",
+      "labels": [
+        "from-meeting",
+        "action-item"
+      ],
+      "description": "Raj Patel will implement the separate tax line item on the confirmation page.\n\nSaid by Raj Patel at 00:01:23.000 (T15):\n\"I'll take that one\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "It is unresolved whether the tax rate is a fixed twenty percent or varies by region.",
+      "labels": [
+        "from-meeting",
+        "open-question"
+      ],
+      "description": "It is unresolved whether the tax rate is a fixed twenty percent or varies by region.\n\nSaid by Mei Lin at 00:01:27.000 (T16):\n\"Do we know the tax rate is always twenty percent, or is it per region?\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "Priya Sharma will check with finance regarding the tax rate structure and report back.",
+      "labels": [
+        "from-meeting",
+        "action-item"
+      ],
+      "description": "Priya Sharma will check with finance regarding the tax rate structure and report back.\n\nSaid by Priya Sharma at 00:01:33.000 (T17):\n\"Let me check with finance and come back\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "The payment retry feature is parked and not committed for the current sprint.",
+      "labels": [
+        "from-meeting",
+        "decision"
+      ],
+      "description": "The payment retry feature is parked and not committed for the current sprint.\n\nSaid by Priya Sharma at 00:01:57.000 (T22):\n\"Let's park it. Not committing to it today.\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Story",
+      "summary": "The regression suite must run on every pull request before merge.",
+      "labels": [
+        "from-meeting",
+        "requirement"
+      ],
+      "description": "The regression suite must run on every pull request before merge.\n\nSaid by Priya Sharma at 00:02:05.000 (T24):\n\"The regression suite has to run on every pull request before merge\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Story",
+      "summary": "The regression suite execution time must be reduced to under fifteen minutes.",
+      "labels": [
+        "from-meeting",
+        "requirement"
+      ],
+      "description": "The regression suite execution time must be reduced to under fifteen minutes.\n\nSaid by Priya Sharma at 00:02:21.000 (T26):\n\"we also need it cut down to under fifteen minutes\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    },
+    {
+      "project": "QA",
+      "issuetype": "Task",
+      "summary": "The fifteen-minute regression suite limit is a hard requirement for enabling the merge gate.",
+      "labels": [
+        "from-meeting",
+        "decision"
+      ],
+      "description": "The fifteen-minute regression suite limit is a hard requirement for enabling the merge gate.\n\nSaid by Priya Sharma at 00:02:35.000 (T29):\n\"If it doesn't hit fifteen we don't turn on the gate.\"\n\nExtracted from e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt."
+    }
+  ],
+  "rejected": []
+}

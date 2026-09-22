@@ -1,0 +1,356 @@
+{
+  "meeting": "Checkout release sync",
+  "source": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt",
+  "format": "webvtt",
+  "speakers": [
+    "Mei Lin",
+    "Priya Sharma",
+    "Raj Patel"
+  ],
+  "turns_total": 33,
+  "turns_filler": 10,
+  "turns_kept": 23,
+  "turns_sent": 23,
+  "turns_omitted": [],
+  "filler_ratio": 0.303,
+  "sent": [
+    {
+      "id": "T1",
+      "speaker": "Priya Sharma",
+      "time": "00:00:07.000",
+      "text": "Right, are we all here? Raj, you're on mute."
+    },
+    {
+      "id": "T2",
+      "speaker": "Raj Patel",
+      "time": "00:00:11.000",
+      "text": "Sorry, sorry. Can you hear me now?"
+    },
+    {
+      "id": "T5",
+      "speaker": "Priya Sharma",
+      "time": "00:00:23.000",
+      "text": "Okay so this is the checkout release sync. Ada's out today so I'll take her items."
+    },
+    {
+      "id": "T7",
+      "speaker": "Priya Sharma",
+      "time": "00:00:33.000",
+      "text": "First thing. The guest checkout flow. We agreed last week it ships behind a flag, but the flag has to default to off in production until legal sign off."
+    },
+    {
+      "id": "T8",
+      "speaker": "Mei Lin",
+      "time": "00:00:44.000",
+      "text": "That's confirmed? Because the build currently has it defaulting to on."
+    },
+    {
+      "id": "T9",
+      "speaker": "Priya Sharma",
+      "time": "00:00:50.000",
+      "text": "It's confirmed. Default off in production, on in staging. That's a hard requirement."
+    },
+    {
+      "id": "T10",
+      "speaker": "Mei Lin",
+      "time": "00:00:57.000",
+      "text": "Okay, I'll raise a ticket to flip it."
+    },
+    {
+      "id": "T12",
+      "speaker": "Priya Sharma",
+      "time": "00:01:05.000",
+      "text": "Second. The order total on the confirmation page needs to include tax as a separate line item. Finance were very clear about that."
+    },
+    {
+      "id": "T13",
+      "speaker": "Raj Patel",
+      "time": "00:01:15.000",
+      "text": "Separate line, not just in the total?"
+    },
+    {
+      "id": "T14",
+      "speaker": "Priya Sharma",
+      "time": "00:01:19.000",
+      "text": "Separate line. Subtotal, tax, delivery, then total."
+    },
+    {
+      "id": "T15",
+      "speaker": "Raj Patel",
+      "time": "00:01:23.000",
+      "text": "Got it. I'll take that one."
+    },
+    {
+      "id": "T16",
+      "speaker": "Mei Lin",
+      "time": "00:01:27.000",
+      "text": "Do we know the tax rate is always twenty percent, or is it per region?"
+    },
+    {
+      "id": "T17",
+      "speaker": "Priya Sharma",
+      "time": "00:01:33.000",
+      "text": "Good question. I don't actually know. Let me check with finance and come back."
+    },
+    {
+      "id": "T19",
+      "speaker": "Raj Patel",
+      "time": "00:01:43.000",
+      "text": "While we're on checkout, should we look at the payment retry thing?"
+    },
+    {
+      "id": "T20",
+      "speaker": "Priya Sharma",
+      "time": "00:01:48.000",
+      "text": "Maybe. I'd like to but I don't think we have capacity this sprint."
+    },
+    {
+      "id": "T21",
+      "speaker": "Raj Patel",
+      "time": "00:01:53.000",
+      "text": "Yeah, probably next one."
+    },
+    {
+      "id": "T22",
+      "speaker": "Priya Sharma",
+      "time": "00:01:57.000",
+      "text": "Let's park it. Not committing to it today."
+    },
+    {
+      "id": "T24",
+      "speaker": "Priya Sharma",
+      "time": "00:02:05.000",
+      "text": "Third thing, and this one's mine. The regression suite has to run on every pull request before merge, not just nightly. That's non negotiable after last week."
+    },
+    {
+      "id": "T25",
+      "speaker": "Raj Patel",
+      "time": "00:02:17.000",
+      "text": "That's going to be slow. It's forty minutes."
+    },
+    {
+      "id": "T26",
+      "speaker": "Priya Sharma",
+      "time": "00:02:21.000",
+      "text": "I know. Which is why we also need it cut down to under fifteen minutes."
+    },
+    {
+      "id": "T28",
+      "speaker": "Mei Lin",
+      "time": "00:02:31.000",
+      "text": "Is that a hard number or a target?"
+    },
+    {
+      "id": "T29",
+      "speaker": "Priya Sharma",
+      "time": "00:02:35.000",
+      "text": "Hard number. If it doesn't hit fifteen we don't turn on the gate."
+    },
+    {
+      "id": "T31",
+      "speaker": "Priya Sharma",
+      "time": "00:02:44.000",
+      "text": "Anything else? No? Right, I'll write this up."
+    }
+  ],
+  "all_turns": [
+    {
+      "id": "T1",
+      "speaker": "Priya Sharma",
+      "time": "00:00:07.000",
+      "text": "Right, are we all here? Raj, you're on mute."
+    },
+    {
+      "id": "T2",
+      "speaker": "Raj Patel",
+      "time": "00:00:11.000",
+      "text": "Sorry, sorry. Can you hear me now?"
+    },
+    {
+      "id": "T3",
+      "speaker": "Priya Sharma",
+      "time": "00:00:15.000",
+      "text": "Yep, got you."
+    },
+    {
+      "id": "T4",
+      "speaker": "Mei Lin",
+      "time": "00:00:19.000",
+      "text": "Hi everyone."
+    },
+    {
+      "id": "T5",
+      "speaker": "Priya Sharma",
+      "time": "00:00:23.000",
+      "text": "Okay so this is the checkout release sync. Ada's out today so I'll take her items."
+    },
+    {
+      "id": "T6",
+      "speaker": "Raj Patel",
+      "time": "00:00:29.000",
+      "text": "Sure."
+    },
+    {
+      "id": "T7",
+      "speaker": "Priya Sharma",
+      "time": "00:00:33.000",
+      "text": "First thing. The guest checkout flow. We agreed last week it ships behind a flag, but the flag has to default to off in production until legal sign off."
+    },
+    {
+      "id": "T8",
+      "speaker": "Mei Lin",
+      "time": "00:00:44.000",
+      "text": "That's confirmed? Because the build currently has it defaulting to on."
+    },
+    {
+      "id": "T9",
+      "speaker": "Priya Sharma",
+      "time": "00:00:50.000",
+      "text": "It's confirmed. Default off in production, on in staging. That's a hard requirement."
+    },
+    {
+      "id": "T10",
+      "speaker": "Mei Lin",
+      "time": "00:00:57.000",
+      "text": "Okay, I'll raise a ticket to flip it."
+    },
+    {
+      "id": "T11",
+      "speaker": "Raj Patel",
+      "time": "00:01:01.000",
+      "text": "Mm."
+    },
+    {
+      "id": "T12",
+      "speaker": "Priya Sharma",
+      "time": "00:01:05.000",
+      "text": "Second. The order total on the confirmation page needs to include tax as a separate line item. Finance were very clear about that."
+    },
+    {
+      "id": "T13",
+      "speaker": "Raj Patel",
+      "time": "00:01:15.000",
+      "text": "Separate line, not just in the total?"
+    },
+    {
+      "id": "T14",
+      "speaker": "Priya Sharma",
+      "time": "00:01:19.000",
+      "text": "Separate line. Subtotal, tax, delivery, then total."
+    },
+    {
+      "id": "T15",
+      "speaker": "Raj Patel",
+      "time": "00:01:23.000",
+      "text": "Got it. I'll take that one."
+    },
+    {
+      "id": "T16",
+      "speaker": "Mei Lin",
+      "time": "00:01:27.000",
+      "text": "Do we know the tax rate is always twenty percent, or is it per region?"
+    },
+    {
+      "id": "T17",
+      "speaker": "Priya Sharma",
+      "time": "00:01:33.000",
+      "text": "Good question. I don't actually know. Let me check with finance and come back."
+    },
+    {
+      "id": "T18",
+      "speaker": "Mei Lin",
+      "time": "00:01:39.000",
+      "text": "Okay."
+    },
+    {
+      "id": "T19",
+      "speaker": "Raj Patel",
+      "time": "00:01:43.000",
+      "text": "While we're on checkout, should we look at the payment retry thing?"
+    },
+    {
+      "id": "T20",
+      "speaker": "Priya Sharma",
+      "time": "00:01:48.000",
+      "text": "Maybe. I'd like to but I don't think we have capacity this sprint."
+    },
+    {
+      "id": "T21",
+      "speaker": "Raj Patel",
+      "time": "00:01:53.000",
+      "text": "Yeah, probably next one."
+    },
+    {
+      "id": "T22",
+      "speaker": "Priya Sharma",
+      "time": "00:01:57.000",
+      "text": "Let's park it. Not committing to it today."
+    },
+    {
+      "id": "T23",
+      "speaker": "Mei Lin",
+      "time": "00:02:01.000",
+      "text": "Sounds right."
+    },
+    {
+      "id": "T24",
+      "speaker": "Priya Sharma",
+      "time": "00:02:05.000",
+      "text": "Third thing, and this one's mine. The regression suite has to run on every pull request before merge, not just nightly. That's non negotiable after last week."
+    },
+    {
+      "id": "T25",
+      "speaker": "Raj Patel",
+      "time": "00:02:17.000",
+      "text": "That's going to be slow. It's forty minutes."
+    },
+    {
+      "id": "T26",
+      "speaker": "Priya Sharma",
+      "time": "00:02:21.000",
+      "text": "I know. Which is why we also need it cut down to under fifteen minutes."
+    },
+    {
+      "id": "T27",
+      "speaker": "Raj Patel",
+      "time": "00:02:27.000",
+      "text": "Under fifteen. Okay."
+    },
+    {
+      "id": "T28",
+      "speaker": "Mei Lin",
+      "time": "00:02:31.000",
+      "text": "Is that a hard number or a target?"
+    },
+    {
+      "id": "T29",
+      "speaker": "Priya Sharma",
+      "time": "00:02:35.000",
+      "text": "Hard number. If it doesn't hit fifteen we don't turn on the gate."
+    },
+    {
+      "id": "T30",
+      "speaker": "Mei Lin",
+      "time": "00:02:40.000",
+      "text": "Understood."
+    },
+    {
+      "id": "T31",
+      "speaker": "Priya Sharma",
+      "time": "00:02:44.000",
+      "text": "Anything else? No? Right, I'll write this up."
+    },
+    {
+      "id": "T32",
+      "speaker": "Raj Patel",
+      "time": "00:02:48.000",
+      "text": "Thanks Priya."
+    },
+    {
+      "id": "T33",
+      "speaker": "Mei Lin",
+      "time": "00:02:52.000",
+      "text": "Bye."
+    }
+  ]
+}
