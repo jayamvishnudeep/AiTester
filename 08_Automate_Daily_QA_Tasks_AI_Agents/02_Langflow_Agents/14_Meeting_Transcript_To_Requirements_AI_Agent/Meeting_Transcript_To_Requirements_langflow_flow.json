@@ -1,0 +1,1781 @@
+{
+  "name": "Meeting Transcript to Requirements",
+  "description": "Extracts requirements from a meeting transcript and verifies every one against what was said.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Mt1Ti",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 340
+        },
+        "data": {
+          "id": "TextInput-Mt1Ti",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt"
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "measured": {
+          "width": 320,
+          "height": 285
+        },
+        "positionAbsolute": {
+          "x": 40,
+          "y": 340
+        }
+      },
+      {
+        "id": "TranscriptParser-Mt2Tp",
+        "type": "genericNode",
+        "position": {
+          "x": 440,
+          "y": 300
+        },
+        "data": {
+          "id": "TranscriptParser-Mt2Tp",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Transcript Parser - a Langflow custom component.\n\nReads a meeting transcript and hands the model the part of it that could\npossibly contain a commitment.\n\nA transcript is mostly not requirements. Greetings, \"you're on mute\",\nscheduling chatter and one-word acknowledgements are the bulk of the lines, and\nthe few turns that actually commit to something are scattered among them. This\ncomponent parses the three formats a QA lead is likely to have - Zoom's WEBVTT,\nthe plain text Teams exports, and a bare \"Name: text\" log - splits it into\nattributed turns, drops the filler, and passes on what is left with the speaker\nand timestamp still attached to every line.\n\nThe attribution is the part that matters later. Every turn keeps a stable id, so\nwhen the model claims a requirement was agreed, the claim can be checked against\nthe exact line it came from rather than taken on trust. Extracting requirements\nis a language problem and the model does that work; proving the requirement was\nactually said is a lookup, and lookups belong in code.\n\nNothing here decides what a requirement is. It decides what could not possibly\nbe one.\n\"\"\"\n\nimport json\nimport re\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import BoolInput, IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_WEBVTT_TIME = re.compile(\n    r\"^(\\d{2}:)?\\d{2}:\\d{2}[.,]\\d{3}\\s*-->\\s*(\\d{2}:)?\\d{2}:\\d{2}[.,]\\d{3}\")\n_CUE_NUMBER = re.compile(r\"^\\d+$\")\n# \"Priya Sharma: text\"  /  \"Priya Sharma (Guest): text\"\n_INLINE_SPEAKER = re.compile(r\"^\\s*([A-Z][\\w.'-]*(?:\\s+[A-Z][\\w.'-]*){0,3})\\s*(?:\\([^)]*\\))?\\s*:\\s*(.+)$\")\n# Teams: \"Priya Sharma   0:14\"  on its own line, text on the next\n_TEAMS_SPEAKER = re.compile(r\"^\\s*([A-Z][\\w.'-]*(?:\\s+[A-Z][\\w.'-]*){0,3})\\s{2,}(\\d{1,2}:\\d{2}(?::\\d{2})?)\\s*$\")\n\n# Turns that cannot carry a commitment. Matched on the whole utterance, not on a\n# substring: \"okay\" is filler, \"okay, tax goes on its own line\" is not.\n_FILLER_EXACT = {\n    \"yes\", \"yeah\", \"yep\", \"no\", \"nope\", \"ok\", \"okay\", \"sure\", \"right\", \"mm\", \"mhm\",\n    \"mmhm\", \"uh huh\", \"hmm\", \"cool\", \"great\", \"thanks\", \"thank you\", \"cheers\",\n    \"bye\", \"goodbye\", \"see you\", \"morning\", \"good morning\", \"afternoon\", \"hi\",\n    \"hi everyone\", \"hello\", \"hey\", \"same\", \"agreed\", \"understood\", \"got it\",\n    \"sounds right\", \"sounds good\", \"fair enough\", \"will do\", \"please\", \"exactly\",\n    \"of course\", \"no worries\", \"sorry\", \"my bad\", \"true\", \"indeed\", \"fine\",\n}\n_FILLER_PATTERNS = [\n    re.compile(r\"^(?:you'?re|you are) on mute\\b\", re.I),\n    re.compile(r\"^can you hear me\\b\", re.I),\n    re.compile(r\"^(?:sorry|sorry,?\\s*sorry)[,.\\s]*$\", re.I),\n    re.compile(r\"^(?:are we all here|is everyone here)\\b\", re.I),\n    re.compile(r\"^(?:how was|how's) (?:the )?(?:your )?weekend\\b\", re.I),\n    re.compile(r\"^(?:i|we) should (?:jump|hop) (?:on|off)\\b\", re.I),\n    re.compile(r\"^catch you later\\b\", re.I),\n    re.compile(r\"^(?:that'?s me|that is me)[.,\\s]*(?:thanks)?[.\\s]*$\", re.I),\n]\n\n\nclass TranscriptParser(Component):\n    display_name = \"Transcript Parser\"\n    description = \"Parses a meeting transcript into attributed turns and drops the filler.\"\n    documentation = \"https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API\"\n    icon = \"captions\"\n    name = \"TranscriptParser\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"transcript_path\",\n            display_name=\"Transcript path\",\n            info=\"A .vtt, .txt or .md transcript. Leave empty to use the pasted transcript below.\",\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"default_transcript_path\",\n            display_name=\"Default transcript path\",\n            info=\"Used whenever the path above is empty or does not exist.\",\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"pasted_transcript\",\n            display_name=\"Pasted transcript\",\n            info=\"Paste a transcript here instead of reading one from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"meeting_title\",\n            display_name=\"Meeting title\",\n            info=\"Used in the report and in the Jira summaries. Empty means the file name.\",\n            value=\"\",\n        ),\n        IntInput(\n            name=\"min_words\",\n            display_name=\"Minimum words in a turn\",\n            info=\"Turns shorter than this carry no commitment and are dropped.\",\n            value=4,\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_brief_chars\",\n            display_name=\"Maximum characters sent to the model\",\n            info=(\n                \"A transcript longer than this is cut, and the cut is reported rather than \"\n                \"hidden - the turns that did not fit are named in the output.\"\n            ),\n            value=12000,\n            advanced=True,\n        ),\n        BoolInput(\n            name=\"drop_filler\",\n            display_name=\"Drop filler turns\",\n            info=\"Off sends every turn, which is slower and rarely better.\",\n            value=True,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where transcript_turns.json is written. The requirements writer reads it back \"\n                \"from here to verify quotes, so both nodes must point at the same folder.\"\n            ),\n            value=\"\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Brief\", name=\"brief\", method=\"build_brief\"),\n        Output(display_name=\"Turns\", name=\"turns\", method=\"build_turns\"),\n    ]\n\n    # ------------------------------------------------------------- loading\n\n    def _source(self) -> tuple:\n        pasted = (self.pasted_transcript or \"\").strip()\n        if pasted:\n            return pasted, \"pasted transcript\"\n        for candidate in (self.transcript_path, self.default_transcript_path):\n            cleaned = (candidate or \"\").strip().strip('\"').strip(\"'\")\n            if cleaned and Path(cleaned).is_file():\n                try:\n                    return Path(cleaned).read_text(encoding=\"utf-8\", errors=\"replace\"), cleaned\n                except OSError as exc:\n                    msg = f\"Could not read {cleaned} - {exc}\"\n                    raise ValueError(msg) from exc\n        msg = (\n            \"No transcript reached this component. A model asked what was agreed in a meeting \"\n            \"it cannot see will write a plausible set of requirements that nobody said, and \"\n            \"there is no way to tell those apart from real ones afterwards. Set 'Default \"\n            \"transcript path', or paste a transcript.\"\n        )\n        raise ValueError(msg)\n\n    # ------------------------------------------------------------- parsing\n\n    @classmethod\n    def _parse(cls, text: str) -> tuple:\n        \"\"\"(turns, format). A turn is {id, speaker, time, text}.\"\"\"\n        raw_lines = text.splitlines()\n        if any(line.strip().upper().startswith(\"WEBVTT\") for line in raw_lines[:3]):\n            return cls._parse_vtt(raw_lines), \"webvtt\"\n\n        turns, fmt = cls._parse_teams(raw_lines)\n        if turns:\n            return turns, fmt\n        return cls._parse_inline(raw_lines), \"inline\"\n\n    @staticmethod\n    def _parse_vtt(lines: list) -> list:\n        turns, time = [], \"\"\n        for line in lines:\n            stripped = line.strip()\n            if not stripped or stripped.upper().startswith(\"WEBVTT\") or _CUE_NUMBER.match(stripped):\n                continue\n            timing = _WEBVTT_TIME.match(stripped)\n            if timing:\n                time = stripped.split(\"-->\")[0].strip()\n                continue\n            found = _INLINE_SPEAKER.match(stripped)\n            speaker, body = (found.group(1), found.group(2)) if found else (\"\", stripped)\n            if turns and not found and turns[-1][\"time\"] == time:\n                turns[-1][\"text\"] += \" \" + body\n                continue\n            turns.append({\"id\": f\"T{len(turns) + 1}\", \"speaker\": speaker.strip(),\n                          \"time\": time, \"text\": body.strip()})\n        return turns\n\n    @staticmethod\n    def _parse_teams(lines: list) -> tuple:\n        turns, speaker, time, buffer = [], \"\", \"\", []\n\n        def flush():\n            if speaker and buffer:\n                turns.append({\"id\": f\"T{len(turns) + 1}\", \"speaker\": speaker,\n                              \"time\": time, \"text\": \" \".join(buffer).strip()})\n\n        for line in lines:\n            header = _TEAMS_SPEAKER.match(line.rstrip())\n            if header:\n                flush()\n                speaker, time, buffer = header.group(1).strip(), header.group(2), []\n                continue\n            if line.strip():\n                buffer.append(line.strip())\n        flush()\n        return (turns, \"teams\") if turns else ([], \"\")\n\n    @staticmethod\n    def _parse_inline(lines: list) -> list:\n        turns = []\n        for line in lines:\n            stripped = line.strip()\n            if not stripped:\n                continue\n            found = _INLINE_SPEAKER.match(stripped)\n            if found:\n                turns.append({\"id\": f\"T{len(turns) + 1}\", \"speaker\": found.group(1).strip(),\n                              \"time\": \"\", \"text\": found.group(2).strip()})\n            elif turns:\n                turns[-1][\"text\"] += \" \" + stripped\n        return turns\n\n    # ------------------------------------------------------------ filtering\n\n    @classmethod\n    def _is_filler(cls, text: str, min_words: int) -> bool:\n        cleaned = re.sub(r\"[^\\w\\s']\", \" \", text).strip().lower()\n        cleaned = re.sub(r\"\\s+\", \" \", cleaned)\n        if not cleaned:\n            return True\n        if cleaned in _FILLER_EXACT:\n            return True\n        if any(p.match(text.strip()) for p in _FILLER_PATTERNS):\n            return True\n        return len(cleaned.split()) < max(int(min_words), 1)\n\n    # ----------------------------------------------------------- analysing\n\n    def _analyse(self) -> dict:\n        text, origin = self._source()\n        turns, fmt = self._parse(text)\n        if not turns:\n            msg = (\n                f\"No speaker turns were found in {origin}. This parser reads Zoom WEBVTT, the \"\n                \"plain text Microsoft Teams export, and a simple 'Name: what they said' log. \"\n                \"Without attributed turns there is nothing to trace a requirement back to.\"\n            )\n            raise ValueError(msg)\n\n        min_words = max(int(self.min_words or 4), 1)\n        drop = bool(self.drop_filler)\n        kept, dropped = [], []\n        for turn in turns:\n            if drop and self._is_filler(turn[\"text\"], min_words):\n                dropped.append(turn)\n            else:\n                kept.append(turn)\n\n        if not kept:\n            msg = (\n                f\"Every one of the {len(turns)} turns in this transcript is filler - greetings, \"\n                \"acknowledgements and chatter. There is nothing in it that could carry a \"\n                \"requirement, and a model asked to find some anyway would invent them.\"\n            )\n            raise ValueError(msg)\n\n        budget = max(int(self.max_brief_chars or 12000), 500)\n        sent, omitted, used = [], [], 0\n        for turn in kept:\n            line = self._render(turn)\n            if used + len(line) > budget and sent:\n                omitted.append(turn)\n                continue\n            sent.append(turn)\n            used += len(line)\n\n        speakers = sorted({t[\"speaker\"] for t in turns if t[\"speaker\"]})\n        title = (self.meeting_title or \"\").strip() or Path(origin).stem.replace(\"_\", \" \")\n        return {\n            \"meeting\": title,\n            \"source\": origin,\n            \"format\": fmt,\n            \"speakers\": speakers,\n            \"turns_total\": len(turns),\n            \"turns_filler\": len(dropped),\n            \"turns_kept\": len(kept),\n            \"turns_sent\": len(sent),\n            \"turns_omitted\": [{\"id\": t[\"id\"], \"speaker\": t[\"speaker\"], \"time\": t[\"time\"]} for t in omitted],\n            \"filler_ratio\": round(len(dropped) / len(turns), 4) if turns else 0.0,\n            \"sent\": sent,\n            \"all_turns\": turns,\n        }\n\n    @staticmethod\n    def _render(turn: dict) -> str:\n        stamp = f\" [{turn['time']}]\" if turn[\"time\"] else \"\"\n        who = turn[\"speaker\"] or \"unknown\"\n        return f\"({turn['id']}){stamp} {who}: {turn['text']}\\n\"\n\n    # -------------------------------------------------------------- disk\n\n    TURNS_FILE = \"transcript_turns.json\"\n\n    def _persist(self, analysis: dict) -> None:\n        \"\"\"The writer reads this back to check the model's quotes are real.\n\n        It is also the reason a requirement can be argued with: every line the\n        model was shown is on disk with the speaker and timestamp attached, so\n        \"who agreed to this\" has an answer that is not a recollection.\n        \"\"\"\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            return\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n        (folder / self.TURNS_FILE).write_text(\n            json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n    # ------------------------------------------------------------ outputs\n\n    def _brief_text(self, a: dict) -> str:\n        lines = [\n            f\"# {a['meeting']}\", \"\",\n            f\"Format: {a['format']}   Speakers: {', '.join(a['speakers']) or 'not attributed'}\",\n            f\"Turns: {a['turns_total']} total, {a['turns_filler']} filler dropped \"\n            f\"({a['filler_ratio']:.0%}), {a['turns_sent']} below\",\n        ]\n        if a[\"turns_omitted\"]:\n            lines.append(f\"WARNING: {len(a['turns_omitted'])} turns did not fit the budget and are \"\n                         \"NOT below. Do not treat this transcript as fully reviewed.\")\n        lines.extend([\"\", \"## Transcript\", \"\"])\n        for turn in a[\"sent\"]:\n            lines.append(self._render(turn).rstrip())\n        return \"\\n\".join(lines)\n\n    def build_brief(self) -> Message:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Message(text=self._brief_text(a))\n\n    def build_turns(self) -> Data:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Data(data=a)\n\n    @staticmethod\n    def _status(a: dict) -> str:\n        return f\"{a['turns_sent']}/{a['turns_total']} turns, {a['filler_ratio']:.0%} filler\"\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_transcript_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_transcript_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/sample_transcripts/checkout_release_sync.vtt",
+                "display_name": "Default transcript path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the path above is empty or does not exist.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "drop_filler": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "drop_filler",
+                "value": true,
+                "display_name": "Drop filler turns",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Off sends every turn, which is slower and rarely better.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "max_brief_chars": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_brief_chars",
+                "value": 12000,
+                "display_name": "Maximum characters sent to the model",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "A transcript longer than this is cut, and the cut is reported rather than hidden - the turns that did not fit are named in the output.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "meeting_title": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "meeting_title",
+                "value": "Checkout release sync",
+                "display_name": "Meeting title",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used in the report and in the Jira summaries. Empty means the file name.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "min_words": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "min_words",
+                "value": 4,
+                "display_name": "Minimum words in a turn",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Turns shorter than this carry no commitment and are dropped.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where transcript_turns.json is written. The requirements writer reads it back from here to verify quotes, so both nodes must point at the same folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "pasted_transcript": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pasted_transcript",
+                "value": "",
+                "display_name": "Pasted transcript",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste a transcript here instead of reading one from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "transcript_path": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "transcript_path",
+                "value": "",
+                "display_name": "Transcript path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "A .vtt, .txt or .md transcript. Leave empty to use the pasted transcript below.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Parses a meeting transcript into attributed turns and drops the filler.",
+            "icon": "captions",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Transcript Parser",
+            "documentation": "https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "brief",
+                "display_name": "Brief",
+                "method": "build_brief",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "turns",
+                "display_name": "Turns",
+                "method": "build_turns",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "transcript_path",
+              "default_transcript_path",
+              "pasted_transcript",
+              "meeting_title",
+              "min_words",
+              "max_brief_chars",
+              "drop_filler",
+              "output_dir"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.transcript_parser",
+              "code_hash": "d142cc0fa7a0",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 440,
+          "y": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Mt3Pt",
+        "type": "genericNode",
+        "position": {
+          "x": 880,
+          "y": 300
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are a QA lead writing up what a meeting actually committed to.\n\nBelow is a meeting transcript. Every line is tagged with a turn id like (T12), the speaker, and a timestamp.\n\nReturn a JSON array and nothing else. Each element has exactly three fields: \"text\", \"category\", \"quote\".\n\n- \"text\" is the requirement, action item, decision or question in one clear sentence.\n- \"category\" is one of: requirement, action_item, decision, open_question.\n- \"quote\" is words copied EXACTLY from one transcript line.\n\nThe quote is the part that matters. Copy it verbatim from a single line above - not paraphrased, not tidied up, not stitched together from two turns. Every item you return is checked against the transcript, and anything whose quote is not found there is thrown away. An item you feel sure about but cannot quote is worth less than one you can.\n\nWhat counts as what:\n\n- requirement - something the product or system must now do.\n- action_item - something a named person agreed to do.\n- decision - a choice the group settled, including a choice NOT to do something.\n- open_question - raised out loud and explicitly left unresolved.\n\nBe strict about agreed versus merely discussed. \"Maybe we should look at that\" is not a requirement. Something one person floated that nobody answered is not a requirement. If the group parked an idea, that is a decision to park it. When a meeting genuinely agreed nothing at all, return an empty array - that is a correct and useful answer.\n\nLeave out greetings, scheduling and anything you cannot quote. No preamble, no explanation, no markdown fences around the JSON.\n\nTRANSCRIPT\n{transcript}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "transcript": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "transcript",
+                "display_name": "transcript",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "transcript"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Mt3Pt"
+        },
+        "measured": {
+          "width": 320,
+          "height": 347
+        },
+        "positionAbsolute": {
+          "x": 880,
+          "y": 300
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Mt4Gq",
+        "type": "genericNode",
+        "position": {
+          "x": 1300,
+          "y": 260
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "allam-2-7b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "groq/compound-mini"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.2,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "8af1ca34-3b2f-4eae-9c30-8062a0004c30"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-17T20:08:17.131Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Mt4Gq",
+          "selected_output": "text_output"
+        },
+        "measured": {
+          "width": 320,
+          "height": 495
+        },
+        "positionAbsolute": {
+          "x": 1300,
+          "y": 260
+        }
+      },
+      {
+        "id": "RequirementsWriter-Mt5Rw",
+        "type": "genericNode",
+        "position": {
+          "x": 1720,
+          "y": 300
+        },
+        "data": {
+          "id": "RequirementsWriter-Mt5Rw",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Requirements Writer - a Langflow custom component.\n\nTakes the requirements the model extracted, throws away the ones nobody said,\nand writes what survives as Jira-ready JSON and a report.\n\nThis is the guard the whole agent is built around. Asked what was agreed in a\nmeeting, a model produces a tidy list of requirements - and some of them were\nnever said. They are not obviously wrong: they are the sensible things a team\n*would* agree given that discussion, phrased exactly like the real ones. A QA\nlead reading the list cannot tell which is which, and neither can the developer\nwho gets the ticket.\n\nSo every extracted item has to carry a **quote**, and every quote is checked\nagainst the parsed transcript before the item is allowed through. An invented\nrequirement has nothing to quote, so it cannot survive the check. Items that\nfail are dropped, counted, and printed - a silent drop would just be a quieter\nversion of the same problem.\n\nAttribution is taken from the matched turn rather than from the model. The model\nsays what was agreed; the transcript says who said it and when.\n\"\"\"\n\nimport json\nimport re\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import IntInput, MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_FENCE = re.compile(r\"```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\", re.DOTALL)\n_PUNCT = re.compile(r\"[^\\w\\s]\")\n_SPACE = re.compile(r\"\\s+\")\n\n_CATEGORIES = (\"requirement\", \"action_item\", \"decision\", \"open_question\")\n_JIRA_TYPE = {\n    \"requirement\": \"Story\",\n    \"action_item\": \"Task\",\n    \"decision\": \"Task\",\n    \"open_question\": \"Task\",\n}\n\n\ndef _normalise(text: str) -> str:\n    return _SPACE.sub(\" \", _PUNCT.sub(\" \", (text or \"\").lower())).strip()\n\n\nclass RequirementsWriter(Component):\n    display_name = \"Requirements Writer\"\n    description = \"Verifies every extracted requirement against the transcript, then writes them.\"\n    documentation = \"https://support.atlassian.com/jira-software-cloud/docs/what-is-an-issue/\"\n    icon = \"clipboard-check\"\n    name = \"RequirementsWriter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"extracted\",\n            display_name=\"Extracted requirements\",\n            info=\"The model's JSON reply. Every item must carry a quote or it is dropped.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where requirements.json and the report are written, and where \"\n                \"transcript_turns.json is read from. Point this at the same folder as the \"\n                \"Transcript Parser's Reports folder.\"\n            ),\n            value=\"\",\n        ),\n        IntInput(\n            name=\"min_quote_words\",\n            display_name=\"Minimum words in a quote\",\n            info=(\n                \"A quote shorter than this matches too easily to prove anything. Three words \"\n                \"of common English will appear in almost any transcript.\"\n            ),\n            value=4,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"report_name\",\n            display_name=\"Report file name\",\n            value=\"requirements_report.md\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"project_key\",\n            display_name=\"Jira project key\",\n            info=\"Used to build the issue payloads. Nothing is sent anywhere.\",\n            value=\"QA\",\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_report\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    TURNS_FILE = \"transcript_turns.json\"\n    ISSUES_FILE = \"requirements.json\"\n\n    # ------------------------------------------------------------- reading\n\n    def _turns(self, folder: Path) -> dict:\n        path = folder / self.TURNS_FILE\n        if not path.is_file():\n            msg = (f\"No {self.TURNS_FILE} in {folder}. The Transcript Parser writes it, and \"\n                   \"without it there is no transcript to check the model's quotes against - \"\n                   \"which is the only thing separating a real requirement from a plausible \"\n                   \"one. Set its Reports folder to this same folder and run it first.\")\n            raise ValueError(msg)\n        try:\n            data = json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n        if not isinstance(data, dict) or \"all_turns\" not in data:\n            msg = f\"{path.name} does not look like a parsed transcript; it has no turns.\"\n            raise ValueError(msg)\n        return data\n\n    @staticmethod\n    def _extract_json(text: str):\n        \"\"\"Models wrap JSON in fences, prose, or both.\"\"\"\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned nothing to verify.\"\n            raise ValueError(msg)\n\n        candidates = [block for block in _FENCE.findall(raw)]\n        candidates.append(raw)\n        for start, end in ((\"[\", \"]\"), (\"{\", \"}\")):\n            first, last = raw.find(start), raw.rfind(end)\n            if first != -1 and last > first:\n                candidates.append(raw[first:last + 1])\n\n        for candidate in candidates:\n            try:\n                parsed = json.loads(candidate)\n            except (json.JSONDecodeError, TypeError):\n                continue\n            if isinstance(parsed, list):\n                return parsed\n            if isinstance(parsed, dict):\n                for key in (\"requirements\", \"items\", \"results\", \"extracted\", \"output\"):\n                    if isinstance(parsed.get(key), list):\n                        return parsed[key]\n                return [parsed]\n        msg = (\"The model's reply was not JSON. It must return a list of items, each with a \"\n               \"quote taken from the transcript.\")\n        raise ValueError(msg)\n\n    # -------------------------------------------------------- verification\n\n    def _verify(self, quote: str, turns: list, min_words: int):\n        \"\"\"The turn this quote came from, or None if nobody said it.\n\n        A quote is matched on normalised text so punctuation and casing do not\n        decide whether a requirement is real. It has to be long enough to mean\n        something: a three-word quote of ordinary English matches almost any\n        transcript and would let an invented requirement borrow a real turn's\n        attribution.\n        \"\"\"\n        cleaned = _normalise(quote)\n        if not cleaned or len(cleaned.split()) < max(int(min_words), 1):\n            return None\n        for turn in turns:\n            if cleaned in _normalise(turn.get(\"text\", \"\")):\n                return turn\n        return None\n\n    def _analyse(self, folder: Path) -> dict:\n        parsed = self._turns(folder)\n        turns = parsed.get(\"all_turns\") or []\n        items = self._extract_json(self.extracted)\n        min_words = max(int(self.min_quote_words or 4), 1)\n        project = (self.project_key or \"QA\").strip() or \"QA\"\n\n        verified, rejected, seen = [], [], set()\n        for raw in items:\n            if not isinstance(raw, dict):\n                rejected.append({\"text\": str(raw)[:160], \"reason\": \"not an object\"})\n                continue\n            text = str(raw.get(\"text\") or raw.get(\"requirement\") or raw.get(\"summary\") or \"\").strip()\n            quote = str(raw.get(\"quote\") or raw.get(\"evidence\") or \"\").strip()\n            category = str(raw.get(\"category\") or raw.get(\"type\") or \"requirement\").strip().lower()\n            if category not in _CATEGORIES:\n                category = \"requirement\"\n            if not text:\n                rejected.append({\"text\": \"\", \"quote\": quote, \"reason\": \"no requirement text\"})\n                continue\n            if not quote:\n                rejected.append({\"text\": text, \"quote\": \"\", \"category\": category,\n                                 \"reason\": \"no quote - nothing to check it against\"})\n                continue\n\n            turn = self._verify(quote, turns, min_words)\n            if turn is None:\n                rejected.append({\"text\": text, \"quote\": quote, \"category\": category,\n                                 \"reason\": \"quote does not appear in the transcript\"})\n                continue\n\n            key = _normalise(text)\n            if key in seen:\n                rejected.append({\"text\": text, \"quote\": quote, \"category\": category,\n                                 \"reason\": \"duplicate of an item already accepted\"})\n                continue\n            seen.add(key)\n\n            verified.append({\n                \"text\": text,\n                \"category\": category,\n                \"quote\": quote,\n                # Attribution comes from the transcript, not from the model.\n                \"said_by\": turn.get(\"speaker\") or \"unattributed\",\n                \"at\": turn.get(\"time\") or \"\",\n                \"turn_id\": turn.get(\"id\") or \"\",\n                \"jira\": {\n                    \"project\": project,\n                    \"issuetype\": _JIRA_TYPE[category],\n                    \"summary\": text if len(text) <= 120 else text[:117].rstrip() + \"...\",\n                    \"labels\": [\"from-meeting\", category.replace(\"_\", \"-\")],\n                },\n            })\n\n        counts = {c: sum(1 for v in verified if v[\"category\"] == c) for c in _CATEGORIES}\n        return {\n            \"meeting\": parsed.get(\"meeting\", \"\"),\n            \"source\": parsed.get(\"source\", \"\"),\n            \"speakers\": parsed.get(\"speakers\", []),\n            \"turns_total\": parsed.get(\"turns_total\", 0),\n            \"turns_sent\": parsed.get(\"turns_sent\", 0),\n            \"turns_omitted\": parsed.get(\"turns_omitted\", []),\n            \"proposed\": len(items),\n            \"verified_count\": len(verified),\n            \"rejected_count\": len(rejected),\n            \"counts\": counts,\n            \"verified\": verified,\n            \"rejected\": rejected,\n        }\n\n    # ------------------------------------------------------------ composing\n\n    def _compose(self, a: dict) -> str:\n        stamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d\")\n        out = [\n            f\"# Requirements from {a['meeting'] or 'the meeting'}\",\n            \"\",\n            f\"*Generated {stamp} by the Meeting Transcript to Requirements agent. Every item \"\n            \"below quotes the line it came from, and every quote was checked against the \"\n            \"transcript before it was accepted.*\",\n            \"\",\n            \"## At a glance\",\n            \"\",\n            \"| | |\",\n            \"|---|---|\",\n            f\"| Meeting | {a['meeting']} |\",\n            f\"| Present | {', '.join(a['speakers']) or 'not attributed'} |\",\n            f\"| Turns reviewed | {a['turns_sent']} of {a['turns_total']} |\",\n            f\"| Items proposed | {a['proposed']} |\",\n            f\"| **Verified** | **{a['verified_count']}** |\",\n            f\"| Rejected | {a['rejected_count']} |\",\n            \"\",\n        ]\n        if a[\"turns_omitted\"]:\n            out.extend([\n                f\"> {len(a['turns_omitted'])} turns did not fit the model's budget and were \"\n                \"never reviewed. This meeting is not fully covered - split the transcript or \"\n                \"raise the budget before treating this list as complete.\",\n                \"\",\n            ])\n\n        labels = {\"requirement\": \"Requirements\", \"action_item\": \"Action items\",\n                  \"decision\": \"Decisions\", \"open_question\": \"Open questions\"}\n        for category, heading in labels.items():\n            items = [v for v in a[\"verified\"] if v[\"category\"] == category]\n            if not items:\n                continue\n            out.extend([f\"## {heading} ({len(items)})\", \"\"])\n            for item in items:\n                stamp_bit = f\" at {item['at']}\" if item[\"at\"] else \"\"\n                out.append(f\"**{item['text']}**\")\n                out.append(\"\")\n                out.append(f\"> {item['quote']}\")\n                out.append(\"\")\n                out.append(f\"— {item['said_by']}{stamp_bit} ({item['turn_id']})\")\n                out.append(\"\")\n\n        if not a[\"verified\"]:\n            out.extend([\n                \"## Nothing was agreed\",\n                \"\",\n                \"No item survived verification. That is a real result, not a failure: some \"\n                \"meetings do not produce requirements, and a list invented to fill the gap \"\n                \"would be worse than an empty one.\",\n                \"\",\n            ])\n\n        if a[\"rejected\"]:\n            out.extend([\n                f\"## Rejected ({a['rejected_count']})\",\n                \"\",\n                \"These were proposed and thrown out. They are printed because a silent drop is \"\n                \"indistinguishable from a filter that stopped working.\",\n                \"\",\n                \"| Proposed | Why it was rejected |\",\n                \"|---|---|\",\n            ])\n            for item in a[\"rejected\"]:\n                text = (item.get(\"text\") or \"(empty)\").replace(\"|\", \"\\\\|\")\n                out.append(f\"| {text[:90]} | {item.get('reason', '')} |\")\n            out.append(\"\")\n\n        out.extend([\n            \"---\",\n            \"\",\n            \"## How to read this\",\n            \"\",\n            \"Every verified item quotes a line somebody actually said, and the attribution \"\n            \"comes from the transcript rather than from the model. What the agent cannot do is \"\n            \"know whether an agreement was *meant* as a commitment - a firm \\\"we will\\\" and a \"\n            \"thinking-aloud \\\"we could\\\" read alike in text. Check the quote before raising the \"\n            \"ticket.\",\n            \"\",\n        ])\n        return \"\\n\".join(out)\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set a reports folder on the Requirements Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        a = self._analyse(folder)\n\n        name = Path((self.report_name or \"requirements_report.md\").strip()).name\n        name = name or \"requirements_report.md\"\n        if not name.endswith(\".md\"):\n            name += \".md\"\n        report_path = folder / name\n        report = self._compose(a)\n        report_path.write_text(report if report.endswith(\"\\n\") else report + \"\\n\", encoding=\"utf-8\")\n\n        issues_path = folder / self.ISSUES_FILE\n        issues_path.write_text(json.dumps({\n            \"meeting\": a[\"meeting\"],\n            \"source\": a[\"source\"],\n            \"issues\": [{**v[\"jira\"], \"description\":\n                        f\"{v['text']}\\n\\nSaid by {v['said_by']}\"\n                        f\"{' at ' + v['at'] if v['at'] else ''} ({v['turn_id']}):\\n\"\n                        f\"\\\"{v['quote']}\\\"\\n\\nExtracted from {a['source']}.\"}\n                       for v in a[\"verified\"]],\n            \"rejected\": a[\"rejected\"],\n        }, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n        return {\n            \"report\": str(report_path),\n            \"report_lines\": len(report.splitlines()),\n            \"issues_json\": str(issues_path),\n            \"meeting\": a[\"meeting\"],\n            \"proposed\": a[\"proposed\"],\n            \"verified_count\": a[\"verified_count\"],\n            \"rejected_count\": a[\"rejected_count\"],\n            \"counts\": a[\"counts\"],\n            \"turns_omitted\": len(a[\"turns_omitted\"]),\n        }\n\n    def write_report(self) -> Message:\n        r = self._write()\n        c = r[\"counts\"]\n        self.status = f\"{r['verified_count']} verified, {r['rejected_count']} rejected\"\n        lines = [\n            f\"{r['meeting']}: {r['verified_count']} of {r['proposed']} proposed items verified \"\n            f\"against the transcript.\",\n            f\"{c['requirement']} requirements, {c['action_item']} action items, \"\n            f\"{c['decision']} decisions, {c['open_question']} open questions.\",\n        ]\n        if r[\"rejected_count\"]:\n            lines.append(f\"{r['rejected_count']} rejected - nobody said them, or they had no quote.\")\n        if r[\"turns_omitted\"]:\n            lines.append(f\"WARNING: {r['turns_omitted']} turns were never reviewed.\")\n        lines.extend([\n            \"\",\n            f\"Report: {r['report']}  ({r['report_lines']} lines)\",\n            f\"Issues: {r['issues_json']}\",\n        ])\n        return Message(text=\"\\n\".join(lines))\n\n    def write_details(self) -> Data:\n        r = self._write()\n        self.status = f\"{r['verified_count']} verified, {r['rejected_count']} rejected\"\n        return Data(data=r)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "extracted": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "extracted",
+                "value": "",
+                "display_name": "Extracted requirements",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's JSON reply. Every item must carry a quote or it is dropped.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "min_quote_words": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "min_quote_words",
+                "value": 4,
+                "display_name": "Minimum words in a quote",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "A quote shorter than this matches too easily to prove anything. Three words of common English will appear in almost any transcript.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where requirements.json and the report are written, and where transcript_turns.json is read from. Point this at the same folder as the Transcript Parser's Reports folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "project_key": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "project_key",
+                "value": "QA",
+                "display_name": "Jira project key",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used to build the issue payloads. Nothing is sent anywhere.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "report_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "report_name",
+                "value": "requirements_report.md",
+                "display_name": "Report file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Verifies every extracted requirement against the transcript, then writes them.",
+            "icon": "clipboard-check",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Requirements Writer",
+            "documentation": "https://support.atlassian.com/jira-software-cloud/docs/what-is-an-issue/",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "extracted",
+              "output_dir",
+              "min_quote_words",
+              "report_name",
+              "project_key"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.requirements_writer",
+              "code_hash": "6cc508637e72",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 1720,
+          "y": 300
+        }
+      },
+      {
+        "id": "ChatOutput-Mt6Co",
+        "type": "genericNode",
+        "position": {
+          "x": 2140,
+          "y": 340
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Mt6Co"
+        },
+        "measured": {
+          "width": 192,
+          "height": 52
+        },
+        "positionAbsolute": {
+          "x": 2140,
+          "y": 340
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Mt1Ti",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mt1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "TranscriptParser-Mt2Tp",
+        "targetHandle": "{œfieldNameœ:œtranscript_pathœ,œidœ:œTranscriptParser-Mt2Tpœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "transcript_path",
+            "id": "TranscriptParser-Mt2Tp",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Mt1Ti",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Mt1Ti{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Mt1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-TranscriptParser-Mt2Tp{œfieldNameœ:œtranscript_pathœ,œidœ:œTranscriptParser-Mt2Tpœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "TranscriptParser-Mt2Tp",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œTranscriptParser-Mt2Tpœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Mt3Pt",
+        "targetHandle": "{œfieldNameœ:œtranscriptœ,œidœ:œPrompt Template-Mt3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "transcript",
+            "id": "Prompt Template-Mt3Pt",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "TranscriptParser-Mt2Tp",
+            "name": "brief",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TranscriptParser-Mt2Tp{œdataTypeœ:œCustomComponentœ,œidœ:œTranscriptParser-Mt2Tpœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Mt3Pt{œfieldNameœ:œtranscriptœ,œidœ:œPrompt Template-Mt3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Mt3Pt",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Mt3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Mt4Gq",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Mt4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Mt4Gq",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Mt3Pt",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Mt3Pt{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Mt3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Mt4Gq{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Mt4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Mt4Gq",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Mt4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "RequirementsWriter-Mt5Rw",
+        "targetHandle": "{œfieldNameœ:œextractedœ,œidœ:œRequirementsWriter-Mt5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "extracted",
+            "id": "RequirementsWriter-Mt5Rw",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Mt4Gq",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Mt4Gq{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Mt4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-RequirementsWriter-Mt5Rw{œfieldNameœ:œextractedœ,œidœ:œRequirementsWriter-Mt5Rwœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "RequirementsWriter-Mt5Rw",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œRequirementsWriter-Mt5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Mt6Co",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Mt6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Mt6Co",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "RequirementsWriter-Mt5Rw",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__RequirementsWriter-Mt5Rw{œdataTypeœ:œCustomComponentœ,œidœ:œRequirementsWriter-Mt5Rwœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Mt6Co{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Mt6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
