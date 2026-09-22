@@ -4,6 +4,14 @@ A Langflow agent that reads two Playwright runs of the same test suite and tells
 you which tests are **flaky** — and, just as importantly, which ones only look
 flaky but are actually broken.
 
+![The flow open on the Langflow canvas: a Chat Input feeding the Flaky Test Comparator custom component, which holds a Results folder and a Default results folder field, then a Prompt Template whose template begins "You are a senior QA engineer reporting on the health of an automated test suite", then a Groq node set to qwen/qwen3.8-27b with its key held as the GROQ_API_KEY global variable, and finally a Chat Output](Flaky_Test_Finder_langflow_flow.png)
+
+Five nodes. The comparing happens in **`flaky_comparator.py`**, a custom
+component — the model never counts anything, it only writes the summary of what
+the component found.
+
+And the same flow after a run:
+
 ![The Langflow Playground showing the finished run. The reply opens with "2 out of 100 tests compared are flaky", then lists the two flaky tests with what each did in run 1 and run 2, then a separate "Not flaky - actually broken" section naming the two tests that failed in both runs, and finally three recommended actions. The run finished in 3.3 seconds using 978 tokens](Flow_Flaky_Test_Finder_result.png)
 
 ---
@@ -38,7 +46,8 @@ and you ship the bug, chase a flaky test as a bug and you waste a morning.
 | `flaky_comparator.py` | The comparison logic, readable on its own |
 | `results/result1.json` | First test run — 100 tests |
 | `results/result2.json` | Second test run — the same 100 tests |
-| `Flow_Flaky_Test_Finder_result.png` | The screenshot above |
+| `Flaky_Test_Finder_langflow_flow.png` | The flow on the canvas |
+| `Flow_Flaky_Test_Finder_result.png` | The Playground after a run |
 | `Flaky Test Finder UI/` | A browser front end for the flow — see [its README](Flaky%20Test%20Finder%20UI/README.md) |
 | `Hosted UI/` | A standalone version that needs no install — see [below](#the-hosted-version-no-install) |
 
