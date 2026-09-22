@@ -1,7 +1,7 @@
 # AiTester
 
 Applying AI to the work a QA engineer actually does — starting from prompt
-rules on a page and ending with **13 working agents** that take over a daily
+rules on a page and ending with **14 working agents** that take over a daily
 task each.
 
 The repository is meant to be read in numbered order. Every folder has its own
@@ -15,7 +15,7 @@ README explaining what is in it and how to run it; this page is the map.
 | 04 | [JobKitAI](04_JobKitAI) | Resume tailoring against real job postings, without inventing a single fact |
 | 05 | [JobTrackerAI](05_JobTrackerAI) | A browser-only Kanban job tracker — no backend, no accounts, IndexedDB only |
 | 07 | [n8n Workflows](07_n8n_Workflows) | Four agents built in n8n, learning the tool |
-| 08 | [Automate Daily QA Tasks](08_Automate_Daily_QA_Tasks_AI_Agents) | **13 agents** that each replace a job a tester does by hand — 6 in n8n, 7 in Langflow |
+| 08 | [Automate Daily QA Tasks](08_Automate_Daily_QA_Tasks_AI_Agents) | **14 agents** that each replace a job a tester does by hand — 6 in n8n, 8 in Langflow |
 | 09 | [Langflow](09_LangFlow) | Learning Langflow — two Jira bug-triage builds and the flaky-test finder |
 
 There is no `06`.

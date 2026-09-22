@@ -20,10 +20,11 @@ it works.
 | 11 | [Smart CI/CD Failure Analysis](02_Langflow_Agents/11_CI_CD_Failure_Analyzer_AI_Agent) | Scrolling a CI log for twenty minutes to find one stack trace |
 | 12 | [Auto-Update Selectors (Self-Healing)](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent) | Repointing every broken selector by hand after a restyle |
 | 13 | [Smart Regression Advisor](02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent) | Running the whole suite because nobody can prove what to skip |
+| 14 | [Meeting Transcript to Requirements](02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent) | Re-reading an hour of transcript to find what was agreed |
 
 The agents live in two folders by the tool that runs them:
 [`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
-[`02_Langflow_Agents`](02_Langflow_Agents) holds 07–10. The split tracks a real
+[`02_Langflow_Agents`](02_Langflow_Agents) holds 07–14. The split tracks a real
 constraint, not a preference: 07 onward each end by writing a file to disk, and
 n8n Cloud runs on someone else's machine — "write a `.spec.ts`" there can only
 ever mean "send you a download". Numbering stays attached to each agent across
@@ -307,6 +308,34 @@ an absolute one the bug cannot reproduce.
 
 See its [README](02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent).
 
+## 14 — Meeting Transcript to Requirements
+
+A Zoom or Teams transcript goes in; the requirements, action items and decisions
+it actually contains come out as Jira payloads, each quoting the line somebody
+said it in.
+
+Its line between code and model is drawn somewhere new for this folder. Reading
+a conversation **is** a language problem, so the model does more of the real work
+here than anywhere else in the section. What code keeps is the part that can be
+checked: **every item must quote a transcript line verbatim, and every quote is
+verified against the transcript before the item is allowed through.** The model
+may propose; only code may confirm. Attribution is taken from the matched turn,
+so the model says what was agreed and the transcript says who said it.
+
+Its failure mode is the least visible in the folder. A requirement nobody said
+does not look like a bug — it looks like a tidy ticket, phrased exactly like the
+real ones, describing the sensible thing the team *would* have agreed. Nobody
+reading the list can pick it out, and the meeting is over. Handed three invented
+requirements written in the same register as the real ones, the verifier rejected
+all three, because an invented requirement has nothing to quote.
+
+It also holds the line between **agreed and merely discussed**. Someone floating
+an idea that the group declines is recorded as a decision not to do it, not as a
+requirement to do it — and a meeting that agreed nothing produces an empty list
+that says so.
+
+See its [README](02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -393,3 +422,10 @@ model could not determine.
 - **Visibility is not dependency.** Java classes in a package need no import to
   see each other, but giving every pair an edge makes each test depend on its
   neighbours and selects the whole package.
+- **Make the model cite, then check the citation.** Requiring a verbatim quote
+  turns "did the model invent this?" from a judgement into a lookup. An invented
+  claim can only carry an invented quote, and an invented quote is not in the
+  source.
+- **A quote has to be long enough to prove something.** Three words of ordinary
+  English appear in almost any document, so a short quote lets an invented claim
+  borrow a real line's attribution and pass the check.
