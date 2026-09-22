@@ -1,0 +1,59 @@
+Regression Triage - Weekly
+Tuesday, 16 September 2026
+
+Ada Lovelace   0:04
+Morning. Small group today, Priya's on leave.
+
+Sam Okafor   0:09
+Morning.
+
+Ada Lovelace   0:11
+Okay. Top of the list is the flaky login test. It's failed eleven times this week.
+
+Sam Okafor   0:19
+Eleven? I thought it was three.
+
+Ada Lovelace   0:22
+Eleven across all branches. Three on main.
+
+Sam Okafor   0:27
+Right.
+
+Ada Lovelace   0:29
+So the decision is we quarantine it today and it does not go back in the suite until it passes fifty consecutive runs.
+
+Sam Okafor   0:38
+Fifty. That's a lot but fine. I'll set that up.
+
+Ada Lovelace   0:43
+Please. And separately, any test that fails more than twice in a week should be quarantined automatically. I want that as a rule, not a judgement call.
+
+Sam Okafor   0:53
+Automatically? That could quarantine a real bug.
+
+Ada Lovelace   0:57
+It could. But a real bug that fails twice will fail again outside the suite, and we'll catch it. The alternative is what we have now, which is nobody trusting the run.
+
+Sam Okafor   1:08
+Okay, I'm convinced. Two failures in seven days, auto quarantine.
+
+Ada Lovelace   1:14
+Yes. Write it down.
+
+Sam Okafor   1:16
+Will do.
+
+Ada Lovelace   1:18
+Last thing. Do we want to move the nightly run earlier? It finishes at nine and nobody looks at it until eleven.
+
+Sam Okafor   1:26
+I don't mind either way.
+
+Ada Lovelace   1:29
+Let's think about it. Not deciding now.
+
+Sam Okafor   1:32
+Sure.
+
+Ada Lovelace   1:34
+That's me. Thanks.
