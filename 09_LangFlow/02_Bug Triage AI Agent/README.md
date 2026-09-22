@@ -25,6 +25,8 @@ Chat Input ──▶ Prompt Template ──▶ API Request ──▶ Parser ─�
   "KAN-9"      builds the URL      fetches Jira    {result}   adds the brief     triages
 ```
 
+![The flow open in Langflow: a Chat Input feeding a Prompt Template that builds the Jira REST URL around an issue-key variable, then an API Request node set to GET, whose JSON response goes to a Parser extracting {result}, then to a second Prompt Template holding the triage brief, then to a Groq node running qwen/qwen3.8-27b with its key held as the GROQ_API_KEY global variable, and finally to a Chat Output](Bug_Triage_Agent_langflow_flow.png)
+
 | Node | What it does |
 |---|---|
 | Chat Input | Takes the ticket key |
@@ -49,6 +51,7 @@ Two details that matter if you edit it:
 |---|---|
 | `Langflow_Bug Triage.json` | The flow. Import into Langflow. |
 | `Bug_Triage_LangFlow_Ai.postman_collection.json` | The API call. Import into Postman. |
+| `Bug_Triage_Agent_langflow_flow.png` | The flow on the canvas. |
 | `Bug_Triage_Postman.png` | The request and response side by side. |
 
 ## Before you start

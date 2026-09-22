@@ -11,6 +11,10 @@ API Request ──JSON──▶ Parser ──Message──▶ Prompt Template �
  one Jira issue       {result}            {variable_name}              qwen3.8-27b
 ```
 
+And the same five nodes on the canvas:
+
+![The flow open in Langflow: a Prompt Template holding the Jira REST URL with an issue-key variable feeds an API Request node set to GET, whose JSON response goes to a Parser extracting {result}, then to a second Prompt Template carrying the triage instructions, then to a Groq node running qwen/qwen3.8-27b with its key held as the GROQ_API_KEY global variable, and finally to a Chat Output](Bug_Triage_Static_langflow_flow.png)
+
 ## What it produces
 
 A real run against `KAN-9` — *"Facebook Login page displays 'email or mobile
@@ -42,6 +46,7 @@ correctly on what would change its mind. That is the output you should expect.
 |---|---|
 | `Bug_Triage_Jira_langflow_flow.json` | The flow. Import into Langflow. |
 | `Bug_Triage_LangFlow_Ai.postman_collection.json` | The API call. Import into Postman. |
+| `Bug_Triage_Static_langflow_flow.png` | The flow on the canvas. |
 | `Bug_Triage_Postman_Request_AND_Response.png` | What a correct run looks like. |
 
 ## Before you start
