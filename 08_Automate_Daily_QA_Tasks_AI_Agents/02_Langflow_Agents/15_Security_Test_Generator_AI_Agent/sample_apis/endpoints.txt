@@ -1,0 +1,10 @@
+# A plain endpoint list, the kind you get from a curl history or a README.
+# Format: METHOD /path  then param names after a ? or as body: fields.
+# The Security Test Generator reads this when there is no OpenAPI spec.
+
+GET  /api/search?q=&lang=
+GET  /api/documents/{docId}
+GET  /api/render?template=&title=
+POST /api/feedback  body: name, message, rating
+GET  /api/proxy?target=
+GET  /api/go?redirect=

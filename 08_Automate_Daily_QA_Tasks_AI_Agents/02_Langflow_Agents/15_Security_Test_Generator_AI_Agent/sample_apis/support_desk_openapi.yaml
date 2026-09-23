@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: Support Desk API
+  version: 1.1.0
+  description: Internal ticketing API. Authorized testing only.
+servers:
+  - url: https://staging.support.example.com/api
+paths:
+  /tickets:
+    get:
+      summary: Search tickets
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: assignee
+          in: query
+          schema:
+            type: string
+    post:
+      summary: Raise a ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                body:
+                  type: string
+  /tickets/{ticketId}:
+    get:
+      summary: Get a ticket
+      parameters:
+        - name: ticketId
+          in: path
+          required: true
+          schema:
+            type: integer
+  /avatar:
+    get:
+      summary: Proxy an avatar image
+      parameters:
+        - name: imageUrl
+          in: query
+          required: true
+          schema:
+            type: string
