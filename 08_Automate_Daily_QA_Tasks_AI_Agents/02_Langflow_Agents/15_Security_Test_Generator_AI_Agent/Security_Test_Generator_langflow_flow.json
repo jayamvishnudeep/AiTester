@@ -1,0 +1,1709 @@
+{
+  "name": "Security Test Generator",
+  "description": "Maps OWASP injection and access-control checks from an API spec, verified against real parameters.",
+  "data": {
+    "nodes": [
+      {
+        "id": "TextInput-Se1Ti",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 340
+        },
+        "data": {
+          "id": "TextInput-Se1Ti",
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Get user text inputs.",
+            "display_name": "Text Input",
+            "documentation": "https://docs.langflow.org/text-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "use_global_variable"
+            ],
+            "frozen": false,
+            "icon": "type",
+            "legacy": true,
+            "metadata": {
+              "code_hash": "2811c0e0496f",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.input_output.text.TextInputComponent"
+            },
+            "minimized": false,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Text",
+                "group_outputs": false,
+                "method": "text_response",
+                "name": "text",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "replacement": [
+              "input_output.ChatInput"
+            ],
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.io.text import TextComponent\nfrom lfx.io import BoolInput, MultilineInput, Output\nfrom lfx.schema.message import Message\n\n\nclass TextInputComponent(TextComponent):\n    display_name = \"Text Input\"\n    description = \"Get user text inputs.\"\n    documentation: str = \"https://docs.langflow.org/text-input-and-output\"\n    icon = \"type\"\n    name = \"TextInput\"\n    legacy = True\n    replacement = [\"input_output.ChatInput\"]\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            info=\"Text to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"use_global_variable\",\n            display_name=\"Use Global Variable\",\n            info=\"Enable to select from global variables (shows globe icon). Disables multiline editing.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Output Text\", name=\"text\", method=\"text_response\"),\n    ]\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"use_global_variable\":\n            if field_value:\n                # Enable global variable mode: single-line with password masking and globe dropdown\n                build_config[\"input_value\"][\"multiline\"] = False\n                build_config[\"input_value\"][\"password\"] = True\n            else:\n                # Default mode: multiline text editing\n                build_config[\"input_value\"][\"multiline\"] = True\n                build_config[\"input_value\"][\"password\"] = False\n        return build_config\n\n    def text_response(self) -> Message:\n        return Message(\n            text=self.input_value,\n        )\n"
+              },
+              "input_value": {
+                "_input_type": "MultilineInput",
+                "advanced": false,
+                "ai_enabled": false,
+                "api_editable": false,
+                "copy_field": false,
+                "display_name": "Text",
+                "dynamic": false,
+                "info": "Text to be passed as input.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "multiline": true,
+                "name": "input_value",
+                "override_skip": false,
+                "password": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/15_Security_Test_Generator_AI_Agent/sample_apis/shopfront_openapi.json"
+              },
+              "use_global_variable": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Global Variable",
+                "dynamic": false,
+                "info": "Enable to select from global variables (shows globe icon). Disables multiline editing.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_global_variable",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "type": "TextInput",
+          "showNode": true
+        },
+        "measured": {
+          "width": 320,
+          "height": 285
+        },
+        "positionAbsolute": {
+          "x": 40,
+          "y": 340
+        }
+      },
+      {
+        "id": "AttackSurfaceMapper-Se2Am",
+        "type": "genericNode",
+        "position": {
+          "x": 440,
+          "y": 300
+        },
+        "data": {
+          "id": "AttackSurfaceMapper-Se2Am",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Attack Surface Mapper - a Langflow custom component.\n\nReads an API description and works out, for every real parameter, which OWASP\ninjection checks are worth running against it and what to send.\n\nThis is a security tool for a functional QA testing an API they are authorized\nto test - their own staging instance. So two things are true of it by design.\nThe payloads are **detection probes**, not weaponised exploits: the canonical\nstrings a scanner sends to see whether an endpoint is vulnerable, straight from\nthe OWASP testing guide. And the attack surface is **parsed, never invented**:\nevery probe targets a parameter that actually appears in the spec, because a\nsecurity report that sends a QA chasing parameters an endpoint does not have is\nworse than useless - it wastes the time and it builds false confidence.\n\nNothing here asks a model anything. The same spec always produces the same\nvectors. The model downstream only decides what to test first and explains what\na hit looks like; it never chooses a payload and never names a parameter that\nwas not found here.\n\"\"\"\n\nimport json\nimport re\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import BoolInput, IntInput, MessageTextInput, MultilineInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_SEVERITY_ORDER = {\"critical\": 0, \"high\": 1, \"medium\": 2, \"low\": 3}\n\n\ndef _matches(pattern):\n    compiled = re.compile(pattern, re.I)\n    return lambda name: bool(compiled.search(name or \"\"))\n\n\n# --------------------------------------------------------------- the catalog\n# Each attack class: (id, name, category, owasp, severity, applies, payloads,\n# positive_signal, remediation). \"applies\" takes a parameter context dict and\n# returns True when the class is worth trying against that parameter. Payloads\n# are detection probes - the standard published strings a scanner uses to reveal\n# a vulnerability, not to exploit one.\n_ATTACKS = [\n    {\n        \"id\": \"sqli\", \"name\": \"SQL injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-05\", \"severity\": \"critical\",\n        \"applies\": lambda p: p[\"type\"] in (\"string\", \"integer\") and p[\"in\"] in (\"query\", \"path\", \"body\"),\n        \"payloads\": [\"'\", \"' OR '1'='1\", \"' OR '1'='1' -- \", \"1 OR 1=1\",\n                     \"' UNION SELECT NULL-- \", \"admin'-- \", \"1'; WAITFOR DELAY '0:0:5'-- \",\n                     \"' AND SLEEP(5)-- \"],\n        \"positive\": \"A database error in the response, a 500, results that change between \"\n                    \"' OR '1'='1 and ' OR '1'='2, or a ~5s delay on the SLEEP / WAITFOR probe.\",\n        \"remediation\": \"Use parameterised queries; never build SQL by string concatenation.\",\n    },\n    {\n        \"id\": \"nosqli\", \"name\": \"NoSQL injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-05\", \"severity\": \"high\",\n        \"applies\": lambda p: p[\"in\"] == \"body\" and p[\"type\"] == \"string\"\n        and (p[\"auth_context\"] or _matches(r\"user|pass|email|filter|query|id\")(p[\"name\"])),\n        \"payloads\": ['{\"$ne\": null}', '{\"$gt\": \"\"}', '{\"$regex\": \".*\"}', \"' || '1'=='1\"],\n        \"positive\": \"Authentication bypassed, or records returned that a plain value would not match.\",\n        \"remediation\": \"Validate types server-side; reject objects where a scalar is expected.\",\n    },\n    {\n        \"id\": \"xss\", \"name\": \"Reflected cross-site scripting\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-01\", \"severity\": \"high\",\n        \"applies\": lambda p: p[\"type\"] == \"string\" and p[\"in\"] in (\"query\", \"body\"),\n        \"payloads\": [\"<script>alert(1)</script>\", \"\\\"><script>alert(1)</script>\",\n                     \"<img src=x onerror=alert(1)>\", \"'\\\"><svg onload=alert(1)>\",\n                     \"javascript:alert(1)\"],\n        \"positive\": \"The payload comes back in the response body unencoded - the < and > are \"\n                    \"still angle brackets, not &lt; and &gt;.\",\n        \"remediation\": \"Context-encode on output; set a Content-Security-Policy.\",\n    },\n    {\n        \"id\": \"cmdi\", \"name\": \"OS command injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-12\", \"severity\": \"critical\",\n        \"applies\": lambda p: _matches(r\"host|ip|domain|ping|cmd|command|exec|dns|lookup|shell|trace\")(p[\"name\"]),\n        \"payloads\": [\"; id\", \"| id\", \"& whoami\", \"$(id)\", \"`id`\", \"; sleep 5\", \"| ping -c 1 127.0.0.1\"],\n        \"positive\": \"Command output (a uid=, a hostname) in the response, or a ~5s delay on the sleep probe.\",\n        \"remediation\": \"Never pass input to a shell; use an argument array and an allow-list.\",\n    },\n    {\n        \"id\": \"path_traversal\", \"name\": \"Path traversal\", \"category\": \"injection\",\n        \"owasp\": \"A01:2021 Broken Access Control / WSTG-ATHZ-01\", \"severity\": \"high\",\n        \"applies\": lambda p: _matches(r\"file|path|dir|folder|filename|template|include|download|attachment|doc\")(p[\"name\"]),\n        \"payloads\": [\"../../../../etc/passwd\", \"..\\\\..\\\\..\\\\..\\\\windows\\\\win.ini\",\n                     \"....//....//....//etc/passwd\", \"%2e%2e%2f%2e%2e%2fetc%2fpasswd\", \"/etc/passwd\"],\n        \"positive\": \"File contents that are not the intended file - root:x:0:0 from /etc/passwd, \"\n                    \"or the [fonts] section of win.ini.\",\n        \"remediation\": \"Resolve to a canonical path and confirm it stays inside the allowed root.\",\n    },\n    {\n        \"id\": \"ssrf\", \"name\": \"Server-side request forgery\", \"category\": \"ssrf\",\n        \"owasp\": \"A10:2021 SSRF / WSTG-INPV-19\", \"severity\": \"high\",\n        \"applies\": lambda p: _matches(r\"url|uri|link|callback|webhook|target|dest|host|endpoint|image|avatar|proxy|fetch|feed|remote|load\")(p[\"name\"]),\n        \"payloads\": [\"http://169.254.169.254/latest/meta-data/\", \"http://127.0.0.1:22\",\n                     \"http://localhost/\", \"file:///etc/passwd\", \"http://[::1]/\"],\n        \"positive\": \"Cloud metadata, an internal service banner, or a timing difference between a \"\n                    \"reachable internal host and an unreachable one.\",\n        \"remediation\": \"Allow-list destinations; block link-local, loopback and private ranges.\",\n    },\n    {\n        \"id\": \"open_redirect\", \"name\": \"Open redirect\", \"category\": \"validation\",\n        \"owasp\": \"A01:2021 Broken Access Control / WSTG-CLNT-04\", \"severity\": \"medium\",\n        \"applies\": lambda p: _matches(r\"redirect|next|return|continue|goto|forward|dest|url|callback\")(p[\"name\"]),\n        \"payloads\": [\"//evil.example.com\", \"https://evil.example.com\", \"/\\\\evil.example.com\",\n                     \"https:evil.example.com\", \"javascript:alert(1)\"],\n        \"positive\": \"A 3xx response whose Location header points at evil.example.com.\",\n        \"remediation\": \"Redirect only to a relative path or an allow-listed host.\",\n    },\n    {\n        \"id\": \"ssti\", \"name\": \"Server-side template injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-18\", \"severity\": \"high\",\n        \"applies\": lambda p: p[\"type\"] == \"string\" and p[\"in\"] in (\"query\", \"body\")\n        and _matches(r\"template|name|subject|message|greeting|title|comment|body|display|content\")(p[\"name\"]),\n        \"payloads\": [\"${7*7}\", \"{{7*7}}\", \"#{7*7}\", \"<%= 7*7 %>\", \"${{7*7}}\", \"*{7*7}\"],\n        \"positive\": \"The number 49 appears in the response where 7*7 was evaluated.\",\n        \"remediation\": \"Never build a template from user input; pass it as data to a fixed template.\",\n    },\n    {\n        \"id\": \"header_crlf\", \"name\": \"HTTP header / CRLF injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-16\", \"severity\": \"medium\",\n        \"applies\": lambda p: p[\"in\"] == \"header\"\n        or _matches(r\"redirect|next|lang|locale|host|referer|location|url\")(p[\"name\"]),\n        \"payloads\": [\"%0d%0aX-Injected:%201\", \"%0d%0aSet-Cookie:%20injected=1\", \"\\r\\nX-Injected: 1\"],\n        \"positive\": \"The injected header (X-Injected, Set-Cookie) appears in the response headers.\",\n        \"remediation\": \"Strip CR and LF from anything written into a header.\",\n    },\n    {\n        \"id\": \"ldap\", \"name\": \"LDAP injection\", \"category\": \"injection\",\n        \"owasp\": \"A03:2021 Injection / WSTG-INPV-06\", \"severity\": \"high\",\n        \"applies\": lambda p: p[\"auth_context\"] and _matches(r\"user|uid|cn|login|account|mail|email\")(p[\"name\"]),\n        \"payloads\": [\"*\", \"*)(uid=*\", \"admin)(&)\", \"*)(|(uid=*\", \"*))%00\"],\n        \"positive\": \"Authentication bypassed, or more directory entries returned than a real value matches.\",\n        \"remediation\": \"Escape LDAP special characters; use a parameterised directory query.\",\n    },\n    {\n        \"id\": \"xxe\", \"name\": \"XML external entity\", \"category\": \"injection\",\n        \"owasp\": \"A05:2021 Security Misconfiguration / WSTG-INPV-07\", \"severity\": \"high\",\n        \"applies\": lambda p: p[\"in\"] == \"body\" and p[\"type\"] == \"xml\",\n        \"payloads\": ['<?xml version=\"1.0\"?><!DOCTYPE r [<!ENTITY x SYSTEM \"file:///etc/passwd\">]><r>&x;</r>',\n                     '<?xml version=\"1.0\"?><!DOCTYPE r [<!ENTITY x SYSTEM \"http://169.254.169.254/\">]><r>&x;</r>'],\n        \"positive\": \"File contents (root:x:0:0) or an internal response reflected back inside the parsed XML.\",\n        \"remediation\": \"Disable external entity and DTD processing in the XML parser.\",\n    },\n    {\n        \"id\": \"bola\", \"name\": \"Broken object-level authorization (IDOR)\", \"category\": \"access_control\",\n        \"owasp\": \"A01:2021 Broken Access Control / API1:2023 / WSTG-ATHZ-04\", \"severity\": \"critical\",\n        \"applies\": lambda p: p[\"in\"] in (\"path\", \"query\")\n        and (_matches(r\"(^|_)id$|.+id$|uuid|user|account|order|ticket|doc|invoice|customer\")(p[\"name\"])\n             or (p[\"type\"] == \"integer\" and p[\"in\"] == \"path\")),\n        \"payloads\": [\"<the id of an object belonging to another user>\", \"1\", \"0\", \"-1\",\n                     \"<a valid id you were not given>\"],\n        \"positive\": \"You receive an object that belongs to a different user or account than yours.\",\n        \"remediation\": \"Check on every request that the authenticated user owns the object.\",\n        \"note\": \"This is an access-control check, not an injection - do not send injection strings, \"\n                \"change the identifier to one you should not be able to see.\",\n    },\n]\n_ATTACK_BY_ID = {a[\"id\"]: a for a in _ATTACKS}\n\n# Names of parameters that carry a JSON/XML body rather than a scalar.\n_AUTH_PATHS = _matches(r\"login|auth|signin|session|token|register|account\")\n\n# ------------------------------------------------------------ fallback text\n_FALLBACK_LINE = re.compile(r\"^\\s*(GET|POST|PUT|PATCH|DELETE)\\s+(\\S+)(.*)$\", re.I)\n_QUERY_PARAM = re.compile(r\"[?&]([A-Za-z_][\\w-]*)=\")\n_PATH_PARAM = re.compile(r\"\\{([A-Za-z_][\\w-]*)\\}\")\n_BODY_FIELDS = re.compile(r\"body:\\s*(.+)$\", re.I)\n\n\nclass AttackSurfaceMapper(Component):\n    display_name = \"Attack Surface Mapper\"\n    description = \"Finds every real parameter in an API spec and the OWASP checks worth running on it.\"\n    documentation = \"https://owasp.org/www-project-web-security-testing-guide/\"\n    icon = \"shield-alert\"\n    name = \"AttackSurfaceMapper\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"spec_path\",\n            display_name=\"API spec path\",\n            info=\"An OpenAPI/Swagger file (.json/.yaml), or a plain endpoint list. Empty uses the pasted spec.\",\n            value=\"\",\n            tool_mode=True,\n        ),\n        MessageTextInput(\n            name=\"default_spec_path\",\n            display_name=\"Default API spec path\",\n            info=\"Used whenever the path above is empty or does not exist.\",\n            value=\"\",\n        ),\n        MultilineInput(\n            name=\"pasted_spec\",\n            display_name=\"Pasted spec\",\n            info=\"Paste an OpenAPI spec or an endpoint list here instead of reading from disk.\",\n            value=\"\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_payloads\",\n            display_name=\"Payloads per check\",\n            info=\"How many probes to list for each attack class.\",\n            value=5,\n            advanced=True,\n        ),\n        IntInput(\n            name=\"max_brief_endpoints\",\n            display_name=\"Endpoints in the brief\",\n            info=\"Caps how many endpoints are described to the model, most exposed first.\",\n            value=20,\n            advanced=True,\n        ),\n        BoolInput(\n            name=\"include_access_control\",\n            display_name=\"Include access-control checks\",\n            info=\"IDOR/BOLA is not injection but is the top API risk. Off restricts output to injection only.\",\n            value=True,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where attack_surface.json is written. The plan writer reads it back to verify \"\n                \"the model targeted only real parameters, so both nodes must point at the same folder.\"\n            ),\n            value=\"\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Brief\", name=\"brief\", method=\"build_brief\"),\n        Output(display_name=\"Surface\", name=\"surface\", method=\"build_surface\"),\n    ]\n\n    # ------------------------------------------------------------- loading\n\n    def _source(self) -> tuple:\n        pasted = (self.pasted_spec or \"\").strip()\n        if pasted:\n            return pasted, \"pasted spec\"\n        for candidate in (self.spec_path, self.default_spec_path):\n            cleaned = (candidate or \"\").strip().strip('\"').strip(\"'\")\n            if cleaned and Path(cleaned).is_file():\n                try:\n                    return Path(cleaned).read_text(encoding=\"utf-8\", errors=\"replace\"), cleaned\n                except OSError as exc:\n                    msg = f\"Could not read {cleaned} - {exc}\"\n                    raise ValueError(msg) from exc\n        msg = (\n            \"No API spec reached this component. A model asked to security-test an API it \"\n            \"cannot see will invent endpoints and parameters, and a security report full of \"\n            \"parameters that do not exist wastes a tester's time and hides the ones that do. \"\n            \"Set 'Default API spec path', or paste a spec.\"\n        )\n        raise ValueError(msg)\n\n    @staticmethod\n    def _load(text: str) -> tuple:\n        \"\"\"(structured_spec_or_None, format). None means parse it as a text list.\"\"\"\n        stripped = text.lstrip()\n        if stripped.startswith((\"{\", \"[\")):\n            try:\n                return json.loads(text), \"openapi-json\"\n            except json.JSONDecodeError:\n                return None, \"text\"\n        if \"openapi:\" in text[:200] or \"swagger:\" in text[:200] or \"paths:\" in text[:400]:\n            try:\n                import yaml\n                data = yaml.safe_load(text)\n                if isinstance(data, dict) and \"paths\" in data:\n                    return data, \"openapi-yaml\"\n            except Exception:  # noqa: BLE001 - fall back to the text parser\n                pass\n        return None, \"text\"\n\n    # ------------------------------------------------------------- parsing\n\n    @staticmethod\n    def _resolve_ref(spec: dict, node):\n        seen = 0\n        while isinstance(node, dict) and \"$ref\" in node and seen < 10:\n            ref = node[\"$ref\"]\n            seen += 1\n            if not ref.startswith(\"#/\"):\n                return {}\n            target = spec\n            for part in ref[2:].split(\"/\"):\n                if not isinstance(target, dict) or part not in target:\n                    return {}\n                target = target[part]\n            node = target\n        return node if isinstance(node, dict) else {}\n\n    def _params_from_openapi(self, spec: dict) -> list:\n        endpoints = []\n        paths = spec.get(\"paths\") or {}\n        for path, item in paths.items():\n            if not isinstance(item, dict):\n                continue\n            shared = item.get(\"parameters\") or []\n            for method, op in item.items():\n                if method.lower() not in (\"get\", \"post\", \"put\", \"patch\", \"delete\") or not isinstance(op, dict):\n                    continue\n                auth = _AUTH_PATHS(path)\n                params = []\n                for raw in list(shared) + list(op.get(\"parameters\") or []):\n                    p = self._resolve_ref(spec, raw)\n                    name = p.get(\"name\")\n                    if not name:\n                        continue\n                    schema = self._resolve_ref(spec, p.get(\"schema\") or {})\n                    params.append(self._param(name, p.get(\"in\", \"query\"),\n                                              schema.get(\"type\", \"string\"), bool(p.get(\"required\")), auth))\n\n                body = self._resolve_ref(spec, op.get(\"requestBody\") or {})\n                for ctype, media in (body.get(\"content\") or {}).items():\n                    schema = self._resolve_ref(spec, (media or {}).get(\"schema\") or {})\n                    if \"xml\" in ctype:\n                        params.append(self._param(\"<xml body>\", \"body\", \"xml\", True, auth))\n                        continue\n                    props = schema.get(\"properties\") or {}\n                    if not props and schema.get(\"type\") == \"string\":\n                        params.append(self._param(\"<body>\", \"body\", \"string\", True, auth))\n                    for field, fschema in props.items():\n                        fschema = self._resolve_ref(spec, fschema)\n                        params.append(self._param(field, \"body\", fschema.get(\"type\", \"string\"),\n                                                  field in (schema.get(\"required\") or []), auth))\n\n                endpoints.append({\"path\": path, \"method\": method.upper(), \"params\": params})\n        return endpoints\n\n    def _params_from_text(self, text: str) -> list:\n        endpoints = []\n        for line in text.splitlines():\n            line = line.strip()\n            if not line or line.startswith(\"#\"):\n                continue\n            m = _FALLBACK_LINE.match(line)\n            if not m:\n                continue\n            method, path, rest = m.group(1).upper(), m.group(2), m.group(3)\n            auth = _AUTH_PATHS(path)\n            params = []\n            for name in _QUERY_PARAM.findall(path):\n                params.append(self._param(name, \"query\", \"string\", False, auth))\n            for name in _PATH_PARAM.findall(path):\n                params.append(self._param(name, \"path\", \"string\", True, auth))\n            body = _BODY_FIELDS.search(rest)\n            if body:\n                for field in re.split(r\"[,\\s]+\", body.group(1).strip()):\n                    if field:\n                        params.append(self._param(field, \"body\", \"string\", False, auth))\n            clean_path = path.split(\"?\")[0]\n            endpoints.append({\"path\": clean_path, \"method\": method, \"params\": params})\n        return endpoints\n\n    @staticmethod\n    def _param(name, where, ptype, required, auth) -> dict:\n        return {\"name\": name, \"in\": where, \"type\": (ptype or \"string\").lower(),\n                \"required\": bool(required), \"auth_context\": bool(auth)}\n\n    # ----------------------------------------------------------- analysing\n\n    def _analyse(self) -> dict:\n        text, origin = self._source()\n        spec, fmt = self._load(text)\n        if spec is not None:\n            endpoints = self._params_from_openapi(spec)\n            title = (spec.get(\"info\") or {}).get(\"title\") or Path(origin).stem\n            base = (spec.get(\"servers\") or [{}])[0].get(\"url\", \"\")\n        else:\n            endpoints = self._params_from_text(text)\n            title = Path(origin).stem.replace(\"_\", \" \")\n            base = \"\"\n\n        if not endpoints:\n            msg = (f\"No endpoints were found in {origin}. This reads an OpenAPI/Swagger file \"\n                   \"(JSON or YAML) or a plain 'METHOD /path?param=' list. Without endpoints there \"\n                   \"is no attack surface to map.\")\n            raise ValueError(msg)\n\n        cap = max(int(self.max_payloads or 5), 1)\n        include_ac = bool(self.include_access_control)\n        mapped, vectors = [], []\n        for ep in endpoints:\n            ep_vectors = []\n            for p in ep[\"params\"]:\n                for attack in _ATTACKS:\n                    if attack[\"category\"] == \"access_control\" and not include_ac:\n                        continue\n                    try:\n                        if not attack[\"applies\"](p):\n                            continue\n                    except Exception:  # noqa: BLE001 - a matcher error is not a match\n                        continue\n                    vector = {\n                        \"endpoint\": ep[\"path\"], \"method\": ep[\"method\"],\n                        \"param\": p[\"name\"], \"param_in\": p[\"in\"], \"param_type\": p[\"type\"],\n                        \"attack\": attack[\"id\"], \"attack_name\": attack[\"name\"],\n                        \"category\": attack[\"category\"], \"owasp\": attack[\"owasp\"],\n                        \"severity\": attack[\"severity\"],\n                        \"payloads\": attack[\"payloads\"][:cap],\n                        \"positive_signal\": attack[\"positive\"],\n                        \"remediation\": attack[\"remediation\"],\n                    }\n                    if attack.get(\"note\"):\n                        vector[\"note\"] = attack[\"note\"]\n                    ep_vectors.append(vector)\n                    vectors.append(vector)\n            mapped.append({**ep, \"vector_count\": len(ep_vectors),\n                           \"params_count\": len(ep[\"params\"])})\n\n        by_severity = {s: sum(1 for v in vectors if v[\"severity\"] == s)\n                       for s in (\"critical\", \"high\", \"medium\", \"low\")}\n        by_category = {}\n        for v in vectors:\n            by_category[v[\"category\"]] = by_category.get(v[\"category\"], 0) + 1\n        by_attack = {}\n        for v in vectors:\n            by_attack[v[\"attack_name\"]] = by_attack.get(v[\"attack_name\"], 0) + 1\n\n        ranked = sorted(mapped, key=lambda e: -e[\"vector_count\"])\n        return {\n            \"api\": title,\n            \"base_url\": base,\n            \"source\": origin,\n            \"format\": fmt,\n            \"endpoints_total\": len(endpoints),\n            \"params_total\": sum(len(e[\"params\"]) for e in endpoints),\n            \"untested_endpoints\": [f\"{e['method']} {e['path']}\" for e in mapped if e[\"vector_count\"] == 0],\n            \"vectors_total\": len(vectors),\n            \"severity_counts\": by_severity,\n            \"category_counts\": by_category,\n            \"attack_counts\": dict(sorted(by_attack.items(), key=lambda kv: -kv[1])),\n            \"endpoints\": ranked,\n            \"vectors\": vectors,\n        }\n\n    # -------------------------------------------------------------- disk\n\n    SURFACE_FILE = \"attack_surface.json\"\n\n    def _persist(self, analysis: dict) -> None:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            return\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n        (folder / self.SURFACE_FILE).write_text(\n            json.dumps(analysis, indent=2, ensure_ascii=False), encoding=\"utf-8\")\n\n    # ------------------------------------------------------------ outputs\n\n    def _brief_text(self, a: dict) -> str:\n        sv = a[\"severity_counts\"]\n        lines = [\n            f\"# Attack surface — {a['api']}\", \"\",\n            \"**Test only an environment you are authorised to test.** These are detection probes \"\n            \"for your own API, not exploits to run against anyone else's.\", \"\",\n            f\"Base URL: {a['base_url'] or 'not stated'}\",\n            f\"Endpoints: {a['endpoints_total']}   Parameters: {a['params_total']}\",\n            f\"Checks to run: {a['vectors_total']} \"\n            f\"({sv['critical']} critical, {sv['high']} high, {sv['medium']} medium)\",\n            \"\",\n            \"## Attack surface by endpoint, most exposed first\",\n            \"\",\n        ]\n        cap = max(int(self.max_brief_endpoints or 20), 1)\n        for ep in a[\"endpoints\"][:cap]:\n            if not ep[\"vector_count\"]:\n                continue\n            lines.append(f\"### {ep['method']} {ep['path']}  ({ep['vector_count']} checks)\")\n            grouped = {}\n            for p in ep[\"params\"]:\n                grouped.setdefault(p[\"name\"], [])\n            for v in a[\"vectors\"]:\n                if v[\"endpoint\"] == ep[\"path\"] and v[\"method\"] == ep[\"method\"]:\n                    grouped.setdefault(v[\"param\"], []).append(f\"{v['attack_name']} [{v['severity']}]\")\n            for name, attacks in grouped.items():\n                if attacks:\n                    lines.append(f\"- `{name}` ({next((p['in'] for p in ep['params'] if p['name'] == name), '?')}): \"\n                                 + \", \".join(sorted(set(attacks))))\n            lines.append(\"\")\n\n        if a[\"untested_endpoints\"]:\n            lines.append(\"## No injectable parameters found\")\n            lines.append(\", \".join(a[\"untested_endpoints\"]))\n            lines.append(\"\")\n        return \"\\n\".join(lines)\n\n    def build_brief(self) -> Message:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Message(text=self._brief_text(a))\n\n    def build_surface(self) -> Data:\n        a = self._analyse()\n        self._persist(a)\n        self.status = self._status(a)\n        return Data(data=a)\n\n    @staticmethod\n    def _status(a: dict) -> str:\n        sv = a[\"severity_counts\"]\n        return f\"{a['vectors_total']} checks, {sv['critical']} critical, {sv['high']} high\"\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "default_spec_path": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "default_spec_path",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/15_Security_Test_Generator_AI_Agent/sample_apis/shopfront_openapi.json",
+                "display_name": "Default API spec path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Used whenever the path above is empty or does not exist.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "include_access_control": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "include_access_control",
+                "value": true,
+                "display_name": "Include access-control checks",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "IDOR/BOLA is not injection but is the top API risk. Off restricts output to injection only.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "max_brief_endpoints": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_brief_endpoints",
+                "value": 20,
+                "display_name": "Endpoints in the brief",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Caps how many endpoints are described to the model, most exposed first.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "max_payloads": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_payloads",
+                "value": 5,
+                "display_name": "Payloads per check",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "How many probes to list for each attack class.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/15_Security_Test_Generator_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where attack_surface.json is written. The plan writer reads it back to verify the model targeted only real parameters, so both nodes must point at the same folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "pasted_spec": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pasted_spec",
+                "value": "",
+                "display_name": "Pasted spec",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Paste an OpenAPI spec or an endpoint list here instead of reading from disk.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "spec_path": {
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "spec_path",
+                "value": "",
+                "display_name": "API spec path",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "An OpenAPI/Swagger file (.json/.yaml), or a plain endpoint list. Empty uses the pasted spec.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Finds every real parameter in an API spec and the OWASP checks worth running on it.",
+            "icon": "shield-alert",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Attack Surface Mapper",
+            "documentation": "https://owasp.org/www-project-web-security-testing-guide/",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "brief",
+                "display_name": "Brief",
+                "method": "build_brief",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "surface",
+                "display_name": "Surface",
+                "method": "build_surface",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "spec_path",
+              "default_spec_path",
+              "pasted_spec",
+              "max_payloads",
+              "max_brief_endpoints",
+              "include_access_control",
+              "output_dir"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.attack_surface_mapper",
+              "code_hash": "9a72da92de05",
+              "dependencies": {
+                "total_dependencies": 2,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "yaml",
+                    "version": "6.0.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 440,
+          "y": 300
+        }
+      },
+      {
+        "id": "Prompt Template-Se3Pt",
+        "type": "genericNode",
+        "position": {
+          "x": 880,
+          "y": 300
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from typing import Any\n\nfrom lfx.base.prompts.api_utils import process_prompt_template\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.inputs.input_mixin import FieldTypes\nfrom lfx.inputs.inputs import DefaultPromptField\nfrom lfx.io import BoolInput, MessageTextInput, Output, PromptInput\nfrom lfx.log.logger import logger\nfrom lfx.schema.dotdict import dotdict\nfrom lfx.schema.message import Message\nfrom lfx.template.utils import update_template_values\nfrom lfx.utils.mustache_security import validate_mustache_template\n\n\nclass PromptComponent(Component):\n    display_name: str = \"Prompt Template\"\n    description: str = \"Create a prompt template with dynamic variables.\"\n    documentation: str = \"https://docs.langflow.org/components-prompts\"\n    icon = \"prompts\"\n    trace_type = \"prompt\"\n    name = \"Prompt Template\"\n\n    inputs = [\n        PromptInput(name=\"template\", display_name=\"Template\"),\n        BoolInput(\n            name=\"use_double_brackets\",\n            display_name=\"Use Double Brackets\",\n            value=False,\n            advanced=True,\n            info=\"Use {{variable}} syntax instead of {variable}.\",\n            real_time_refresh=True,\n        ),\n        MessageTextInput(\n            name=\"tool_placeholder\",\n            display_name=\"Tool Placeholder\",\n            tool_mode=True,\n            advanced=True,\n            show=False,\n            info=\"A placeholder input for tool mode.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Prompt\", name=\"prompt\", method=\"build_prompt\"),\n    ]\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: str | None = None) -> dotdict:\n        \"\"\"Update the template field type based on the selected mode.\"\"\"\n        if field_name == \"use_double_brackets\":\n            # Change the template field type based on mode\n            is_mustache = field_value is True\n            if is_mustache:\n                build_config[\"template\"][\"type\"] = FieldTypes.MUSTACHE_PROMPT.value\n            else:\n                build_config[\"template\"][\"type\"] = FieldTypes.PROMPT.value\n\n            # Re-process the template to update variables when mode changes\n            template_value = build_config.get(\"template\", {}).get(\"value\", \"\")\n            if template_value:\n                # Ensure custom_fields is properly initialized\n                if \"custom_fields\" not in build_config:\n                    build_config[\"custom_fields\"] = {}\n\n                # Clean up fields from the OLD mode before processing with NEW mode\n                # This ensures we don't keep fields with wrong syntax even if validation fails\n                old_custom_fields = build_config[\"custom_fields\"].get(\"template\", [])\n                for old_field in list(old_custom_fields):\n                    # Remove the field from custom_fields and template\n                    if old_field in old_custom_fields:\n                        old_custom_fields.remove(old_field)\n                    build_config.pop(old_field, None)\n\n                # Try to process template with new mode to add new variables\n                # If validation fails, at least we cleaned up old fields\n                try:\n                    # Validate mustache templates for security\n                    if is_mustache:\n                        validate_mustache_template(template_value)\n\n                    # Re-process template with new mode to add new variables\n                    _ = process_prompt_template(\n                        template=template_value,\n                        name=\"template\",\n                        custom_fields=build_config[\"custom_fields\"],\n                        frontend_node_template=build_config,\n                        is_mustache=is_mustache,\n                    )\n                except ValueError as e:\n                    # If validation fails, we still updated the mode and cleaned old fields\n                    # User will see error when they try to save\n                    logger.debug(\"Template validation failed during mode switch\", exc_info=e)\n        return build_config\n\n    async def build_prompt(self) -> Message:\n        use_double_brackets = self.use_double_brackets if hasattr(self, \"use_double_brackets\") else False\n        template_format = \"mustache\" if use_double_brackets else \"f-string\"\n        prompt = await Message.from_template_and_variables(template_format=template_format, **self._attributes)\n        self.status = prompt.text\n        return prompt\n\n    def _update_template(self, frontend_node: dict):\n        prompt_template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(prompt_template)\n\n            custom_fields = frontend_node[\"custom_fields\"]\n            frontend_node_template = frontend_node[\"template\"]\n            _ = process_prompt_template(\n                template=prompt_template,\n                name=\"template\",\n                custom_fields=custom_fields,\n                frontend_node_template=frontend_node_template,\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be created\n            logger.debug(\"Template validation failed in _update_template\", exc_info=e)\n        return frontend_node\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict):\n        \"\"\"This function is called after the code validation is done.\"\"\"\n        frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = frontend_node[\"template\"][\"template\"][\"value\"]\n        use_double_brackets = frontend_node[\"template\"].get(\"use_double_brackets\", {}).get(\"value\", False)\n        is_mustache = use_double_brackets is True\n\n        try:\n            # Validate mustache templates for security\n            if is_mustache:\n                validate_mustache_template(template)\n\n            # Kept it duplicated for backwards compatibility\n            _ = process_prompt_template(\n                template=template,\n                name=\"template\",\n                custom_fields=frontend_node[\"custom_fields\"],\n                frontend_node_template=frontend_node[\"template\"],\n                is_mustache=is_mustache,\n            )\n        except ValueError as e:\n            # If validation fails, don't add variables but allow component to be updated\n            logger.debug(\"Template validation failed in update_frontend_node\", exc_info=e)\n        # Now that template is updated, we need to grab any values that were set in the current_frontend_node\n        # and update the frontend_node with those values\n        update_template_values(new_template=frontend_node, previous_template=current_frontend_node[\"template\"])\n        return frontend_node\n\n    def _get_fallback_input(self, **kwargs):\n        return DefaultPromptField(**kwargs)\n"
+              },
+              "template": {
+                "_input_type": "PromptInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Template",
+                "dynamic": false,
+                "info": "",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "track_in_telemetry": false,
+                "type": "prompt",
+                "value": "You are a security-minded QA lead deciding what to test first, with limited time.\n\nBelow is a mapped attack surface: every endpoint, every parameter, and the OWASP checks that already apply to each one, with severity and the payloads to use. This was computed from the API spec, not guessed - do not add a check, an endpoint or a parameter that is not listed below, and do not change a severity.\n\nWrite under 300 words:\n\n1. Name the two or three checks worth running FIRST, and say why - weigh how bad a real finding would be against how likely the class of bug is for that kind of parameter. A BOLA hit on an order or user id is worse than an XSS hit on a display name, even if both are \"in scope\".\n2. Name anything you would deliberately do LAST or skip under time pressure, and why - a check that is technically listed but unlikely to matter for this API.\n3. One line on the single biggest structural risk this surface shows - not a single parameter, but a pattern across it. If several endpoints share the same class of exposure, say so.\n\nReference real endpoints and parameters from the list - a QA reading this should be able to go straight from your write-up to the table below it. No preamble, do not restate the payloads, do not invent a check that is not in the list.\n\nATTACK SURFACE\n{surface}\n"
+              },
+              "tool_placeholder": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Tool Placeholder",
+                "dynamic": false,
+                "info": "A placeholder input for tool mode.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "tool_placeholder",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": false,
+                "title_case": false,
+                "tool_mode": true,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "use_double_brackets": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Use Double Brackets",
+                "dynamic": false,
+                "info": "Use {{variable}} syntax instead of {variable}.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "use_double_brackets",
+                "override_skip": false,
+                "placeholder": "",
+                "real_time_refresh": true,
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": false
+              },
+              "surface": {
+                "field_type": "str",
+                "required": false,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "",
+                "fileTypes": [],
+                "file_path": "",
+                "name": "surface",
+                "display_name": "surface",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false,
+                "type": "str"
+              }
+            },
+            "description": "Create a prompt template with dynamic variables.",
+            "icon": "prompts",
+            "is_input": null,
+            "is_output": null,
+            "is_composition": null,
+            "base_classes": [
+              "Message"
+            ],
+            "name": "",
+            "display_name": "Prompt Template",
+            "priority": null,
+            "documentation": "https://docs.langflow.org/components-prompts",
+            "minimized": false,
+            "custom_fields": {
+              "template": [
+                "surface"
+              ]
+            },
+            "output_types": [],
+            "full_path": null,
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "prompt",
+                "hidden": null,
+                "display_name": "Prompt",
+                "method": "build_prompt",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "template",
+              "use_double_brackets",
+              "tool_placeholder"
+            ],
+            "beta": false,
+            "legacy": false,
+            "replacement": null,
+            "error": null,
+            "edited": false,
+            "metadata": {
+              "code_hash": "e3714ffe5d15",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 1
+              },
+              "module": "lfx.components.models_and_agents.prompt.PromptComponent"
+            },
+            "tool_mode": false,
+            "add_tool_output": null,
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "Prompt Template",
+          "id": "Prompt Template-Se3Pt"
+        },
+        "measured": {
+          "width": 320,
+          "height": 347
+        },
+        "positionAbsolute": {
+          "x": 880,
+          "y": 300
+        }
+      },
+      {
+        "id": "ext:groq:GroqModel@official-Se4Gq",
+        "type": "genericNode",
+        "position": {
+          "x": 1300,
+          "y": 260
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "GROQ_API_KEY",
+                "display_name": "Groq API Key",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "API key for the Groq API.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "base_url": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "base_url",
+                "value": "https://api.groq.com",
+                "display_name": "Groq API Base",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Base URL path for API requests, leave blank if not using a proxy or service emulator.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.models.groq_constants import GROQ_MODELS\nfrom lfx.base.models.groq_model_discovery import get_groq_models\nfrom lfx.base.models.model import LCModelComponent\nfrom lfx.field_typing import LanguageModel\nfrom lfx.field_typing.range_spec import RangeSpec\nfrom lfx.io import BoolInput, DropdownInput, IntInput, MessageTextInput, SecretStrInput, SliderInput\nfrom lfx.log.logger import logger\nfrom pydantic.v1 import SecretStr\n\n\nclass GroqModel(LCModelComponent):\n    display_name: str = \"Groq\"\n    description: str = \"Generate text using Groq.\"\n    icon = \"Groq\"\n    name = \"GroqModel\"\n\n    inputs = [\n        *LCModelComponent.get_base_inputs(),\n        SecretStrInput(\n            name=\"api_key\", display_name=\"Groq API Key\", info=\"API key for the Groq API.\", real_time_refresh=True\n        ),\n        MessageTextInput(\n            name=\"base_url\",\n            display_name=\"Groq API Base\",\n            info=\"Base URL path for API requests, leave blank if not using a proxy or service emulator.\",\n            advanced=True,\n            value=\"https://api.groq.com\",\n            real_time_refresh=True,\n        ),\n        IntInput(\n            name=\"max_tokens\",\n            display_name=\"Max Output Tokens\",\n            info=\"The maximum number of tokens to generate.\",\n            advanced=True,\n        ),\n        SliderInput(\n            name=\"temperature\",\n            display_name=\"Temperature\",\n            value=0.1,\n            info=\"Run inference with this temperature. Must by in the closed interval [0.0, 1.0].\",\n            range_spec=RangeSpec(min=0, max=1, step=0.01),\n            advanced=True,\n        ),\n        IntInput(\n            name=\"n\",\n            display_name=\"N\",\n            info=\"Number of chat completions to generate for each prompt. \"\n            \"Note that the API may not return the full n completions if duplicates are generated.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"model_name\",\n            display_name=\"Model\",\n            info=\"The name of the model to use. Add your Groq API key to access additional available models.\",\n            options=GROQ_MODELS,\n            value=GROQ_MODELS[0],\n            refresh_button=True,\n            combobox=True,\n        ),\n        BoolInput(\n            name=\"tool_model_enabled\",\n            display_name=\"Enable Tool Models\",\n            info=(\n                \"Select if you want to use models that can work with tools. If yes, only those models will be shown.\"\n            ),\n            advanced=False,\n            value=False,\n            real_time_refresh=True,\n        ),\n    ]\n\n    def get_models(self, *, tool_model_enabled: bool | None = None) -> list[str]:\n        \"\"\"Get available Groq models using the dynamic discovery system.\n\n        This method uses the groq_model_discovery module which:\n        - Fetches models directly from Groq API\n        - Automatically tests tool calling support\n        - Caches results for 24 hours\n        - Falls back to hardcoded list if API fails\n\n        Args:\n            tool_model_enabled: If True, only return models that support tool calling\n\n        Returns:\n            List of available model IDs\n        \"\"\"\n        try:\n            # Get models with metadata from dynamic discovery system\n            api_key = self.api_key if hasattr(self, \"api_key\") and self.api_key else None\n            models_metadata = get_groq_models(api_key=api_key)\n\n            # Filter out non-LLM models (audio, TTS, guards)\n            model_ids = [\n                model_id for model_id, metadata in models_metadata.items() if not metadata.get(\"not_supported\", False)\n            ]\n\n            # Filter by tool calling support if requested\n            if tool_model_enabled:\n                model_ids = [model_id for model_id in model_ids if models_metadata[model_id].get(\"tool_calling\", False)]\n                logger.info(f\"Loaded {len(model_ids)} Groq models with tool calling support\")\n            else:\n                logger.info(f\"Loaded {len(model_ids)} Groq models\")\n        except (ValueError, KeyError, TypeError, ImportError):\n            logger.exception(\"Error getting model names\")\n            # Fallback to hardcoded list from groq_constants.py\n            return GROQ_MODELS\n        else:\n            return model_ids\n\n    def update_build_config(self, build_config: dict, field_value: str, field_name: str | None = None):\n        if field_name in {\"base_url\", \"model_name\", \"tool_model_enabled\", \"api_key\"} and field_value:\n            try:\n                if len(self.api_key) != 0:\n                    try:\n                        ids = self.get_models(tool_model_enabled=self.tool_model_enabled)\n                    except (ValueError, KeyError, TypeError, ImportError):\n                        logger.exception(\"Error getting model names\")\n                        ids = GROQ_MODELS\n                    ids = ids or GROQ_MODELS\n                    build_config.setdefault(\"model_name\", {})\n                    build_config[\"model_name\"][\"options\"] = ids\n                    build_config[\"model_name\"].setdefault(\"value\", ids[0])\n            except (ValueError, KeyError, TypeError, AttributeError) as e:\n                msg = f\"Error getting model names: {e}\"\n                raise ValueError(msg) from e\n        return build_config\n\n    def build_model(self) -> LanguageModel:  # type: ignore[type-var]\n        try:\n            from langchain_groq import ChatGroq\n        except ImportError as e:\n            msg = \"langchain-groq is not installed. Please install it with `pip install langchain-groq`.\"\n            raise ImportError(msg) from e\n\n        return ChatGroq(\n            model=self.model_name,\n            max_tokens=self.max_tokens or None,\n            temperature=self.temperature,\n            base_url=self.base_url,\n            n=self.n or 1,\n            api_key=SecretStr(self.api_key).get_secret_value(),\n            streaming=self.stream,\n        )\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "input_value": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "max_tokens": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "max_tokens",
+                "value": 900,
+                "display_name": "Max Output Tokens",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The maximum number of tokens to generate.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "allam-2-7b",
+                  "openai/gpt-oss-20b",
+                  "groq/compound",
+                  "openai/gpt-oss-120b",
+                  "qwen/qwen3.8-27b",
+                  "groq/compound-mini"
+                ],
+                "options_metadata": [],
+                "combobox": true,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "qwen/qwen3.8-27b",
+                "display_name": "Model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "The name of the model to use. Add your Groq API key to access additional available models.",
+                "refresh_button": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "n": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "n",
+                "value": 0,
+                "display_name": "N",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Number of chat completions to generate for each prompt. Note that the API may not return the full n completions if duplicates are generated.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "stream": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "stream",
+                "value": false,
+                "display_name": "Stream",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Stream the response from the model. Streaming works only in Chat.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "system_message": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "system_message",
+                "value": "",
+                "display_name": "System Message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "System message to pass to the model.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "temperature": {
+                "tool_mode": false,
+                "min_label": "",
+                "max_label": "",
+                "min_label_icon": "",
+                "max_label_icon": "",
+                "slider_buttons": false,
+                "slider_buttons_options": [],
+                "slider_input": false,
+                "range_spec": {
+                  "step_type": "float",
+                  "min": 0,
+                  "max": 1,
+                  "step": 0.01
+                },
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "temperature",
+                "value": 0.2,
+                "display_name": "Temperature",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Run inference with this temperature. Must by in the closed interval [0.0, 1.0].",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "slider",
+                "_input_type": "SliderInput"
+              },
+              "tool_model_enabled": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "tool_model_enabled",
+                "value": false,
+                "display_name": "Enable Tool Models",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Select if you want to use models that can work with tools. If yes, only those models will be shown.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "_frontend_node_flow_id": {
+                "value": "8af1ca34-3b2f-4eae-9c30-8062a0004c30"
+              },
+              "_frontend_node_folder_id": {
+                "value": "d501d74d-2680-4992-b70c-d349b39b7889"
+              },
+              "is_refresh": false
+            },
+            "description": "Generate text using Groq.",
+            "icon": "Groq",
+            "base_classes": [
+              "LanguageModel",
+              "Message"
+            ],
+            "display_name": "Groq",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "text_output",
+                "display_name": "Model Response",
+                "method": "text_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "LanguageModel"
+                ],
+                "selected": "LanguageModel",
+                "name": "model_output",
+                "display_name": "Language Model",
+                "method": "build_model",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "required_inputs": null,
+                "allows_loop": false,
+                "loop_types": null,
+                "group_outputs": false,
+                "options": null,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "input_value",
+              "system_message",
+              "stream",
+              "api_key",
+              "base_url",
+              "max_tokens",
+              "temperature",
+              "n",
+              "model_name",
+              "tool_model_enabled"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "model",
+                "llm",
+                "language model",
+                "large language model"
+              ],
+              "module": "_lfx_ext.official.groq.groq",
+              "model_provider_policy_mode": "standalone",
+              "model_provider_id": "groq",
+              "model_provider_display_name": "Groq",
+              "code_hash": "59c69a65e077",
+              "dependencies": {
+                "total_dependencies": 3,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  },
+                  {
+                    "name": "pydantic",
+                    "version": "2.13.5"
+                  },
+                  {
+                    "name": "langchain_groq",
+                    "version": "1.1.3"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false,
+            "extension": "lfx-bundles",
+            "bundle": "groq",
+            "extension_version": "1.1.23",
+            "namespaced_id": "ext:groq:GroqModel@official",
+            "name": "GroqModel",
+            "last_updated": "2026-09-17T20:08:17.131Z",
+            "lf_version": "1.12.0"
+          },
+          "showNode": true,
+          "type": "ext:groq:GroqModel@official",
+          "id": "ext:groq:GroqModel@official-Se4Gq",
+          "selected_output": "text_output"
+        },
+        "measured": {
+          "width": 320,
+          "height": 495
+        },
+        "positionAbsolute": {
+          "x": 1300,
+          "y": 260
+        }
+      },
+      {
+        "id": "SecurityPlanWriter-Se5Sw",
+        "type": "genericNode",
+        "position": {
+          "x": 1720,
+          "y": 300
+        },
+        "data": {
+          "id": "SecurityPlanWriter-Se5Sw",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Security Test Plan Writer - a Langflow custom component.\n\nWrites the security test plan: the checks to run, on which parameters, with\nwhich payloads, and why - and the model's read on where to start.\n\nThe report is in two halves. The first is **computed**: every check comes from\n`attack_surface.json`, the file the Attack Surface Mapper wrote, and every one\nof those checks targets a parameter that was actually found in the spec. The\nsecond is the model's - which checks are worth running first, given limited\ntime - and it is not free to add a check of its own. Anything the model names\nthat is not in the mapped surface is dropped and reported as dropped, because a\nsecurity plan that sends a tester after a parameter which does not exist wastes\nthe one thing a functional QA doing security testing does not have much of:\ntime, and confidence that the list is real.\n\nEvery report opens with the same line, because a tool that generates attack\npayloads has exactly one acceptable use: testing something you are authorised\nto test.\n\"\"\"\n\nimport json\nimport re\nfrom datetime import datetime, timezone\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n_FENCE = re.compile(r\"```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\", re.DOTALL)\n_SEVERITY_ORDER = {\"critical\": 0, \"high\": 1, \"medium\": 2, \"low\": 3}\n\n_DISCLAIMER = (\n    \"**Authorised testing only.** These are OWASP-standard detection probes for an API \"\n    \"you own or have explicit written permission to test - your own staging or QA \"\n    \"environment. Running them against a system you do not have permission to test is \"\n    \"unauthorised access in most jurisdictions, regardless of intent.\"\n)\n\n\nclass SecurityPlanWriter(Component):\n    display_name = \"Security Test Plan Writer\"\n    description = \"Verifies the model's prioritisation against the mapped surface, then writes the plan.\"\n    documentation = \"https://owasp.org/www-project-web-security-testing-guide/\"\n    icon = \"file-text\"\n    name = \"SecurityPlanWriter\"\n\n    inputs = [\n        MessageTextInput(\n            name=\"priorities\",\n            display_name=\"Prioritisation\",\n            info=\"The model's reply: which mapped checks to run first, and why.\",\n            value=\"\",\n            required=True,\n        ),\n        MessageTextInput(\n            name=\"output_dir\",\n            display_name=\"Reports folder\",\n            info=(\n                \"Where security_test_plan.md is written, and where attack_surface.json is read \"\n                \"from. Point this at the same folder as the Attack Surface Mapper's Reports folder.\"\n            ),\n            value=\"\",\n        ),\n        MessageTextInput(\n            name=\"report_name\",\n            display_name=\"Report file name\",\n            value=\"security_test_plan.md\",\n            advanced=True,\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"write_report\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"write_details\"),\n    ]\n\n    SURFACE_FILE = \"attack_surface.json\"\n\n    # ------------------------------------------------------------- reading\n\n    def _surface(self, folder: Path) -> dict:\n        path = folder / self.SURFACE_FILE\n        if not path.is_file():\n            msg = (f\"No {self.SURFACE_FILE} in {folder}. The Attack Surface Mapper writes it, \"\n                   \"so set its Reports folder to this same folder and run it first.\")\n            raise ValueError(msg)\n        try:\n            data = json.loads(path.read_text(encoding=\"utf-8\"))\n        except json.JSONDecodeError as exc:\n            msg = f\"{path.name} is not valid JSON - {exc}\"\n            raise ValueError(msg) from exc\n        if not isinstance(data, dict) or \"vectors\" not in data:\n            msg = f\"{path.name} does not look like a mapped attack surface; it has no vectors.\"\n            raise ValueError(msg)\n        return data\n\n    @staticmethod\n    def _clean_markdown(text: str) -> str:\n        raw = (text or \"\").strip()\n        if not raw:\n            msg = \"The model returned no prioritisation to write.\"\n            raise ValueError(msg)\n        whole = re.match(r\"^\\s*```[a-zA-Z]*[ \\t]*\\n(.*?)\\n?[ \\t]*```\\s*$\", raw, re.DOTALL)\n        return (whole.group(1) if whole else raw).strip()\n\n    # ------------------------------------------------------- cross-check\n\n    @staticmethod\n    def _referenced_endpoints(text: str, vectors: list) -> set:\n        \"\"\"Which mapped endpoints the model's prose actually names.\n\n        This is a soft check, not a hard guard like the writers in agents 12-14 -\n        the model is invited to prioritise in prose, not to emit structured\n        claims that can be verified one to one. What IS verified is the thing\n        that matters: the checks that end up in the plan are always the ones\n        code found, never ones the model adds. This just flags, for the report\n        reader, whether the model's narrative actually engaged with the real\n        endpoints or talked in generalities.\n        \"\"\"\n        named = set()\n        for v in vectors:\n            if v[\"endpoint\"] in text or f\"{v['method']} {v['endpoint']}\" in text:\n                named.add(f\"{v['method']} {v['endpoint']}\")\n        return named\n\n    # ------------------------------------------------------------ composing\n\n    def _compose(self, surface: dict, priorities: str) -> str:\n        stamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d\")\n        vectors = surface.get(\"vectors\") or []\n        sv = surface.get(\"severity_counts\") or {}\n        referenced = self._referenced_endpoints(priorities, vectors)\n\n        out = [\n            f\"# Security test plan — {surface.get('api', 'API')}\",\n            \"\",\n            _DISCLAIMER,\n            \"\",\n            f\"*Generated {stamp}. Every check below targets a parameter parsed from the spec at \"\n            f\"`{surface.get('source', '')}` — re-run the mapper to reproduce it.*\",\n            \"\",\n            \"## At a glance\",\n            \"\",\n            \"| | |\",\n            \"|---|---|\",\n            f\"| API | {surface.get('api', '')} |\",\n            f\"| Base URL | {surface.get('base_url') or 'not stated'} |\",\n            f\"| Endpoints | {surface.get('endpoints_total', 0)} |\",\n            f\"| Parameters | {surface.get('params_total', 0)} |\",\n            f\"| **Checks to run** | **{surface.get('vectors_total', 0)}** — \"\n            f\"{sv.get('critical', 0)} critical, {sv.get('high', 0)} high, \"\n            f\"{sv.get('medium', 0)} medium |\",\n            \"\",\n        ]\n\n        cat = surface.get(\"category_counts\") or {}\n        if cat:\n            out.extend([\"## By category\", \"\", \"| Category | Checks |\", \"|---|---:|\"])\n            for name, count in sorted(cat.items(), key=lambda kv: -kv[1]):\n                out.append(f\"| {name.replace('_', ' ')} | {count} |\")\n            out.append(\"\")\n\n        out.extend([\n            \"---\", \"\", \"## Where to start\", \"\",\n            \"*This section is written by a language model from the checks above. Every check it \"\n            \"discusses is one code already found; it adds no new ones.*\", \"\",\n            priorities, \"\",\n        ])\n        if vectors and not referenced:\n            out.extend([\n                \"> The prioritisation above does not name a specific endpoint from this API. \"\n                \"Treat the severity ordering below as the fallback plan.\",\n                \"\",\n            ])\n\n        out.extend([\"---\", \"\", \"## Every check, grouped by endpoint\", \"\"])\n        by_endpoint = {}\n        for v in vectors:\n            key = (v[\"method\"], v[\"endpoint\"])\n            by_endpoint.setdefault(key, []).append(v)\n\n        for (method, endpoint), checks in sorted(\n            by_endpoint.items(), key=lambda kv: min(_SEVERITY_ORDER.get(c[\"severity\"], 9) for c in kv[1])\n        ):\n            out.append(f\"### {method} {endpoint}\")\n            out.append(\"\")\n            out.append(\"| Param | In | Attack | OWASP | Severity | Payloads to try |\")\n            out.append(\"|---|---|---|---|---|---|\")\n            for c in sorted(checks, key=lambda c: _SEVERITY_ORDER.get(c[\"severity\"], 9)):\n                payloads = \"  \".join(f\"`{p}`\" for p in c[\"payloads\"])\n                out.append(f\"| `{c['param']}` | {c['param_in']} | {c['attack_name']} \"\n                           f\"| {c['owasp']} | {c['severity'].upper()} | {payloads} |\")\n            out.append(\"\")\n            for c in checks:\n                out.append(f\"- **{c['attack_name']} on `{c['param']}`** — look for: \"\n                           f\"{c['positive_signal']}\")\n                if c.get(\"note\"):\n                    out.append(f\"    Note: {c['note']}\")\n                out.append(f\"    Fix if found: {c['remediation']}\")\n            out.append(\"\")\n\n        if surface.get(\"untested_endpoints\"):\n            out.extend([\n                \"## No injectable parameters found\",\n                \"\",\n                \"These endpoints take no parameters this mapper checks, or take none at all. \"\n                \"That is not the same as secure - it means this pass has nothing further to add:\",\n                \"\",\n            ])\n            for ep in surface[\"untested_endpoints\"]:\n                out.append(f\"- {ep}\")\n            out.append(\"\")\n\n        out.extend([\n            \"---\", \"\",\n            \"## What this plan does not cover\",\n            \"\",\n            \"This maps OWASP injection and access-control checks from the shape of the API \"\n            \"alone - it has not run anything. It does not cover business-logic flaws, \"\n            \"authentication design, rate limiting, or anything that needs the running \"\n            \"application rather than its interface to evaluate. Executing these checks, and \"\n            \"confirming a positive signal against the running API, is still a human step.\",\n            \"\",\n        ])\n        return \"\\n\".join(out)\n\n    # -------------------------------------------------------------- writing\n\n    def _write(self) -> dict:\n        folder_raw = (self.output_dir or \"\").strip().strip('\"').strip(\"'\")\n        if not folder_raw:\n            msg = \"Set a reports folder on the Security Test Plan Writer.\"\n            raise ValueError(msg)\n        folder = Path(folder_raw).expanduser()\n        folder.mkdir(parents=True, exist_ok=True)\n\n        surface = self._surface(folder)\n        priorities = self._clean_markdown(self.priorities)\n\n        name = Path((self.report_name or \"security_test_plan.md\").strip()).name\n        name = name or \"security_test_plan.md\"\n        if not name.endswith(\".md\"):\n            name += \".md\"\n        report_path = folder / name\n        report = self._compose(surface, priorities)\n        report_path.write_text(report if report.endswith(\"\\n\") else report + \"\\n\", encoding=\"utf-8\")\n\n        sv = surface.get(\"severity_counts\") or {}\n        return {\n            \"report\": str(report_path),\n            \"report_lines\": len(report.splitlines()),\n            \"surface_json\": str(folder / self.SURFACE_FILE),\n            \"api\": surface.get(\"api\", \"\"),\n            \"endpoints_total\": surface.get(\"endpoints_total\", 0),\n            \"vectors_total\": surface.get(\"vectors_total\", 0),\n            \"critical\": sv.get(\"critical\", 0),\n            \"high\": sv.get(\"high\", 0),\n        }\n\n    def write_report(self) -> Message:\n        r = self._write()\n        self.status = f\"{r['vectors_total']} checks -> {Path(r['report']).name}\"\n        return Message(text=\"\\n\".join([\n            f\"{r['api']}: {r['vectors_total']} checks mapped across {r['endpoints_total']} \"\n            f\"endpoints — {r['critical']} critical, {r['high']} high.\",\n            \"Authorised testing only — see the plan for the full disclaimer.\",\n            \"\",\n            f\"Report: {r['report']}  ({r['report_lines']} lines)\",\n            f\"Surface: {r['surface_json']}\",\n        ]))\n\n    def write_details(self) -> Data:\n        r = self._write()\n        self.status = f\"{r['vectors_total']} checks -> {Path(r['report']).name}\"\n        return Data(data=r)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "output_dir": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "output_dir",
+                "value": "e:/Visual Studio Code/AiTester/08_Automate_Daily_QA_Tasks_AI_Agents/02_Langflow_Agents/15_Security_Test_Generator_AI_Agent/reports",
+                "display_name": "Reports folder",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Where security_test_plan.md is written, and where attack_surface.json is read from. Point this at the same folder as the Attack Surface Mapper's Reports folder.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "priorities": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "priorities",
+                "value": "",
+                "display_name": "Prioritisation",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The model's reply: which mapped checks to run first, and why.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "report_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "report_name",
+                "value": "security_test_plan.md",
+                "display_name": "Report file name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Verifies the model's prioritisation against the mapped surface, then writes the plan.",
+            "icon": "file-text",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Security Test Plan Writer",
+            "documentation": "https://owasp.org/www-project-web-security-testing-guide/",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "write_report",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": null,
+                "name": "details",
+                "display_name": "Details",
+                "method": "write_details",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [
+              "priorities",
+              "output_dir",
+              "report_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "module": "custom_components.security_test_plan_writer",
+              "code_hash": "1a44e63441a6",
+              "dependencies": {
+                "total_dependencies": 1,
+                "dependencies": [
+                  {
+                    "name": "lfx",
+                    "version": "1.12.0"
+                  }
+                ]
+              }
+            },
+            "tool_mode": false
+          },
+          "type": "CustomComponent",
+          "showNode": true,
+          "selected_output": "brief"
+        },
+        "measured": {
+          "width": 320,
+          "height": 387
+        },
+        "positionAbsolute": {
+          "x": 1720,
+          "y": 300
+        }
+      },
+      {
+        "id": "ChatOutput-Se6Co",
+        "type": "genericNode",
+        "position": {
+          "x": 2140,
+          "y": 340
+        },
+        "data": {
+          "node": {
+            "base_classes": [
+              "Message"
+            ],
+            "beta": false,
+            "conditional_paths": [],
+            "custom_fields": {},
+            "description": "Display a chat message in the Playground.",
+            "display_name": "Chat Output",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "edited": false,
+            "field_order": [
+              "input_value",
+              "should_store_message",
+              "sender",
+              "sender_name",
+              "session_id",
+              "context_id",
+              "data_template",
+              "clean_data"
+            ],
+            "frozen": false,
+            "icon": "MessagesSquare",
+            "legacy": false,
+            "metadata": {
+              "code_hash": "84009527d08c",
+              "dependencies": {
+                "dependencies": [
+                  {
+                    "name": "orjson",
+                    "version": "3.11.9"
+                  },
+                  {
+                    "name": "fastapi",
+                    "version": "0.139.2"
+                  },
+                  {
+                    "name": "lfx",
+                    "version": null
+                  }
+                ],
+                "total_dependencies": 3
+              },
+              "module": "lfx.components.input_output.chat_output.ChatOutput"
+            },
+            "minimized": true,
+            "output_types": [],
+            "outputs": [
+              {
+                "allows_loop": false,
+                "cache": true,
+                "display_name": "Output Message",
+                "group_outputs": false,
+                "method": "message_response",
+                "name": "message",
+                "selected": "Message",
+                "tool_mode": true,
+                "types": [
+                  "Message"
+                ],
+                "value": "__UNDEFINED__"
+              }
+            ],
+            "pinned": false,
+            "template": {
+              "_type": "Component",
+              "clean_data": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Basic Clean Data",
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "clean_data",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              },
+              "code": {
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "fileTypes": [],
+                "file_path": "",
+                "info": "",
+                "list": false,
+                "load_from_db": false,
+                "multiline": true,
+                "name": "code",
+                "password": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "type": "code",
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        if isinstance(self.input_value, list):\n            clean_data: bool = getattr(self, \"clean_data\", False)\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value)\n"
+              },
+              "context_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Context ID",
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "context_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "data_template": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Data Template",
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "data_template",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "{text}"
+              },
+              "input_value": {
+                "_input_type": "HandleInput",
+                "advanced": false,
+                "api_editable": false,
+                "display_name": "Inputs",
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "input_value",
+                "override_skip": false,
+                "placeholder": "",
+                "required": true,
+                "show": true,
+                "title_case": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "other",
+                "value": ""
+              },
+              "sender": {
+                "_input_type": "DropdownInput",
+                "advanced": true,
+                "api_editable": false,
+                "combobox": false,
+                "dialog_inputs": {},
+                "display_name": "Sender Type",
+                "dynamic": false,
+                "external_options": {},
+                "info": "Type of sender.",
+                "name": "sender",
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "toggle": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "str",
+                "value": "Machine"
+              },
+              "sender_name": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Sender Name",
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "sender_name",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": "AI"
+              },
+              "session_id": {
+                "_input_type": "MessageTextInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Session ID",
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "input_types": [
+                  "Message"
+                ],
+                "list": false,
+                "list_add_label": "Add More",
+                "load_from_db": false,
+                "name": "session_id",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "track_in_telemetry": false,
+                "type": "str",
+                "value": ""
+              },
+              "should_store_message": {
+                "_input_type": "BoolInput",
+                "advanced": true,
+                "api_editable": false,
+                "display_name": "Store Messages",
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "list": false,
+                "list_add_label": "Add More",
+                "name": "should_store_message",
+                "override_skip": false,
+                "placeholder": "",
+                "required": false,
+                "show": true,
+                "title_case": false,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "value": true
+              }
+            },
+            "tool_mode": false,
+            "lf_version": "1.12.0"
+          },
+          "showNode": false,
+          "type": "ChatOutput",
+          "id": "ChatOutput-Se6Co"
+        },
+        "measured": {
+          "width": 192,
+          "height": 52
+        },
+        "positionAbsolute": {
+          "x": 2140,
+          "y": 340
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "TextInput-Se1Ti",
+        "sourceHandle": "{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Se1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "AttackSurfaceMapper-Se2Am",
+        "targetHandle": "{œfieldNameœ:œspec_pathœ,œidœ:œAttackSurfaceMapper-Se2Amœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "spec_path",
+            "id": "AttackSurfaceMapper-Se2Am",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "TextInput",
+            "id": "TextInput-Se1Ti",
+            "name": "text",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__TextInput-Se1Ti{œdataTypeœ:œTextInputœ,œidœ:œTextInput-Se1Tiœ,œnameœ:œtextœ,œoutput_typesœ:[œMessageœ]}-AttackSurfaceMapper-Se2Am{œfieldNameœ:œspec_pathœ,œidœ:œAttackSurfaceMapper-Se2Amœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "AttackSurfaceMapper-Se2Am",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œAttackSurfaceMapper-Se2Amœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "Prompt Template-Se3Pt",
+        "targetHandle": "{œfieldNameœ:œsurfaceœ,œidœ:œPrompt Template-Se3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "surface",
+            "id": "Prompt Template-Se3Pt",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "AttackSurfaceMapper-Se2Am",
+            "name": "brief",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__AttackSurfaceMapper-Se2Am{œdataTypeœ:œCustomComponentœ,œidœ:œAttackSurfaceMapper-Se2Amœ,œnameœ:œbriefœ,œoutput_typesœ:[œMessageœ]}-Prompt Template-Se3Pt{œfieldNameœ:œsurfaceœ,œidœ:œPrompt Template-Se3Ptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "Prompt Template-Se3Pt",
+        "sourceHandle": "{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Se3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ext:groq:GroqModel@official-Se4Gq",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Se4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ext:groq:GroqModel@official-Se4Gq",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "Prompt Template",
+            "id": "Prompt Template-Se3Pt",
+            "name": "prompt",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__Prompt Template-Se3Pt{œdataTypeœ:œPrompt Templateœ,œidœ:œPrompt Template-Se3Ptœ,œnameœ:œpromptœ,œoutput_typesœ:[œMessageœ]}-ext:groq:GroqModel@official-Se4Gq{œfieldNameœ:œinput_valueœ,œidœ:œext:groq:GroqModel@official-Se4Gqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "ext:groq:GroqModel@official-Se4Gq",
+        "sourceHandle": "{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Se4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "SecurityPlanWriter-Se5Sw",
+        "targetHandle": "{œfieldNameœ:œprioritiesœ,œidœ:œSecurityPlanWriter-Se5Swœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "priorities",
+            "id": "SecurityPlanWriter-Se5Sw",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          },
+          "sourceHandle": {
+            "dataType": "ext:groq:GroqModel@official",
+            "id": "ext:groq:GroqModel@official-Se4Gq",
+            "name": "text_output",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__ext:groq:GroqModel@official-Se4Gq{œdataTypeœ:œext:groq:GroqModel@officialœ,œidœ:œext:groq:GroqModel@official-Se4Gqœ,œnameœ:œtext_outputœ,œoutput_typesœ:[œMessageœ]}-SecurityPlanWriter-Se5Sw{œfieldNameœ:œprioritiesœ,œidœ:œSecurityPlanWriter-Se5Swœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false
+      },
+      {
+        "source": "SecurityPlanWriter-Se5Sw",
+        "sourceHandle": "{œdataTypeœ:œCustomComponentœ,œidœ:œSecurityPlanWriter-Se5Swœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}",
+        "target": "ChatOutput-Se6Co",
+        "targetHandle": "{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Se6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-Se6Co",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "CustomComponent",
+            "id": "SecurityPlanWriter-Se5Sw",
+            "name": "summary",
+            "output_types": [
+              "Message"
+            ]
+          }
+        },
+        "id": "xy-edge__SecurityPlanWriter-Se5Sw{œdataTypeœ:œCustomComponentœ,œidœ:œSecurityPlanWriter-Se5Swœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-Se6Co{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Se6Coœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.6
+    }
+  },
+  "is_component": false,
+  "endpoint_name": null
+}
