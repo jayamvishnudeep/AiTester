@@ -21,10 +21,11 @@ it works.
 | 12 | [Auto-Update Selectors (Self-Healing)](02_Langflow_Agents/12_Self_Healing_Selectors_AI_Agent) | Repointing every broken selector by hand after a restyle |
 | 13 | [Smart Regression Advisor](02_Langflow_Agents/13_Smart_Regression_Advisor_AI_Agent) | Running the whole suite because nobody can prove what to skip |
 | 14 | [Meeting Transcript to Requirements](02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent) | Re-reading an hour of transcript to find what was agreed |
+| 15 | [Security Test Generator](02_Langflow_Agents/15_Security_Test_Generator_AI_Agent) | A functional QA guessing at OWASP checks with no security background |
 
 The agents live in two folders by the tool that runs them:
 [`01_n8n_Agents`](01_n8n_Agents) holds 01–06,
-[`02_Langflow_Agents`](02_Langflow_Agents) holds 07–14. The split tracks a real
+[`02_Langflow_Agents`](02_Langflow_Agents) holds 07–15. The split tracks a real
 constraint, not a preference: 07 onward each end by writing a file to disk, and
 n8n Cloud runs on someone else's machine — "write a `.spec.ts`" there can only
 ever mean "send you a download". Numbering stays attached to each agent across
@@ -336,6 +337,32 @@ that says so.
 
 See its [README](02_Langflow_Agents/14_Meeting_Transcript_To_Requirements_AI_Agent).
 
+## 15 — Security Test Generator
+
+An API spec goes in; the OWASP injection and access-control checks worth
+running against it come out — every check aimed at a parameter that actually
+exists, every payload the standard published detection probe for its class.
+
+Its line between code and model is drawn at the point where a wrong answer
+stops being a report problem and becomes a live action. **The payloads are a
+fixed, hand-verified catalog the model never writes to** — an invented
+injection string is a security-testing action with no reviewer, unlike an
+invented test case or an invented selector elsewhere in this folder. The model's
+only decision is which of the checks *already found* to run first.
+
+Its targeting is the part worth trusting rather than skimming. SSRF and open
+redirect fire only on a parameter shaped like a URL; path traversal only on one
+shaped like a file path; XXE only on a literal XML body; BOLA only on an id in
+the path or query. A report that offers every attack on every field gets read
+once, and the whole value of a security report is being read twice.
+
+It also carries the folder's most direct guard rail: **every report opens with
+a fixed authorised-testing disclaimer that the model cannot write around**,
+because the one acceptable use of an attack-payload generator is testing
+something you have permission to test.
+
+See its [README](02_Langflow_Agents/15_Security_Test_Generator_AI_Agent).
+
 ## What this section adds over `07_n8n_Workflows`
 
 **The contract ships inside the workflow.** No instructions typed into a chat
@@ -429,3 +456,7 @@ model could not determine.
 - **A quote has to be long enough to prove something.** Three words of ordinary
   English appear in almost any document, so a short quote lets an invented claim
   borrow a real line's attribution and pass the check.
+- **Some decisions are too live to leave to a model, even with verification.**
+  Everywhere else in this folder, checking a claim after the fact is enough.
+  A security payload is different — sending it IS the action, so the catalog
+  itself has to be fixed and reviewed, not generated and then checked.
