@@ -7,6 +7,36 @@
 | **Input** | A live application and nothing else — no documentation, no existing tests |
 | **Output** | A verified test plan, and 24 scenarios automated from it |
 | **Shape** | planner → plan → generator → specs → healer → green |
+| **Structure** | Page objects per page, flows for preconditions, fixtures for wiring |
+
+## Why the suite is a page object model
+
+The 24 scenarios were first written flat: one file, every locator inline, shared
+helpers at the top. That is the right shape for the generator agent, which
+verifies each step in a browser and writes what it saw, and it is the wrong
+shape to keep.
+
+The reason is concentrated in this application's oddities. `[data-test="cancel"]`
+being an anchor rather than a button is a fact about TTACart that eight tests
+depend on. The cart badge leaving the DOM is a fact that six tests assert
+against. Inline, each of those facts is restated at every use, and a change to
+the application means finding all of them. In `CartPage` and `BasePage` each is
+stated once, next to the comment explaining why it is written that way — so the
+explanation travels with the locator instead of being repeated or, worse, lost.
+
+Three rules keep it from becoming the usual page-object mess:
+
+- **Page objects hold locators and actions, not scenarios.** The `expect*`
+  methods are limited to page identity and shell state — `expectLoaded`,
+  `expectCartBadgeAbsent`. Everything a specific test claims stays in the spec,
+  because a test whose assertions are hidden behind method names cannot be read.
+- **Multi-page journeys live in `OrderFlow`, not on a page.** "Log in, add an
+  item, land on checkout" belongs to none of `LoginPage`, `InventoryPage` or
+  `CartPage`, and putting it on any one of them is how a page class turns into a
+  god object holding every route through the app.
+- **Verified values live in one file.** `test-data.ts` holds the prices, totals
+  and verbatim error strings, so the things most likely to change when the app
+  changes are in the place you would look first.
 
 ## The thing that makes this different from generating tests
 
@@ -66,7 +96,7 @@ them silently into an assertion. **If the application is ever fixed, those two
 tests are supposed to fail** — and the comment is what tells the next person
 that failing is the good outcome.
 
-## The bug that would have made four tests meaningless while green
+## The storage reset, and what measuring it actually showed
 
 TTACart writes the checkout details to `localStorage` under
 `tta-cart-checkout-info` on a successful Continue, step one **pre-fills** from
@@ -74,19 +104,33 @@ that key on every later visit, and the key is **not** cleared when an order
 completes. After a finished order the stored value was still
 `{"firstName":"John","lastName":"Doe","postal":"12345"}`.
 
-The consequence is the nastiest class of test failure — the one with no
+The consequence would be the nastiest class of test failure — the one with no
 symptom. The blank-field negatives in §4.1–4.4 each clear a field and expect
-`Error: First Name is required`. If a previous test left values behind, the form
-is not blank when the test arrives, the validation the test exists to exercise
-never fires, and the test passes. Four scenarios reporting green while testing
-nothing at all, with no error anywhere to notice.
+`Error: First Name is required`. Reach step one with that key already set and
+the form is not blank when the test arrives, the validation the test exists to
+exercise never fires, and the test passes. Four scenarios reporting green while
+testing nothing at all, with no error anywhere to notice.
 
-Hence the `localStorage.clear()` in `beforeEach`. It reads like defensive
-boilerplate and it is the reason a third of §4 means anything. This is the one
-piece of the suite most likely to be "tidied away" by someone who has not read
-this file, which is why it carries its own comment pointing back at plan §6.3.
+That is the reasoning this suite inherited, and it is worth writing down that
+**it was measured rather than believed.** Disabling the reset and running the
+eight checkout negatives: all eight still pass. Playwright gives every test its
+own browser context, so `localStorage` starts empty regardless. Under the
+current configuration the reset is not what is holding those four tests up.
 
-It is also a deliberate exception to the project's own rule that assertions use
+It stays anyway, and the distinction matters more after a page-object refactor
+than before it. The obvious next optimisation for a suite where all 24 scenarios
+log in is `storageState` — save the session once, reuse it, stop paying for the
+login. The moment anyone does that, storage stops being per-test and this
+fixture becomes the only thing between §4.1–4.4 and a silent false pass. Serial
+mode sharing a context does the same. So the reset is insurance against a change
+that a reasonable person is likely to make, and the fixture comment says exactly
+that rather than overstating its current role.
+
+Calling it load-bearing when it is not would have been the worse error: the next
+person finds the claim, disables it, sees everything still green, and reasonably
+concludes the rest of the file's warnings are also inflated.
+
+It is also a deliberate exception to the project's rule that assertions use
 web-first `expect(locator)` calls. `page.evaluate` appears exactly once, for
 fixture teardown of browser storage, because Playwright exposes no API for it —
 and the MCP server's `browser_localstorage_*` tools advertise but resolve as

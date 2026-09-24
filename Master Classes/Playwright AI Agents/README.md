@@ -18,16 +18,40 @@ repairs them when they break.
 
 ## Contents
 
-| File | What it is |
+| Path | What it is |
 |---|---|
 | `specs/ttacart-e2e-order-plan.md` | The test plan. 613 lines, 24 scenarios — the authoritative document |
-| `src/ttacart-e2e-order.spec.ts` | All 24 scenarios, in three describes mirroring the plan |
+| `src/specs/` | The three spec files, mirroring the plan's sections |
+| `src/pages/` | One class per page, plus `BasePage` for the shared header shell |
+| `src/flows/OrderFlow.ts` | Multi-page preconditions ("logged in, one item, on checkout") |
+| `src/fixtures/tta-test.ts` | The `test`/`expect` specs import, wiring the page objects and the storage reset |
+| `src/fixtures/test-data.ts` | Every verified URL, price, string and error message |
 | `src/seed.spec.ts` | The generator's seed file — leave it alone |
 | `playwright.config.ts` | `testDir: ./src`, chromium, `dotenv.config()` |
 | `.mcp.json` | The `playwright-test` MCP server, for Claude Code |
 | `.vscode/mcp.json` | The same server, for VS Code |
 | `.github/agents/` | The three agent definitions |
 | `plan.md` | Why it is built this way |
+
+### How the suite is put together
+
+Specs import `test` and `expect` from `src/fixtures/tta-test.ts`, never from
+`@playwright/test` directly — that import is what supplies the page objects and
+the storage reset. A test names the pages it needs as fixtures:
+
+```ts
+test('Last Name left blank is rejected', async ({ orderFlow, checkoutInformationPage }) => {
+  await orderFlow.reachCheckoutStepOne();
+  await checkoutInformationPage.fillDetails('John', '', '12345');
+  await checkoutInformationPage.continue();
+  await checkoutInformationPage.expectError(ERRORS.lastNameRequired);
+});
+```
+
+Page objects hold locators and actions, plus `expect*` helpers limited to page
+*identity* and *shell state* (`expectLoaded`, `expectCartBadgeAbsent`).
+Everything scenario-specific stays in the spec, where a reader can see what the
+test actually claims.
 
 The plan is worth reading before the specs. Every selector, price and error
 string in it was read off the running application, and §5–§6 record what the
@@ -89,6 +113,7 @@ npx playwright test --headed --reporter=list
 | Command | What it does |
 |---|---|
 | `npx playwright test --headed --reporter=list` | The whole suite, visible |
+| `npx playwright test --headed src/specs/ttacart-login-negative.spec.ts` | One section |
 | `npx playwright test --headed -g "happy path"` | One scenario by name |
 | `npx playwright test --ui` | Pick and step through tests interactively |
 | `npx playwright show-report` | The HTML report from the last run |
@@ -112,7 +137,7 @@ Each is explained where it appears; the short version:
 
 | Looks like | Actually |
 |---|---|
-| A stray `localStorage.clear()` in `beforeEach` | `tta-cart-checkout-info` pre-fills checkout and survives a completed order. Without the clear, every blank-field negative passes on stale values |
+| A redundant storage reset in `tta-test.ts` | `tta-cart-checkout-info` pre-fills checkout and survives a completed order. Measured: the negatives *do* still pass without it today, because each test gets a fresh context — but it is the only guard left the moment anyone adds `storageState` to reuse a login. See `plan.md` |
 | Two tests asserting broken behaviour | §4.7 and §4.8 **pin suspected bugs**. Passing is not approval, and both say so |
 | `toHaveCount(0)` where a visibility check would read better | The cart badge is removed from the DOM when empty, not hidden |
 | `data-test` selectors where `getByRole('button')` would be idiomatic | Checkout, Cancel and Continue Shopping are anchors. The role locator does not find them |
