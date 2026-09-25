@@ -7,7 +7,29 @@
 | **Input** | A live application and nothing else — no documentation, no existing tests |
 | **Output** | A verified test plan, and 24 scenarios automated from it |
 | **Shape** | planner → plan → generator → specs → healer → green |
-| **Structure** | Page objects per page, flows for preconditions, fixtures for wiring |
+| **Structure** | Page objects, composable state fixtures, area-organised specs |
+
+## Why the structure follows AdvancePlaywrightFramework2x
+
+The layout here is deliberately the one from
+[AdvancePlaywrightFramework2x](https://github.com/PramodDutta/AdvancePlaywrightFramework2x):
+`src/` split into `pages/`, `fixtures/`, `config/`, `testdata/`, `utils/` and
+`tests/`, path aliases, `BasePage` supplying `el` and `log`, locators as
+`private readonly`, and specs grouped by area.
+
+Adopting someone else's conventions rather than inventing house ones is the point:
+a reader who knows that framework can navigate this repository without being told
+anything, and the arguments behind each convention have already been had.
+
+What was **not** adopted is as deliberate. That framework carries an API-testing
+progression, an LLM agent layer, five provider transports, a custom reporter and
+Ajv schema validation. None of it is here, because none of it has a job here —
+this is a UI suite against one application with no API surface under test. Copying
+the folders without the need would be the exact thing that framework's own
+over-engineering quality gate exists to catch. The one substitution: `logger.ts`
+keeps the scope-tagging interface but is dependency-free rather than Winston-backed,
+because a transport layer for a 34-test suite that only writes to a console is
+weight without a reader.
 
 ## Why the suite is a page object model
 
@@ -30,10 +52,15 @@ Three rules keep it from becoming the usual page-object mess:
   methods are limited to page identity and shell state — `expectLoaded`,
   `expectCartBadgeAbsent`. Everything a specific test claims stays in the spec,
   because a test whose assertions are hidden behind method names cannot be read.
-- **Multi-page journeys live in `OrderFlow`, not on a page.** "Log in, add an
-  item, land on checkout" belongs to none of `LoginPage`, `InventoryPage` or
+- **Multi-page journeys are composable fixtures, not page methods.** "Log in, add
+  an item, land on checkout" belongs to none of `LoginPage`, `InventoryPage` or
   `CartPage`, and putting it on any one of them is how a page class turns into a
-  god object holding every route through the app.
+  god object holding every route through the app. An earlier version kept them in
+  an `OrderFlow` class; fixtures are better for a reason that is not cosmetic — a
+  fixture is requested by name in the test signature, so the precondition is
+  visible in the test's own declaration instead of buried in its first line. They
+  chain (`loggedIn` → `cartWithItem` → `atCheckoutInformation` →
+  `atCheckoutOverview`), so asking for the deepest runs the stack beneath it.
 - **Verified values live in one file.** `test-data.ts` holds the prices, totals
   and verbatim error strings, so the things most likely to change when the app
   changes are in the place you would look first.

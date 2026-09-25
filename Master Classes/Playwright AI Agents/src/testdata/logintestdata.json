@@ -1,0 +1,71 @@
+{
+  "_comment": "Login accounts and their verified outcomes (plan §3, §5). The valid account's credentials are NOT here - they come from .env as TTA_USERNAME / TTA_PASSWORD, read through @config/credentials. Only usernames and expected messages are data.",
+  "invalid": [
+    {
+      "case": "unknown username",
+      "username": "nonexistent_user",
+      "passwordSource": "valid",
+      "expectedError": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "case": "wrong password",
+      "username": "valid",
+      "password": "wrong_password",
+      "expectedError": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "case": "wrong-case username",
+      "username": "Standard_User",
+      "passwordSource": "valid",
+      "expectedError": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "case": "locked-out user",
+      "username": "locked_out_user",
+      "passwordSource": "valid",
+      "expectedError": "Epic sadface: Sorry, this user has been locked out."
+    },
+    {
+      "case": "whitespace-only username",
+      "username": "   ",
+      "passwordSource": "valid",
+      "expectedError": "Epic sadface: Username is required"
+    },
+    {
+      "case": "whitespace-only password",
+      "username": "valid",
+      "password": "   ",
+      "expectedError": "Epic sadface: Username and password do not match any user in this service"
+    }
+  ],
+  "nativeValidation": [
+    {
+      "case": "empty username",
+      "field": "#user-name",
+      "note": "The required attribute stops the submit before the app runs, so there is no banner to assert - only validity.valueMissing (plan §3.4)."
+    },
+    {
+      "case": "empty password",
+      "field": "#password",
+      "note": "As above (plan §3.5)."
+    }
+  ],
+  "otherAccounts": [
+    {
+      "username": "problem_user",
+      "verdict": "unsuitable for the end-to-end flow - see plan §5"
+    },
+    {
+      "username": "performance_glitch_user",
+      "verdict": "logs in successfully but takes about four seconds; everything after login is identical to the standard user"
+    },
+    {
+      "username": "error_user",
+      "verdict": "unsuitable for the end-to-end flow - see plan §5"
+    },
+    {
+      "username": "visual_user",
+      "verdict": "functionally identical to the standard user; the only difference is an 8px transform on the cart link, so it is a visual-regression fixture and not a functional-failure case"
+    }
+  ]
+}

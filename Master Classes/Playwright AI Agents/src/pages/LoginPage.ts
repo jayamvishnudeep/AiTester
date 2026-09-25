@@ -1,63 +1,79 @@
-// spec: specs/ttacart-e2e-order-plan.md
+// spec: specs/ttacart-e2e-order-plan.md §3
 
 import { expect, type Locator, type Page } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { TITLES, URLS } from '../fixtures/test-data';
+import { TITLES, URLS } from '../testdata/ttacart.data';
 
 /**
  * The login page — the application root.
  *
- * Both fields carry the HTML `required` attribute, which is why this class
- * exposes two different ways to submit. See `submit` versus `loginAs`.
+ * Both fields carry the HTML `required` attribute, which is why there are
+ * several ways to submit here. See `submit` versus `loginAs`, and the two
+ * deliberately-partial submitters below.
  */
 export class LoginPage extends BasePage {
   readonly url = URLS.login;
   readonly title = TITLES.login;
 
-  readonly usernameInput: Locator;
-  readonly passwordInput: Locator;
-  readonly loginButton: Locator;
-  readonly loginContainer: Locator;
+  private readonly usernameInputEl: Locator;
+  private readonly passwordInputEl: Locator;
+  private readonly loginButtonEl: Locator;
+  private readonly loginContainerEl: Locator;
 
   constructor(page: Page) {
-    super(page);
-    this.usernameInput = page.locator('#user-name');
-    this.passwordInput = page.locator('#password');
-    this.loginButton = page.locator('#login-button');
-    this.loginContainer = page.locator('[data-test="login-container"]');
+    super(page, 'LoginPage');
+    this.usernameInputEl = page.locator('#user-name');
+    this.passwordInputEl = page.locator('#password');
+    this.loginButtonEl = page.locator('#login-button');
+    this.loginContainerEl = page.locator('[data-test="login-container"]');
   }
 
+  get usernameInput(): Locator {
+    return this.usernameInputEl;
+  }
+  get passwordInput(): Locator {
+    return this.passwordInputEl;
+  }
+  get loginContainer(): Locator {
+    return this.loginContainerEl;
+  }
+
+  // --- actions ---------------------------------------------------------------
+
   async fillCredentials(username: string, password: string): Promise<void> {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
+    await this.usernameInputEl.fill(username);
+    await this.passwordInputEl.fill(password);
   }
 
   /**
-   * Submit the form without asserting the outcome.
+   * Submit without asserting the outcome.
    *
-   * This is what every negative login scenario uses: the point of those tests
-   * is what happens when login does *not* succeed, so asserting success here
-   * would make them impossible to write.
+   * What every negative scenario uses: the point of those tests is what happens
+   * when login does not succeed, so asserting success here would make them
+   * impossible to write.
    */
   async submit(username: string, password: string): Promise<void> {
+    this.log.info(`submit login as "${username}"`);
     await this.fillCredentials(username, password);
-    await this.loginButton.click();
+    await this.loginButtonEl.click();
   }
 
   /**
    * Fill only the password and submit, leaving the username untouched.
-   * Used by §3.4, where the empty field must stay genuinely untouched so that
-   * Chromium's own `required` check is what blocks the submit.
+   * §3.4 needs the empty field genuinely untouched so that Chromium's own
+   * `required` check is what blocks the submit.
    */
   async submitWithoutUsername(password: string): Promise<void> {
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
+    this.log.info('submit with the username left blank');
+    await this.passwordInputEl.fill(password);
+    await this.loginButtonEl.click();
   }
 
-  /** The mirror of the above for §3.5. */
+  /** The mirror of the above, for §3.5. */
   async submitWithoutPassword(username: string): Promise<void> {
-    await this.usernameInput.fill(username);
-    await this.loginButton.click();
+    this.log.info('submit with the password left blank');
+    await this.usernameInputEl.fill(username);
+    await this.loginButtonEl.click();
   }
 
   /** Submit and assert the products page was reached. */
@@ -66,12 +82,14 @@ export class LoginPage extends BasePage {
     await expect(this.page).toHaveURL(URLS.inventory);
   }
 
+  // --- assertions ------------------------------------------------------------
+
   /**
    * Assert a field was blocked by native browser validation.
    *
    * §3.4/§3.5 assert `validity.valueMissing` rather than a banner because the
-   * `required` attribute stops the submit before the application ever runs —
-   * no request happens, so there is no banner that could exist. Whitespace-only
+   * `required` attribute stops the submit before the application ever runs — no
+   * request happens, so there is no banner that could exist. Whitespace-only
    * values are a different story and reach the app's own validator (§3.6).
    */
   async expectBlockedByNativeValidation(field: Locator): Promise<void> {

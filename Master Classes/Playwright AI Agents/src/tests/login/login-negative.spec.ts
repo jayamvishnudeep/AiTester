@@ -1,32 +1,26 @@
 // spec: specs/ttacart-e2e-order-plan.md §3
-// seed: src/seed.spec.ts
+// seed: src/tests/seed.spec.ts
 //
-// A note on why these tests are not all shaped the same way.
+// Why these tests are not all shaped the same way.
 //
 // §3.4/§3.5 assert `validity.valueMissing`; §3.6/§3.7 assert the application's
-// own error banners. Read side by side that looks inconsistent — it is testing
-// two different layers. Both fields carry the HTML `required` attribute, so a
-// genuinely empty field is blocked by Chromium before the application ever
-// runs: no request happens, so there is no banner that could exist. A space
-// satisfies `required`, so whitespace passes the native check, reaches the app,
-// and produces the app's own message. Asserting a banner for the empty case
-// would assert something that cannot exist.
+// own error banners. Side by side that looks inconsistent — it is testing two
+// different layers. Both fields carry the HTML `required` attribute, so a
+// genuinely empty field is blocked by Chromium before the application runs: no
+// request happens, so there is no banner that could exist. A space satisfies
+// `required`, so whitespace passes the native check, reaches the app, and
+// produces the app's own message. Asserting a banner for the empty case would be
+// asserting something that cannot exist.
 
-import { expect, test } from '../fixtures/tta-test';
-import {
-  CREDENTIALS,
-  ERRORS,
-  TITLES,
-  URLS,
-  USERS,
-  WHITESPACE,
-} from '../fixtures/test-data';
+import { expect, test } from '@fixtures/test-base';
+import { accounts, standardUser } from '@config/credentials';
+import { ERRORS, TITLES, URLS, WHITESPACE } from '@testdata/ttacart.data';
 
-test.describe('TTACart — negative cases: login', () => {
+test.describe('Login — negative', () => {
   // ------------------------------------------------------------------- §3.1
-  test('Invalid password is refused', async ({ page, loginPage }) => {
-    // 1-4. On the login page, enter the valid username with a wrong password.
-    await loginPage.submit(CREDENTIALS.username, 'wrong_password');
+  test('Invalid password is refused @p0', async ({ page, loginPage }) => {
+    // 1-4. On the login page, the valid username with a wrong password.
+    await loginPage.submit(standardUser.username, 'wrong_password');
 
     await loginPage.expectAtUrl();
     await loginPage.expectError(ERRORS.credentials);
@@ -39,8 +33,7 @@ test.describe('TTACart — negative cases: login', () => {
 
   // ------------------------------------------------------------------- §3.2
   test('Locked-out user cannot log in', async ({ page, loginPage }) => {
-    // 1-3. Enter locked_out_user with the valid password and submit.
-    await loginPage.submit(USERS.lockedOut, CREDENTIALS.password);
+    await loginPage.submit(accounts.lockedOut, standardUser.password);
 
     await loginPage.expectAtUrl();
     await loginPage.expectError(ERRORS.lockedOut);
@@ -54,11 +47,11 @@ test.describe('TTACart — negative cases: login', () => {
   test('Unknown username gets the same message as a bad password', async ({
     loginPage,
   }) => {
-    // 1-3. Enter an unknown username with the valid password and submit.
-    await loginPage.submit(USERS.unknown, CREDENTIALS.password);
+    await loginPage.submit(accounts.unknown, standardUser.password);
 
     await loginPage.expectAtUrl();
-    // Identical to §3.1 — the app does not distinguish the two cases.
+    // Identical to §3.1 — the app does not distinguish the two cases, which is
+    // the correct behaviour: telling them apart enumerates valid usernames.
     await loginPage.expectError(ERRORS.credentials);
   });
 
@@ -66,13 +59,12 @@ test.describe('TTACart — negative cases: login', () => {
   test('Empty username is blocked by native browser validation', async ({
     loginPage,
   }) => {
-    // 1-4. Leave the username blank, enter the password, click Login.
-    await loginPage.submitWithoutUsername(CREDENTIALS.password);
+    // Leave the username blank, enter the password, click Login.
+    await loginPage.submitWithoutUsername(standardUser.password);
 
-    // The submit never reaches the application: the input carries the HTML
-    // required attribute, so Chromium intercepts it. Assert valueMissing
-    // rather than any banner text — the app's own "Username is required"
-    // branch is unreachable this way (see §3.6 for the only route to it).
+    // The submit never reaches the application, so assert valueMissing rather
+    // than a banner — the app's own "Username is required" branch is unreachable
+    // this way. §3.6 is the only route to it.
     await loginPage.expectBlockedByNativeValidation(loginPage.usernameInput);
     await loginPage.expectNoError();
     await loginPage.expectAtUrl();
@@ -82,8 +74,7 @@ test.describe('TTACart — negative cases: login', () => {
   test('Empty password is blocked by native browser validation', async ({
     loginPage,
   }) => {
-    // 1-4. Enter the username, leave the password blank, click Login.
-    await loginPage.submitWithoutPassword(CREDENTIALS.username);
+    await loginPage.submitWithoutPassword(standardUser.username);
 
     await loginPage.expectBlockedByNativeValidation(loginPage.passwordInput);
     await loginPage.expectNoError();
@@ -94,9 +85,9 @@ test.describe('TTACart — negative cases: login', () => {
   test('Whitespace-only username reports that the username is required', async ({
     loginPage,
   }) => {
-    // 1-4. Three spaces satisfy native validation, so the app's own validator
-    // runs and trims the value. This is the only route to this message.
-    await loginPage.submit(WHITESPACE, CREDENTIALS.password);
+    // Three spaces satisfy native validation, so the app's own validator runs
+    // and trims the value. This is the only route to this message.
+    await loginPage.submit(WHITESPACE, standardUser.password);
 
     await loginPage.expectAtUrl();
     await loginPage.expectError(ERRORS.usernameRequired);
@@ -106,8 +97,8 @@ test.describe('TTACart — negative cases: login', () => {
   test('Whitespace-only password is treated as a wrong password', async ({
     loginPage,
   }) => {
-    // 1-4. The password is not trimmed, so spaces are a genuine wrong password.
-    await loginPage.submit(CREDENTIALS.username, WHITESPACE);
+    // The password is not trimmed, so spaces are a genuine wrong password.
+    await loginPage.submit(standardUser.username, WHITESPACE);
 
     await loginPage.expectAtUrl();
     // Not a "required" message.
@@ -117,21 +108,18 @@ test.describe('TTACart — negative cases: login', () => {
 
   // ------------------------------------------------------------------- §3.8
   test('Username matching is case-sensitive', async ({ loginPage }) => {
-    // 1-3. Enter the username in the wrong case with the valid password.
-    await loginPage.submit(USERS.wrongCase, CREDENTIALS.password);
+    await loginPage.submit(accounts.wrongCase, standardUser.password);
 
     await loginPage.expectAtUrl();
     await loginPage.expectError(ERRORS.credentials);
   });
 
   // ------------------------------------------------------------------- §3.9
-  test('Checkout pages are not reachable while logged out', async ({
+  test('Checkout pages are not reachable while logged out @p0', async ({
     page,
     loginPage,
   }) => {
-    // 1. Site storage was cleared by the cleanSession fixture, so no session
-    //    exists.
-    // 2. Request checkout step one directly.
+    // The cleanSession fixture cleared storage, so no session exists.
     await page.goto(URLS.checkoutStepOne);
     await loginPage.expectLoaded();
     await expect(loginPage.loginContainer).toBeVisible();
