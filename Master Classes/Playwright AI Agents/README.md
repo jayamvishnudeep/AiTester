@@ -9,8 +9,9 @@ repairs them when they break.
 | | |
 |---|---|
 | **Application under test** | `https://app.thetestingacademy.com/playwright/ttacart/` |
-| **Plan** | 24 scenarios, written from live exploration |
-| **Suite** | 25 tests (24 scenarios + seed), green in ~45s |
+| **Plan** | 24 scenarios, plus a 9-scenario addendum, all written from live exploration |
+| **Suite** | 34 tests (33 scenarios + seed), green in ~1.8m headed |
+| **Suspected bugs pinned** | 6 — two in the primary plan, four found by the addendum |
 | **Built with** | Playwright 1.63, the `playwright-test` MCP server |
 | **Agents** | `playwright-test-planner`, `-generator`, `-healer` |
 
@@ -21,7 +22,8 @@ repairs them when they break.
 | Path | What it is |
 |---|---|
 | `specs/ttacart-e2e-order-plan.md` | The test plan. 613 lines, 24 scenarios — the authoritative document |
-| `src/specs/` | The three spec files, mirroring the plan's sections |
+| `specs/ttacart-extended-negative-plan.md` | Addendum: 9 more scenarios, and the four bugs they found |
+| `src/specs/` | The four spec files, mirroring the plans' sections |
 | `src/pages/` | One class per page, plus `BasePage` for the shared header shell |
 | `src/flows/OrderFlow.ts` | Multi-page preconditions ("logged in, one item, on checkout") |
 | `src/fixtures/tta-test.ts` | The `test`/`expect` specs import, wiring the page objects and the storage reset |

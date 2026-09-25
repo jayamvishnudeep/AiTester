@@ -48,6 +48,14 @@ export class InventoryPage extends BasePage {
     await expect(this.cartBadge).toHaveText('1');
   }
 
+  /**
+   * Change the sort order. The four verified values are `az`, `za`, `lohi` and
+   * `hilo` (plan addendum §8.4).
+   */
+  async sortBy(value: 'az' | 'za' | 'lohi' | 'hilo'): Promise<void> {
+    await this.sortDropdown.selectOption(value);
+  }
+
   /** Assert the default sort is Name (A to Z) and reads as such. */
   async expectDefaultSort(): Promise<void> {
     await expect(this.sortDropdown).toHaveValue('az');

@@ -142,3 +142,14 @@ export const WHITESPACE = '   ';
  * a test rather than endorsed (plan §6.2).
  */
 export const NON_NUMERIC_POSTAL_CODE = 'not-a-zip!!';
+
+/** The localStorage keys TTACart writes (plan §6.3, addendum §8.5 – §8.6). */
+export const STORAGE_KEYS = {
+  user: 'tta-cart-user',
+  items: 'tta-cart-items',
+  sort: 'tta-cart-sort',
+  checkoutInfo: 'tta-cart-checkout-info',
+} as const;
+
+/** The first card under Name (Z to A) (plan addendum §8.4). */
+export const LAST_ITEM_ALPHABETICALLY = 'TTA Practice Backpack';

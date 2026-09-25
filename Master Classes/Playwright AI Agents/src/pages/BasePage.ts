@@ -31,6 +31,13 @@ export abstract class BasePage {
   readonly pageHeading: Locator;
   readonly errorBanner: Locator;
 
+  // --- the burger sidebar, shared by every signed-in page (plan addendum §8.5) --
+  readonly closeMenuButton: Locator;
+  readonly allItemsLink: Locator;
+  readonly aboutLink: Locator;
+  readonly logoutLink: Locator;
+  readonly resetAppStateLink: Locator;
+
   protected constructor(page: Page) {
     this.page = page;
     this.primaryHeader = page.locator('[data-test="primary-header"]');
@@ -39,6 +46,45 @@ export abstract class BasePage {
     this.cartBadge = page.locator('[data-test="shopping-cart-badge"]');
     this.pageHeading = page.locator('[data-test="title"]');
     this.errorBanner = page.locator('[data-test="error"]');
+
+    this.closeMenuButton = page.locator('[data-test="close-menu"]');
+    this.allItemsLink = page.locator('[data-test="inventory-sidebar-link"]');
+    this.aboutLink = page.locator('[data-test="about-sidebar-link"]');
+    this.logoutLink = page.locator('[data-test="logout-sidebar-link"]');
+    this.resetAppStateLink = page.locator('[data-test="reset-sidebar-link"]');
+  }
+
+  /**
+   * Open the burger sidebar and wait for it to finish sliding in.
+   *
+   * The wait is on a link being *visible* rather than present: the sidebar is in
+   * the DOM before it is reachable, so clicking without this is a race.
+   */
+  async openMenu(): Promise<void> {
+    await this.burgerMenu.click();
+    await expect(this.logoutLink).toBeVisible();
+  }
+
+  async logout(): Promise<void> {
+    await this.openMenu();
+    await this.logoutLink.click();
+  }
+
+  /**
+   * Reset App State.
+   *
+   * Clears `tta-cart-items` and `tta-cart-checkout-info` and leaves
+   * `tta-cart-user` intact, so the session survives (plan addendum §8.6).
+   * Note that it does NOT clear the cart on logout — see addendum §9.3.
+   */
+  async resetAppState(): Promise<void> {
+    await this.openMenu();
+    await this.resetAppStateLink.click();
+  }
+
+  /** Read a localStorage key, or null when it is absent. */
+  async readStorageKey(key: string): Promise<string | null> {
+    return this.page.evaluate((k) => localStorage.getItem(k), key);
   }
 
   /** Navigate straight to this page. Also the way §3.9 probes the route guard. */
@@ -89,5 +135,19 @@ export abstract class BasePage {
 
   async expectError(message: string): Promise<void> {
     await expect(this.errorBanner).toHaveText(message);
+  }
+
+  /**
+   * Assert this page has no error banner element at all.
+   *
+   * Distinct from `expectNoError`, and the distinction is a real property of the
+   * application rather than a stylistic choice. The banner exists — present but
+   * empty — only on the login page and checkout step one, the two pages that can
+   * actually raise an error. On the products, cart, overview and confirmation
+   * pages the element is absent from the DOM entirely, so `toHaveText('')`
+   * fails there with a strict-mode resolution error rather than passing.
+   */
+  async expectErrorBannerAbsent(): Promise<void> {
+    await expect(this.errorBanner).toHaveCount(0);
   }
 }
