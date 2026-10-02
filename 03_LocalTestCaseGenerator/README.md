@@ -108,7 +108,7 @@ bundled copy in `src/templates/`, so it still runs if it is moved.
 ├── Generated_TCs_using_Local_Ollama.md  a real generated suite
 └── TestcaseGeneratorsSrc/
     ├── Application_chart.png            the wireframe above
-    ├── promt.md / finetuned_promt.md    the prompt before and after tuning
+    ├── prompt.md / finetuned_prompt.md  the prompt before and after tuning
     ├── Test_Results_images/             the three screenshots above
     └── src/
         ├── app.py             Streamlit chat UI and the request flow

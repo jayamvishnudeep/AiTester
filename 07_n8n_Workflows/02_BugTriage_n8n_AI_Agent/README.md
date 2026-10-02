@@ -49,7 +49,7 @@ proposes; it never writes back to Jira. Jira access is read-only.
 Both versions are in `resources/`, and the difference between them is the whole
 lesson.
 
-**`BugTriage_Promt.md` — the first version.** A persona and a set of principles:
+**`BugTriage_Prompt.md` — the first version.** A persona and a set of principles:
 *"You are a QA engineer with 8+ years of experience… you have run the daily bug
 triage meeting for teams of 30+ engineers."* It teaches judgement well, and its
 central rule is still the one that matters:
@@ -63,7 +63,7 @@ What it does not do is tell the agent how to *behave* — so the agent would
 happily describe what it would write to the spreadsheet instead of calling the
 tool.
 
-**`Modified_BugTriage_promt.md` — the rewrite.** Same judgement, but restructured
+**`Modified_BugTriage_prompt.md` — the rewrite.** Same judgement, but restructured
 as an executable contract. The sections that made it work:
 
 - **MANDATORY EXECUTION ORDER** — eleven numbered steps, and an explicit
