@@ -2,7 +2,7 @@
 
 ## Context
 
-`AiTester4X` is a prompt-engineering training workspace. `02_Promt_Engineering/00_Task1.md` sets the assignment ("Write a Selenium Code for the Salesforce login"), `01_RICE_POT_Template.md` is the blank RICE-POT template, and `02_RICE_POT.example.md` (currently empty, open in the IDE) is meant to hold a worked example of that template applied to Task1. The prompt the user pasted **is** that worked example — a fully-specified RICE-POT prompt whose payload asks for a production-grade Selenium automation suite against `login.salesforce.com/?locale=in`.
+`AiTester4X` is a prompt-engineering training workspace. `02_Prompt_Engineering/00_Task1.md` sets the assignment ("Write a Selenium Code for the Salesforce login"), `01_RICE_POT_Template.md` is the blank RICE-POT template, and `02_RICE_POT.example.md` (currently empty, open in the IDE) is meant to hold a worked example of that template applied to Task1. The prompt the user pasted **is** that worked example — a fully-specified RICE-POT prompt whose payload asks for a production-grade Selenium automation suite against `login.salesforce.com/?locale=in`.
 
 The user confirmed the goal: actually build the real Maven/Selenium/TestNG project the prompt describes, not just log it as documentation. No Selenium/Java project exists anywhere in the workspace yet — everything is created from scratch.
 

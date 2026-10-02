@@ -38,7 +38,7 @@ back to this repo, this is the thread to follow:
 
 | Where | How the same rule appears |
 |---|---|
-| `02_Promt_Engineering` | `VWO_Login_Test_Plan.md` is written in this exact output format, opening with **Verified Facts** |
+| `02_Prompt_Engineering` | `VWO_Login_Test_Plan.md` is written in this exact output format, opening with **Verified Facts** |
 | `03_LocalTestCaseGenerator` | The QA template says *"Use ONLY the provided requirements… if information is missing, state Not specified"* |
 | `07_.../02_BugTriage` | `Not Applicable` — a Story or Task is never forced into a defect classification |
 | `08_.../01_Screenshot_To_Bug_Reporter` | Steps to reproduce are never invented from an image; the field reads `Not Provided - tester to complete` and confidence drops to Low |

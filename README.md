@@ -10,7 +10,7 @@ README explaining what is in it and how to run it; this page is the map.
 | | Folder | What is in it |
 |---|---|---|
 | 01 | [LLM Basics](01_LLM_Basics) | One file — the anti-hallucination prompt contract the rest of the repo keeps reusing |
-| 02 | [Prompt Engineering](02_Promt_Engineering) | RICE-POT taken from a one-line request through to a real Selenium framework, plus a reusable prompt library |
+| 02 | [Prompt Engineering](02_Prompt_Engineering) | RICE-POT taken from a one-line request through to a real Selenium framework, plus a reusable prompt library |
 | 03 | [Local Test Case Generator](03_LocalTestCaseGenerator) | A Streamlit app turning a Jira ticket into test cases with a model running on your own machine |
 | 04 | [JobKitAI](04_JobKitAI) | Resume tailoring against real job postings, without inventing a single fact |
 | 05 | [JobTrackerAI](05_JobTrackerAI) | A browser-only Kanban job tracker — no backend, no accounts, IndexedDB only |
