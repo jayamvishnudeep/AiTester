@@ -1,0 +1,22 @@
+# Points that decide which test cases come first in get_top_test_cases, the suites and
+# the automation candidates. Score = priority points + test type points; a tie goes to the
+# lower issue key. Change the numbers and restart the server (or set TC_MCP_RANKING to
+# your own copy of this file).
+
+priority:
+  Highest: 100
+  High: 70
+  Medium: 40
+  Low: 10
+  Lowest: 0
+
+test_type:
+  Security: 12
+  Functional: 10
+  Regression: 10
+  API: 8
+  Negative: 8
+  Boundary: 6
+  Performance: 6
+  Accessibility: 4
+  UI/UX: 4
