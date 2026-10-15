@@ -118,6 +118,14 @@ py -3.11 -m venv .venv
 - **Every agent folder has a `README.md` and a `plan.md`.** The README is how to
   run it; the `plan.md` is why it is built that way, including what went wrong on
   the way. If you only read one, read the plan of an agent you find surprising.
+- **Every folder you browse into has a README** — groups of projects, templates,
+  outputs, screenshots and skill categories included. Three kinds of folder are
+  described by their project's README instead, because an extra file could be
+  mistaken for input or output there:
+  - code folders (`src/`, `tests/`, `server/`, `.github/`);
+  - the inputs a flow or app reads (`sample_*`, QABuddy's source folders, the
+    sample repositories an agent audits);
+  - the folders a flow writes to (`generated/`, `reports/`).
 - **Sample data is included and deliberately imperfect.** The framework auditor
   ships a framework full of real anti-patterns; the CI analyzer ships logs that
   are 90% noise. Fixtures that are all signal make an agent look better than it is.
