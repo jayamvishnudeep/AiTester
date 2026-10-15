@@ -12,13 +12,13 @@ the source resume.
    by the user) and extracted every role, date, tool, and claim into a single
    source of truth.
 2. **Read two job batches**:
-   - `naukri_jobs.csv` — 22 postings from Naukri (Indian job market).
+   - `naukri_jobs.csv` — 21 postings from Naukri (Indian job market).
    - `stepstone_jobs.csv` — 5 postings from Stepstone (German job market,
      descriptions in German).
 3. **Extracted each JD's real requirements** — named tools, responsibilities,
    seniority signals, and domain — and cross-referenced them against the
    resume to see what's a genuine match vs. a real gap.
-4. **Generated one tailored `.docx` resume per job posting** (27 total). For
+4. **Generated one tailored `.docx` resume per job posting** (26 total). For
    each one, only the following changed:
    - The target title line (matches the JD's job title)
    - The summary (proof points relevant to that JD)
@@ -41,12 +41,12 @@ the source resume.
 ```
 04_JobKitAI/
 ├── README.md                    ← this file
-├── naukri_jobs.csv               source: 22 Naukri job postings
+├── naukri_jobs.csv               source: 21 Naukri job postings
 ├── stepstone_jobs.csv            source: 5 Stepstone job postings (German)
-├── naukri.md                     all 22 Naukri JDs, formatted by company
+├── naukri.md                     all 21 Naukri JDs, formatted by company
 ├── stepstone.md                  all 5 Stepstone JDs, formatted by company
 ├── output/
-│   ├── naukri/                   22 tailored resumes (.docx), one per job
+│   ├── naukri/                   21 tailored resumes (.docx), one per job
 │   └── stepstone/                5 tailored resumes (.docx), one per job
 └── resume-helper/
     └── resume-tailor/            the skill that drove all of this
@@ -54,7 +54,7 @@ the source resume.
         ├── references/            writing rules + resume JSON schema
         ├── scripts/
         │   ├── build_resume.js     renders one spec.json -> one .docx
-        │   └── generate_all.js     defines all 27 jobs + builds them all
+        │   └── generate_all.js     defines all 26 jobs + builds them all
         └── specs/                 the generated spec.json for every resume
                                     (kept for traceability / re-editing)
 ```
@@ -67,7 +67,7 @@ without renaming.
 
 ## Regenerating or adding more jobs
 
-All 27 resumes come from one script, so nothing needs to be hand-built again:
+All 26 resumes come from one script, so nothing needs to be hand-built again:
 
 ```bash
 cd resume-helper/resume-tailor
